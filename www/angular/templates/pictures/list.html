@@ -1,0 +1,21 @@
+<div class="fakebody picturelisttemplate" data-ng-class="bodyClasses()">
+    <div class="container">
+        <div class="picturelist">
+            <div class="row">
+                <div class="span3">
+                    <h1>My Pictures</h1>
+                    <a class="btn btn-primary">Upload new picture</a>
+                </div>
+                <div class="span9">
+                    <ul class="picturelist">
+                        <li data-ng-repeat="picture in pictures">
+                            <a class="picture" data-ng-href='#!/my/pictures/{{picture.slug}}'>
+                                <img src='/media/cache/resource_image_thumbnail/{{picture.path}}' alt="{{picture.title}}" />
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

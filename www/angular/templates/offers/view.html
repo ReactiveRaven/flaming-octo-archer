@@ -1,0 +1,35 @@
+<div class="fakebody offertemplate" data-ng-class="bodyClasses()">
+    <div class="container">
+        <div class="offer">
+            <div class="row">
+                <div class="span9">
+                    <h1>
+                        <input class="offertitle" data-resizable="true" data-ng-disabled="!editing" data-ng-model="offer.title" name="offertitle"/>
+                        <div class="inline">
+                            <small>from <a class="username" data-ng-href="#!/artist/{{artist.username}}">{{artist.username}}</a></small>
+                        </div>
+                        <div class="inline">
+                            <div class="inline" data-ng-show="iOwnThis()">
+                                <a class="btn btn-success" data-ng-hide="!editing" data-ng-click="save()"><i class="icon-save"></i> Save</a>
+                                <a class="btn disabled" data-ng-hide="!saving"><i class="icon-spinner icon-spin"></i> Saving</a>
+                                <a class="btn" data-ng-hide="editing || saving" data-ng-click="edit()"><i class="icon-edit"></i> Edit</a>
+                                <a class="btn btn-primary" data-ng-hide="offer.published || saving" data-ng-click='publish()'><i class="icon-unlock"></i> Make public</a>
+                                <a class="btn" data-ng-hide="!offer.published || saving" data-ng-click='unpublish()'><i class="icon-lock"></i> Make private</a>
+                            </div>
+                        </div>
+                    </h1>
+                    <textarea class="description" data-ng-model="offer.description" data-ng-disabled="!editing"></textarea>
+                    <markdown data-ng-model="offer.description">
+                    </markdown>
+                </div>
+                <div class="span3">
+                    <ul>
+                        <li data-ng-repeat="resource in offer.resources | filter:{type: 'image'}">
+                            {{resource.title}}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

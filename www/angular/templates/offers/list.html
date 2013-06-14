@@ -1,0 +1,32 @@
+<div class="fakebody offerlisttemplate" data-ng-class="bodyClasses()">
+    <div class="container">
+        <div class="offerlist">
+            <div class="row">
+                <div class="span3">
+                    <h1>{{artist.username}}</h1>
+                </div>
+                <div class="span9">
+                    <ul data-ng-show='iOwnThis()'>
+                        <li class="offerlist">
+                            <a class="offer add prototype" data-ng-href='#!/artist/{{me.username}}/create'>
+                                <h2>Add new offer <i class="icon icon-plus-sign"></i></h2>
+                                <p>
+                                    Click here to create a new offer
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li class="offerlist" data-ng-repeat="offer in offers">
+                            <a class="offer" data-ng-class="{'prototype': !offer.published}" data-ng-href='#!/artist/{{offer.user.username}}/{{offer.slug}}'>
+                                <h2>{{offer.title}}</h2>
+                                <markdown data-ng-model="offer.description" data-textonly="true" data-firstparagraph="true" data-wordlimit="30">
+                                </markdown>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
