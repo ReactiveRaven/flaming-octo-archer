@@ -2,7 +2,15 @@
 
 /* Controllers */
 
-function MenuCtrl($scope, Featured, My, Authentication) {
+function MenuCtrl($scope, Featured, My, Authentication, cornercouch) {
+    
+    $scope.couch = cornercouch("/couchdb", "GET");
+    
+    $scope.allusers = [];
+    
+    $scope.couch.getDB("commissar_users").queryAll().then(function (data) {
+        console.log(data.data.rows);
+    });
 
     var updateTicks = 0;
 
@@ -16,6 +24,14 @@ function MenuCtrl($scope, Featured, My, Authentication) {
 //            $scope.featuredOffers = Featured.get({type: "offers"});
 //            $scope.featuredArtists = Featured.get({type: "artists"});
         }
+    };
+    
+    $scope.loginUsername = "";
+    
+    $scope.isLoginOrSignup = function () {
+        var CDBUsers = $scope.couch.getDB("commissar_users");
+        
+        console.log(CDBUsers.getDoc($scope));
     };
 
     $scope.menuClasses = function() {
@@ -51,7 +67,7 @@ function MenuCtrl($scope, Featured, My, Authentication) {
     window.menuCtrlScope = $scope;
 }
 
-MenuCtrl.$inject = ['$scope', 'Featured', 'My', 'Authentication'];
+//MenuCtrl.$inject = ['$scope', 'Featured', 'My', 'Authentication'];
 
 
 function IndexCtrl($scope, $http) {

@@ -1,5 +1,5 @@
 angular.
-    module('commissar', ['commisarServices']).
+    module('commissar', ['commisarServices', 'CornerCouch']).
     config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
   
         var routeprefix = "/angular/templates/";
