@@ -21,4 +21,4 @@ cucumber.js
 ```
 
 In an ideal world there will be no errors, and no undefined steps. 
-Do your best to make this world the ideal world, soldier.
+Do your duty to make this world the ideal world, soldier.
