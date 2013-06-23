@@ -5,14 +5,16 @@ commissar reset repo
 
 Aiming for minimal php, majority angular.
 
-## Install
+## Testing
+
+### Install Cucumber
 
 ```bash
 npm install --dev
 npm install -g cucumber
 ```
 
-## Testing
+### Run tests
 
 ```
 cucumber.js
