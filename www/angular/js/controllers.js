@@ -8,9 +8,9 @@ function MenuCtrl($scope, Featured, My, Authentication, cornercouch) {
     
     $scope.allusers = [];
     
-    $scope.couch.getDB("commissar_users").queryAll().then(function (data) {
-        console.log(data.data.rows);
-    });
+//    $scope.couch.getDB("commissar_users").queryAll().then(function (data) {
+//        console.log(data.data.rows);
+//    });
 
     var updateTicks = 0;
 
@@ -29,9 +29,9 @@ function MenuCtrl($scope, Featured, My, Authentication, cornercouch) {
     $scope.loginUsername = "";
     
     $scope.isLoginOrSignup = function () {
-        var CDBUsers = $scope.couch.getDB("commissar_users");
+        //var CDBUsers = $scope.couch.getDB("commissar_users");
         
-        console.log(CDBUsers.getDoc($scope));
+        //console.log(CDBUsers.getDoc($scope));
     };
 
     $scope.menuClasses = function() {
@@ -62,7 +62,7 @@ function MenuCtrl($scope, Featured, My, Authentication, cornercouch) {
     $scope.me = Authentication.me;
 
     update();
-    setInterval(update, 1000 * 60);
+    //setInterval(update, 1000 * 60);
 
     window.menuCtrlScope = $scope;
 }

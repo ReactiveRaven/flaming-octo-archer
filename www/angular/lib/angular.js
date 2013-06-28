@@ -3099,6 +3099,7 @@ function Browser(window, document, $log, $sniffer) {
    * @param {boolean=} replace Should new url replace current history record ?
    */
   self.url = function(url, replace) {
+    var location = window.location
     // setter
     if (url) {
       if (lastBrowserUrl == url) return;
