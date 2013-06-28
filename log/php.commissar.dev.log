@@ -1,0 +1,2 @@
+[28-Jun-2013 16:07:19 Europe/London] PHP Warning:  require_once(/media/david/SSD/Sites/flaming-octo-archer/www/server/../vendor/autoload.php): failed to open stream: No such file or directory in /media/david/SSD/Sites/flaming-octo-archer/www/server/index.php on line 3
+[28-Jun-2013 16:07:19 Europe/London] PHP Fatal error:  require_once(): Failed opening required '/media/david/SSD/Sites/flaming-octo-archer/www/server/../vendor/autoload.php' (include_path='.:/usr/share/php:/usr/share/pear') in /media/david/SSD/Sites/flaming-octo-archer/www/server/index.php on line 3
