@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-function MenuCtrl($scope, Featured, My, Authentication, cornercouch) {
+function MenuCtrl($scope, $rootScope, Featured, My, Authentication, cornercouch) {
     
     $scope.couch = cornercouch("/couchdb", "GET");
     
@@ -27,6 +27,21 @@ function MenuCtrl($scope, Featured, My, Authentication, cornercouch) {
     };
     
     $scope.loginUsername = "";
+    
+    $scope.isUsernameRecognised = function () {
+      
+      if (!$scope.couch.databases || !$scope.couch.databases.length) {
+        $scope.couch.getDatabases().then(function() {
+          $rootScope.$apply();
+        });
+      } else {
+        if ($.inArray("commissar_user_" + $scope.loginUsername, $scope.couch.databases) >= 0) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
     
     $scope.isLoginOrSignup = function () {
         //var CDBUsers = $scope.couch.getDB("commissar_users");

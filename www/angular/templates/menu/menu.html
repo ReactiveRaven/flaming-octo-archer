@@ -88,7 +88,9 @@
                                             <input type="text" name="user[username]" size="30" placeholder="username" data-ng-model="loginUsername" />
                                             <input type="password" name="user[password]" size="30" placeholder="password" data-ng-model="loginPassword" />
 
-                                            <button class="btn btn-primary" data-ng-model="isLoginOrSignup">Log in</button>
+                                            <button class="btn btn-primary">Log in</button>
+                                            <button class="btn btn-success" data-ng-hide="isUsernameRecognised()">Sign up</button>
+                                            <button class="btn btn-success" disabled="disabled" data-ng-show="isUsernameRecognised()">Welcome back {{loginUsername}}!</button>
                                         </form>
                                     </div>
                                 </li>
