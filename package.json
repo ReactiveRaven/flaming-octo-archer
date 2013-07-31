@@ -1,6 +1,20 @@
-{ 
-  "devDependencies" : {
-    "cucumber": "latest",
-    "zombie": "latest"
+{
+  "dependencies": {
+    "cucumber": "~0.3.0",
+    "grunt": "~0.4.1",
+    "grunt-karma": "~0.4.4",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-requirejs": "~0.4.1",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-less": "~0.6.4",
+    "karma": "~0.8.7",
+    "karma-cucumberjs": "git://github.com/ReactiveRaven/karma-cucumberjs.git#master",
+    "grunt-bower-task": "~0.2.3",
+    "grunt-cli": "~0.1.9",
+    "grunt-contrib-uglify": "~0.2.2"
+  },
+  "scripts": {
+    "install": "./node_modules/grunt-cli/bin/grunt setup"
   }
 }

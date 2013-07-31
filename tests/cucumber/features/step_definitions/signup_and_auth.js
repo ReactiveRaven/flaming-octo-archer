@@ -4,7 +4,7 @@ var signup_and_auth = function () {
   this.World = require("../support/world.js").World; // overwrite default World constructor
   
   this.Given(/^I am (not logged in|not signed in|signed out|logged out)$/, function(match, callback) {
-      this.visit(this.settings.url + "/logout", callback);
+      this.open(this.settings.url + "/logout", callback);
   });
   
   this.Given(/^I am signed in as an? (commissioner|artist)$/, function (usertype, callback) {
