@@ -1,23 +1,21 @@
 // Karma configuration
 // Generated on Tue Jun 11 2013 21:07:37 GMT-0700 (PDT)
 
+/* globals 
+   basePath:true, files:true, exclude:true, reporters:true, port:true, 
+   runnerPort:true, colors:true, logLevel:true, autoWatch:true, 
+   browsers:true, captureTimeout:true, singleRun:true,
+   LOG_INFO:false
+ */
+
 
 // base path, that will be used to resolve files and exclude
-basePath = './';
+basePath = './../../../';
 
 
 // list of files / patterns to load in the browser
 files = [
-  JASMINE,
-  JASMINE_ADAPTER,
-  REQUIRE,
-  REQUIRE_ADAPTER,
-
-  {pattern: './source/**/*.js', included: false},
-  {pattern: './tests/jasmine/support/**/*.js', included: false},
-  {pattern: './tests/jasmine/**/*spec.js', included: false},
-
-  './tests/jasmine/test-main.js'
+    'provided in Gruntfile.js'
 ];
 
 

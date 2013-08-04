@@ -1,3 +1,6 @@
+/* global $:false */
+"use strict";
+
 $("body").on("input", "input[data-resizable]", function () {
     var $this = $(this);
     var value = $this.val();
@@ -10,7 +13,7 @@ $("body").on("input", "input[data-resizable]", function () {
     $this.width($span.width() + 7);
     $span.remove();
     if ($this.width() > $this.parents(".span1, .span2, .span3, .span4, .span5, .span6, .span7, .span8, .span9, .span10, .span11, .span12").first().width()) {
-        $this.val(value.slice(0,value.length-1));
+        $this.val(value.slice(0, value.length - 1));
         $this.trigger("input");
     }
 });
