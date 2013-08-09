@@ -8,7 +8,9 @@
     "angular-mocks": "~1.0.7",
     "angular-resource": "~1.0.7",
     "marked": "~0.2.9",
-    "CornerCouch": "git://github.com/ReactiveRaven/CornerCouch.git"
+    "CornerCouch": "git://github.com/ReactiveRaven/CornerCouch.git",
+    "angular-cookies": "~1.0.7",
+    "requirejs": "~2.1.8"
   },
   "exportsOverride": {
     "marked": {

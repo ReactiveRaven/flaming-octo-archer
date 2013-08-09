@@ -1,39 +1,40 @@
-define(['angular', './Couch'], function (angular) {
+define(['angular', 'angularCookies', './Couch'], function (angular) {
     "use strict";
     
-    var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch']);
+    var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch', 'ngCookies']);
     
-    AuthenticationModule.factory('Authentication', ['$rootScope', 'Couch', function ($rootScope, Couch) {
-        
+    AuthenticationModule.factory('Authentication', ['$rootScope', 'Couch', '$q', '$cookies', function ($rootScope, Couch, $q, $cookies) {
+
         if (!$rootScope.Authentication) {
             var Authentication = {
                 'userExists': function (username) {
                     return Couch.databaseExists('commissar_user_' + username);
+                },
+                'loggedIn': function () {
+                    var deferred = $q.defer();
+
+                    if (typeof $cookies.AuthSession !== 'undefined') {
+                        Couch.getSession().then(function (userCtx) {
+                            deferred.resolve(userCtx.name !== null);
+                        });
+                    } else {
+                        deferred.resolve(false);
+                    }
+
+                    return deferred.promise;
+                },
+                'login': function (username, password) {
+                    var deferred = $q.defer();
+                    
+                    Couch.login(username, password).then(function (response) {
+                        deferred.resolve(response);
+                    }, function () {
+                        deferred.resolve(false);
+                    });
+            
+                    return deferred.promise;
                 }
             };
-//
-//            var doLogin = function (/** /username, password/**/) {
-//                console.log("AJAX request to get login success or failure?");
-//                updateMe();
-//            };
-//
-//            var updateMe = function () {
-//                $rootScope.me = Artist.get({artist: "me"}, function () {
-//                    Authentication.me = $rootScope.me;
-//                });
-//            };
-//
-//
-//            $rootScope.$on("login", function (event, username, password) {
-//                doLogin(username, password);
-//            });
-//
-//
-//            if (!$rootScope.me) {
-//                updateMe();
-//            }
-//
-//            Authentication.me = $rootScope.me;
 
             $rootScope.Authentication = Authentication;
         }

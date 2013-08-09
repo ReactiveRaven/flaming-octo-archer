@@ -2,7 +2,8 @@
     'use strict';
     
     var defaultControllers = [
-        'IndexCtrl'
+        'IndexCtrl',
+        'MenuCtrl'
     ];
     
     var controllers = typeof controllers === "undefined" ? defaultControllers : controllers;
@@ -15,11 +16,9 @@
     }
     requireds = ['angular'].concat(requireds);
     
-    define(requireds, function (angular) {
+    define('app', requireds, function (angular) {
         var App = angular.module('commissar', includes);
-        App.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
-            $routeProvider.otherwise({redirectTo: '/'});
-            
+        App.config(['$locationProvider', function ($locationProvider) {
             $locationProvider.html5Mode(false);
             $locationProvider.hashPrefix("!");
         }]);

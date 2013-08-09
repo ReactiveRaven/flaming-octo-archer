@@ -1,9 +1,9 @@
-define(['angular', '../services/Authentication', '../directives/Markdown'], function (angular) {
+define(['angular', '../services/Authentication', '../directives/Markdown', '../filters/Capitalize'], function (angular) {
     "use strict";
     
     var IndexCtrlModule = angular.module(
         'commissar.controllers.IndexCtrl',
-        ['commissar.services.Authentication', 'commissar.directives.Markdown']
+        ['commissar.services.Authentication', 'commissar.directives.Markdown', 'commissar.filters.Capitalize']
     );
     
     IndexCtrlModule.controller('IndexCtrl', ['$scope', function ($scope) {
@@ -14,6 +14,7 @@ define(['angular', '../services/Authentication', '../directives/Markdown'], func
         var routeprefix = "angular/templates/";
 
         $routeProvider.when('/', {templateUrl: routeprefix + 'index.html',  controller: 'IndexCtrl'});
+        $routeProvider.otherwise({redirectTo: '/'});
     }]);
     
     return IndexCtrlModule;
