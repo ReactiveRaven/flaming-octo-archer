@@ -1,7 +1,12 @@
-define('bootstrap', ['angular', 'app'], function (angular, app) {
+define('bootstrap', ['angular', 'app', 'appmocked'], function (angular, app, appmocked) {
     "use strict";
     
+    if (typeof window.e2emocks !== 'undefined') {
+        app = appmocked;
+    }
+    
     return function () {
+        
         angular.bootstrap(document, [app['name']]);
 
         var html = document.getElementsByTagName('html')[0];
