@@ -23,7 +23,7 @@ define(['world'], function (world) {
         describe('[constructor]', function () {
             it('should not make requests unnecessarily', inject(function (Authentication) {
                 // no flush!
-                Authentication = Authentication; // shut up jshint
+                Authentication.shut_up_jshint = true;
             }));
         });
 
@@ -71,7 +71,18 @@ define(['world'], function (world) {
                 
                 it('should be case insensitive', inject(function (Couch, Authentication) {
                     spyOn(Couch, 'databaseExists').andReturn(world.resolved(true));
-                }))
+                    
+                    Authentication.userExists('Frank');
+                    world.digest();
+                    
+                    expect(Couch.databaseExists).toHaveBeenCalledWith("commissar_user_frank");
+                }));
+                
+                it('should not fail on undefined', inject(function (Authentication) {
+                    Authentication.userExists(undefined).then(function (result) {
+                        expect(result).toEqual(false);
+                    });
+                }));
 
             });
             
