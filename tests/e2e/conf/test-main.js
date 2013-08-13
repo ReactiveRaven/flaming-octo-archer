@@ -24,7 +24,7 @@
         },
         baseUrl: '/base/www/angular/js',
         shim: {
-            'angular' : {'exports': 'angular'},
+            'angular': {'exports': 'angular'},
             'angularMocks': {deps: ['angular'], 'exports': 'angular.mock'},
             'angularCookies': {deps: ['angular']},
             'CornerCouch': {deps: ['angular']}
@@ -33,11 +33,13 @@
             "angular"
         ],
         deps: [
-            'angular',
-            'angularMocks',
-            'app'
+            'bootstrap',
+            'angularMocks'
         ].concat(tests),
-        callback: function () {
+        callback: function (bootstrap) {
+            
+            bootstrap();
+            
             window.__karma__.start();
         }
     });

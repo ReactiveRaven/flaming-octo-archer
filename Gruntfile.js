@@ -274,6 +274,7 @@ module.exports = function (grunt) {
                     paths: {
                         angular: '../../bower_components/angular/angular',
                         requirejs: '../../bower_components/requirejs/require',
+                        angularMocks: '../../bower_components/angular-mocks/angular-mocks',
                         angularCookies: '../../bower_components/angular-cookies/angular-cookies',
                         angularResource: '../../bower_components/angular-resource/angular-resource',
                         marked: '../../bower_components/marked/js/marked',
