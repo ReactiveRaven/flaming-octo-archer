@@ -17,22 +17,22 @@
                         <div class="nav-collapse collapse">
                             <ul class="nav">
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <a href="#" id="menuArtistToggle" class="dropdown-toggle" data-toggle="dropdown">
                                         Artists
                                         <b class="caret"></b>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul id="menuArtistDropdown" class="dropdown-menu">
                                         <li>1</li>
                                         <li>2</li>
                                         <li>3</li>
                                     </ul>
                                 </li>
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <a href="#" id="menuOffersToggle" class="dropdown-toggle" data-toggle="dropdown">
                                         Offers
                                         <b class="caret"></b>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul id="menuOffersDropdown" class="dropdown-menu">
                                         <li>1</li>
                                         <li>2</li>
                                         <li>3</li>
@@ -80,17 +80,18 @@
                                     </ul>
                                 </li>
                                 <li class='dropdown' data-ng-show='!isLoggedIn()'>
-                                    <a href='#' class='dropdown-toggle' data-toggle='dropdown'>
+                                    <a href='#' id="menuLoginToggle" class='dropdown-toggle' data-toggle='dropdown'>
                                         Sign up &amp; Log in <i class='icon icon-key'></i>
                                     </a>
                                     <div class='dropdown-menu' id='menuloginform'>
                                         <form accept-charset="UTF-8">
-                                            <input type="text" name="user[username]" size="30" placeholder="username" data-ng-model="loginUsername" />
-                                            <input type="password" name="user[password]" size="30" placeholder="password" data-ng-model="loginPassword" />
+                                            <input type="text" name="user[username]" size="30" placeholder="username" data-ng-model="loginFormUsername" />
+                                            <input type="password" name="user[password]" size="30" placeholder="password" data-ng-model="loginFormPassword" />
 
-                                            <button class="btn btn-primary">Log in</button>
-                                            <button class="btn btn-success" data-ng-hide="isUsernameRecognised()">Sign up</button>
-                                            <button class="btn btn-success" disabled="disabled" data-ng-show="isUsernameRecognised()">Welcome back {{loginUsername}}!</button>
+                                            <button id="menuLoginFormButtonLogin" class="btn btn-primary">Log in</button>
+                                            <button id="menuLoginFormButtonSignup" class="btn btn-success" data-ng-hide="isUsernameRecognised(loginFormUsername)">Sign up</button>
+                                            <button id="menuLoginFormButtonSignupDisabled" class="btn btn-success" disabled="disabled" data-ng-show="isUsernameRecognised(loginFormUsername)">Already signed up!</button>
+                                            <button id="menuLoginFormButtonForgot" class="btn btn-link" data-ng-show="isUsernameRecognised(loginFormUsername)">Forgot your password?</button>
                                         </form>
                                     </div>
                                 </li>

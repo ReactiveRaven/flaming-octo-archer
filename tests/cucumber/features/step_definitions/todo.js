@@ -1,7 +1,4 @@
-"use strict";
-
-var todo_steps = function () {
-    this.World = require("../support/world.js").World; // overwrite default World constructor
+module.exports = function () {
+    
+    this.World = require('../support/world.coffee').World;
 };
-
-module.exports = todo_steps;

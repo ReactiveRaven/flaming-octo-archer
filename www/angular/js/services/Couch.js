@@ -7,16 +7,20 @@ define(['angular', 'CornerCouch'], function (angular) {
         if (!$rootScope.cornercouch) {
             $rootScope.cornercouch = cornercouch("/couchdb", "GET");
         }
+        
+        function isDefined(value) {
+            return typeof value !== 'undefined';
+        }
 
         return {
             databaseExists: function (databaseName) {
                 var deferred = $q.defer();
                 
-                if (typeof $rootScope.cornercouch.databases !== 'undefined') {
+                if (isDefined($rootScope.cornercouch.databases)) {
                     deferred.resolve($rootScope.cornercouch.databases.indexOf(databaseName) > -1);
                 } else {
-                    $rootScope.cornercouch.getDatabases().then(function (databases) {
-                        deferred.resolve(databases.indexOf(databaseName) > -1);
+                    $rootScope.cornercouch.getDatabases().then(function () {
+                        deferred.resolve($rootScope.cornercouch.databases.indexOf(databaseName) > -1);
                     });
                 }
                 

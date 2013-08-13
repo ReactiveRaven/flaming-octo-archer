@@ -39,6 +39,41 @@ define(['angular', '../services/Authentication'], function (angular) {
                 return reply;
             });
         };
+        
+        (function () {
+            var lastUsername = null,
+                lastResponse = null;
+                
+            $scope.isUsernameRecognised = function (username) {
+                var response = null;
+                
+                if (typeof username === "undefined") {
+                    username = $scope.loginFormUsername;
+                }
+                
+                if (username === lastUsername) {
+                    response = lastResponse;
+                } else {
+                    lastUsername = username;
+                    lastResponse = false;
+                    Authentication.userExists(username).then(function (reply) {
+                        lastResponse = reply;
+                        if (!$scope.$$phase) {
+                            $scope.$apply();
+                        }
+                    });
+                    response = false;
+                }
+                
+                return response;
+            };
+            
+            // Needed to trigger the form to update as it doesn't actually 
+            // contain 'loginFormUsername' as a binding!
+            $scope.$watch('loginFormUsername', function () {
+                $scope.isUsernameRecognised();
+            });
+        })();
     }]);
     
     return MenuCtrlModule;

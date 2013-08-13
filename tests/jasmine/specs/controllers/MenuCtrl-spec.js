@@ -166,6 +166,71 @@ define(['world', 'angular'], function (world, angular) {
                 });
             });
             
+            describe('[isUsernameRecognised()]', function () {
+                it('should be a function', function () {
+                    getCtrl();
+                    
+                    expect(typeof scope.isUsernameRecognised).toBe('function');
+                });
+                
+                it('should pass login requests to Authentication', function () {
+                    var username = 'username',
+                        response = null;
+                    
+                    getCtrl();
+                    
+                    response = scope.isUsernameRecognised(username);
+                    world.digest();
+                    
+                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
+                    expect(response).toBe(false);
+                });
+                
+                it('should return real values', function () {
+                    var username = 'username',
+                        response = null;
+                    
+                    getCtrl();
+                    
+                    response = scope.isUsernameRecognised(username);
+                    world.digest();
+                    
+                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
+                    expect(response).toBe(false);
+                });
+                
+                it('should pull from scope if no arguments given', function () {
+                    var username = 'username',
+                        response = null;
+                    
+                    getCtrl();
+                    
+                    scope.loginFormUsername = username;
+                    
+                    response = scope.isUsernameRecognised();
+                    world.digest();
+                    
+                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
+                    expect(response).toBe(false);
+                });
+                
+                it('should update once a response is received from the server', function () {
+                    var username = 'username',
+                        response = null;
+                    
+                    getCtrl();
+                    
+                    scope.loginFormUsername = username;
+                    
+                    scope.isUsernameRecognised();
+                    world.digest();
+                    response = scope.isUsernameRecognised();
+                    
+                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
+                    expect(response).toBe(true);
+                });
+            });
+            
         });
     });
 });

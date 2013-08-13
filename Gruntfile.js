@@ -2,22 +2,32 @@ module.exports = function (grunt) {
     "use strict";
     
     var npmTasks = [
-        'grunt-contrib-jshint',
-        'grunt-contrib-requirejs',
-        'grunt-contrib-watch',
-        'grunt-contrib-clean',
-        'grunt-contrib-less',
-        'grunt-karma',
         'grunt-bower-task',
-        'grunt-contrib-uglify'
+        'grunt-contrib-clean',
+        'grunt-contrib-connect',
+        'grunt-contrib-jshint',
+        'grunt-contrib-less',
+        'grunt-contrib-requirejs',
+        'grunt-contrib-uglify',
+        'grunt-contrib-watch',
+        'grunt-cucumber',
+        'grunt-env',
+        'grunt-karma',
+        'grunt-shell'
     ];
     
+    // "postinstall": "./node_modules/protractor/bin/install_selenium_standalone"
+    
     var tasks = {
-        'tests': ['jshint', 'karma:jasmine_once', 'karma:cuke_once'],
-        'setup': ['bower:install', 'build'],
+        'tests': ['jshint', 'karma:jasmine_once', 'karma:e2e_once', /** /'karma:cuke_once'/**/],
+        'setup': ['shell:install_selenium', 'bower:install', 'build'],
         'build': [],
         'default': ['tests'],
-        'dev': ['default', 'watch:dev']
+        'dev': ['watch:dev'],
+        'release': ['tests', 'build'],
+        'server': ['connect:server'],
+        'selenium': ['shell:selenium'],
+        'test': ['env:test', 'cucumberjs']
     };
     
     var config = {
@@ -191,13 +201,9 @@ module.exports = function (grunt) {
                 files: '<%= files._js_all %>',
                 tasks: ['jshint']
             },
-            jslint: { // alias for 'jshint'
-                files: '<%= files._js_all %>',
-                tasks: ['jshint']
-            },
             dev: {
                 files: '<%= files._watchable_all %>',
-                tasks: ['dev']
+                tasks: ['tests']
             }
         },
     
@@ -219,6 +225,41 @@ module.exports = function (grunt) {
                 }
             }
         },
+                
+        connect: {
+            server: {
+                options: {
+                    keepalive: true,
+                    port: 9001,
+                    base: 'www'
+                }
+            }
+        },
+                
+        env: {
+            test: {
+                PATH: '#{seleniumPath}:process.env.PATH'
+            }
+        },
+        
+        shell: {
+            install_selenium: {
+                command: './node_modules/protractor/bin/install_selenium_standalone',
+                options: {
+                    stdOut: true
+                }
+            },
+            selenium: {
+                command: 'java -jar selenium/selenium-server-standalone-*.jar -Dwebdriver.chrome.driver=./selenium/chromedriver',
+                options: {
+                    stdOut: true
+                }
+            }
+        },
+                
+        cucumberjs: {
+            files: 'tests/cucumber/features/**/*.feature'
+        }
 
     };
     

@@ -52,18 +52,13 @@ define(['world'], function (world) {
                 beforeEach(inject(function ($rootScope, Couch) {
                     Couch = Couch; // shut up jshint
                     
-                    spyOn(
-                        $rootScope.cornercouch,
-                        'getDatabases'
-                    ).andReturn(
-                        world.resolved([
-                            '_replicator', '_users', 'commissar',
-                            'commissar_user_fish',
-                            'commissar_user_geraldine',
-                            'commissar_validation_global',
-                            'commissar_validation_users'
-                        ])
-                    );
+                    $rootScope.cornercouch.databases = [
+                        '_replicator', '_users', 'commissar',
+                        'commissar_user_fish',
+                        'commissar_user_geraldine',
+                        'commissar_validation_global',
+                        'commissar_validation_users'
+                    ];
                 }));
 
                 it('should be a function', inject(function (Couch) {
@@ -74,7 +69,7 @@ define(['world'], function (world) {
                 it('should return a promise', inject(function (Couch) {
                     var response = Couch.databaseExists('_users');
                     
-                    expect(response).toBeDefined('undefined');
+                    expect(response).toBeDefined();
                     expect(typeof response.then).toEqual('function');
                 }));
 

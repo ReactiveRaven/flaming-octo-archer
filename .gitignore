@@ -6,3 +6,4 @@ www/bower_components/
 libpeerconnection.log
 .idea/
 erl_crash.dump
+selenium/

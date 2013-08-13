@@ -5,7 +5,7 @@
    basePath:true, files:true, exclude:true, reporters:true, port:true, 
    runnerPort:true, colors:true, logLevel:true, autoWatch:true, 
    browsers:true, captureTimeout:true, singleRun:true,
-   LOG_INFO:false
+   LOG_INFO:false, proxies:true, urlRoot:true
  */
 
 
@@ -67,3 +67,9 @@ captureTimeout = 60000;
 // Continuous Integration mode
 // if true, it capture browsers, run tests and exit
 singleRun = false;
+
+proxies = {
+    '/': 'http://dev.commissar.dev/'
+};
+
+urlRoot = "/__karma__/";

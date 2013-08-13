@@ -68,6 +68,10 @@ define(['world'], function (world) {
                         expect(result).toEqual(false);
                     });
                 }));
+                
+                it('should be case insensitive', inject(function (Couch, Authentication) {
+                    spyOn(Couch, 'databaseExists').andReturn(world.resolved(true));
+                }))
 
             });
             
