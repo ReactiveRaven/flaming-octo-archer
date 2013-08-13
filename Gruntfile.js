@@ -19,15 +19,18 @@ module.exports = function (grunt) {
     // "postinstall": "./node_modules/protractor/bin/install_selenium_standalone"
     
     var tasks = {
-        'tests': ['jshint', 'karma:jasmine_once', 'karma:e2e_once', /** /'karma:cuke_once'/**/],
         'setup': ['shell:install_selenium', 'bower:install', 'build'],
-        'build': [],
-        'default': ['tests'],
+        'build': ['requirejs'],
+        'release': ['tests:unit', 'tests:acceptance'],
+        
         'dev': ['watch:dev'],
-        'release': ['tests', 'build'],
+        'tests:unit': ['jshint', 'karma:jasmine_once', 'karma:e2e_once'],
+        'tests:acceptance': ['build', 'env:test', 'cucumberjs'],
+        
         'server': ['connect:server'],
         'selenium': ['shell:selenium'],
-        'test': ['env:test', 'cucumberjs']
+
+        'default': ['dev']
     };
     
     var config = {
@@ -47,24 +50,15 @@ module.exports = function (grunt) {
                 {pattern: './www/angular/js/**/*.js', watched: true, included: false, served: true}
             ],
 
-            karma_cucumber_library_files: [
-                // karma-cucumberjs specific files
-                {pattern: 'node_modules/karma-cucumberjs/vendor/*.css', watched: false, included: false, served: true},
-                {pattern: 'node_modules/karma-cucumberjs/lib/adapter.js', watched: false, included: true, served: true}
-            ],
+            // NOT USED IN KARMA ANYMORE!
             karma_cucumber_editable_files: [
-
-                // template files
-                {pattern: 'tests/cucumber/app.template', watched: true, included: false, served: true},
-
                 // tests
-                {pattern: 'tests/cucumber/features/support/world.js', watched: true, included: true, served: true},
-                {pattern: 'tests/cucumber/features/**/*.feature', watched: true, included: false, served: true},
-                {pattern: 'tests/cucumber/features/**/step_definitions/*.js', watched: true, included: true, served: true},
+                {pattern: 'tests/cucumber/features/support/*', watched: true, included: true, served: true},
+                {pattern: 'tests/cucumber/features/*.feature', watched: true, included: false, served: true},
+                {pattern: 'tests/cucumber/features/step_definitions/*.js', watched: true, included: false, served: true},
                 
                 // Config files
-                {pattern: './Gruntfile.js', watched: true, included: false, served: false},
-                {pattern: './tests/cucumber/conf/karma.conf.js', watched: true, included: false, served: false}
+                {pattern: './Gruntfile.js', watched: true, included: false, served: false}
             ],
 
             karma_jasmine_library_files: [
@@ -131,7 +125,8 @@ module.exports = function (grunt) {
         jshint: {
             all: '<%= files._js_all %>',
             options: {
-                jshintrc: '.jshintrc'
+                jshintrc: '.jshintrc',
+                ignores: ['www/angular/js/compiled.js'],
             }
         },
 
@@ -154,13 +149,6 @@ module.exports = function (grunt) {
             cuke_once: {
                 configFile: 'tests/cucumber/conf/karma.conf.js',
                 singleRun: true,
-                browsers: ['Chrome'],
-                files: '<%= files.karma_cucumber_files %>'
-            },
-
-            cucumber: {
-                configFile: 'tests/cucumber/conf/karma.conf.js',
-                singleRun: false,
                 browsers: ['Chrome'],
                 files: '<%= files.karma_cucumber_files %>'
             },
@@ -195,7 +183,7 @@ module.exports = function (grunt) {
             },
             cucumber: {
                 files: '<%= files._watchable_cucumber %>',
-                tasks: ['karma:cucumber_once']
+                tasks: ['tests:acceptance']
             },
             jshint: {
                 files: '<%= files._js_all %>',
@@ -203,7 +191,7 @@ module.exports = function (grunt) {
             },
             dev: {
                 files: '<%= files._watchable_all %>',
-                tasks: ['tests']
+                tasks: ['tests:unit']
             }
         },
     
@@ -246,19 +234,58 @@ module.exports = function (grunt) {
             install_selenium: {
                 command: './node_modules/protractor/bin/install_selenium_standalone',
                 options: {
-                    stdOut: true
+                    stdout: true,
+                    stderr: true
                 }
             },
             selenium: {
                 command: 'java -jar selenium/selenium-server-standalone-*.jar -Dwebdriver.chrome.driver=./selenium/chromedriver',
                 options: {
-                    stdOut: true
+                    stdout: true,
+                    stderr: true
+                }
+            },
+            reinstall: {
+                command: 'rm -rf selenium && rm -rf www/bower_components && rm -rf node_modules && npm install;',
+                options: {
+                    stdout: true,
+                    stderr: true
                 }
             }
         },
                 
         cucumberjs: {
-            files: 'tests/cucumber/features/**/*.feature'
+            files: 'tests/cucumber/features/**/*.feature',
+            options: {
+                format: 'progress'
+            }
+        },
+                
+        requirejs: {
+            compile: {
+                options: {
+                    name: "bootstrap",
+                    optimize: "none",
+                    baseUrl: "./www/angular/js",
+                    out: "./www/angular/js/compiled.js",
+                    priority: [
+                        'angular'
+                    ],
+                    paths: {
+                        angular: '../../bower_components/angular/angular',
+                        requirejs: '../../bower_components/requirejs/require',
+                        angularCookies: '../../bower_components/angular-cookies/angular-cookies',
+                        angularResource: '../../bower_components/angular-resource/angular-resource',
+                        marked: '../../bower_components/marked/js/marked',
+                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch',
+                    },
+                    shim: {
+                        'angular' : {'exports': 'angular'},
+                        'angularCookies': {deps: ['angular']},
+                        'CornerCouch': {deps: ['angular']}
+                    }
+                }
+            }
         }
 
     };

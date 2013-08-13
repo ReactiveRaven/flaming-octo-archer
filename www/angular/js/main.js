@@ -4,7 +4,7 @@ require.config({
 	paths: {
 		angular: '/bower_components/angular/angular',
         angularCookies: '/bower_components/angular-cookies/angular-cookies',
-        angularResource: '/bower_components/angular-resource/angular-resource.js',
+        angularResource: '/bower_components/angular-resource/angular-resource',
         marked: '/bower_components/marked/js/marked',
         CornerCouch: '/bower_components/CornerCouch/angular-cornercouch',
 	},
@@ -20,19 +20,7 @@ require.config({
 });
 
 require([
-	'angular',
-	'app'
-], function (angular, app) {
-    angular.bootstrap(document, [app['name']]);
-    
-    var html = document.getElementsByTagName('html')[0];
-
-    html.setAttribute('ng-app', app['name']);
-    html.dataset.ngApp = app['name'];
-    
-    if (top !== window) {
-        top.postMessage({
-            type: 'apploaded'
-        }, '*');
-    }
+    'bootstrap'
+], function () {
+    // All handled in 'bootstrap'
 });

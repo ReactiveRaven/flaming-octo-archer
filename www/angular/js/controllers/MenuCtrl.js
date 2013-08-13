@@ -1,9 +1,9 @@
-define(['angular', '../services/Authentication'], function (angular) {
+define(['angular', '../services/Authentication', '../filters/Capitalize'], function (angular) {
     "use strict";
     
     var MenuCtrlModule = angular.module(
         'commissar.controllers.MenuCtrl',
-        ['commissar.services.Authentication', 'commissar.directives.Markdown']
+        ['commissar.services.Authentication', 'commissar.directives.Markdown', 'commissar.filters.Capitalize']
     );
     
     MenuCtrlModule.controller('MenuCtrl', ['$scope', 'Authentication', function ($scope, Authentication) {

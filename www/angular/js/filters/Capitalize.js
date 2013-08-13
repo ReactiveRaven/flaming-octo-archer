@@ -13,6 +13,4 @@ define(['angular'], function (angular) {
         };
     });
     
-    return CapitalizeModule;
-    
 });

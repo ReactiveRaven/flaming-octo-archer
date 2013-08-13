@@ -1,73 +1,49 @@
 module.exports = function () {
-    this.When(/^I visit the site$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
+    "use strict";
 
     this.Given(/^I am not logged in$/, function (callback) {
         // express the regexp above with the code you wish you had
-        callback.pending();
+        if (this.browser.findElement(this.By.id('menuLoginToggle')).isDisplayed()) {
+            callback();
+        } else {
+            callback.pending("don't know how to log out yet");
+        }
     });
 
     this.Then(/^I should see the sign up and login menu item$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
+        this.assert(this.browser.findElement(this.By.id('menuLoginToggle')).isDisplayed(), true);
+        callback();
     });
 
     this.When(/^I click the sign up and login menu item$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
+        this.browser.findElement(this.By.id('menuLoginToggle')).click();
+        callback();
     });
 
     this.Then(/^I should see the sign up and login form$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
+        this.assert(this.browser.findElement(this.By.id('menuLoginForm')).isDisplayed(), true);
+        callback();
     });
 
-    this.Given(/^I am not registered$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
+    this.When(/^I type an unregistered username in the sign up form$/, function (callback) {
+        
+        var tick = (new Date()).getTime();
+        
+        var mock_code = function () {
+            /* globals angular:false */
+            
+            angular.module('httpBackendMock', ['ngMockE2E']).run(function ($httpBackend) {
+                $httpBackend.whenGET('/couchdb/_all_dbs').respond({status: 'loggedin'});
+            });
+        };
+        
+        
+        this.browser.addMockModule('httpBackendMock', mock_code);
+        
+        this.browser.findElement(this.By.binding('loginFormUsername')).sendKeys('a_username_never_used_before' + tick);
+        setTimeout(function () {
+            callback();
+        }, 5000);
     });
 
-    this.When(/^I type my username in the sign up form$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-    this.Then(/^I should see a spinner in the sign up form$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-    this.When(/^the spinner in the sign up form is gone$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-    this.Then(/^I should see the full sign up form$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-    this.When(/^I fill in the rest of my details to sign up$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-    this.When(/^click sign up$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-    this.Then(/^I should be signed up$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-    this.Then(/^I should see the sign\-up welcome message$/, function (callback) {
-        // express the regexp above with the code you wish you had
-        callback.pending();
-    });
-
-
-}
+};

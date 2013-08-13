@@ -1,28 +1,13 @@
-(function () {
-    'use strict';
+/* globals e2emocks:false */
+
+define('app', ['angular', 'controllers/IndexCtrl', 'controllers/MenuCtrl'], function (angular) {
+    "use strict";
     
-    var defaultControllers = [
-        'IndexCtrl',
-        'MenuCtrl'
-    ];
-    
-    var controllers = typeof controllers === "undefined" ? defaultControllers : controllers;
-    
-    var requireds = [];
-    var includes = [];
-    for (var i = 0; i < controllers.length; i++) {
-        requireds.push('controllers/' + controllers[i]);
-        includes.push('commissar.controllers.' + controllers[i]);
-    }
-    requireds = ['angular'].concat(requireds);
-    
-    define('app', requireds, function (angular) {
-        var App = angular.module('commissar', includes);
-        App.config(['$locationProvider', function ($locationProvider) {
-            $locationProvider.html5Mode(false);
-            $locationProvider.hashPrefix("!");
-        }]);
-    
-        return App;
-    });
-})();
+    var App = angular.module('commissar', ['commissar.controllers.IndexCtrl', 'commissar.controllers.MenuCtrl'].concat(typeof e2emocks !== 'undefined' ? e2emocks : []));
+    App.config(['$locationProvider', function ($locationProvider) {
+        $locationProvider.html5Mode(false);
+        $locationProvider.hashPrefix("!");
+    }]);
+
+    return App;
+});

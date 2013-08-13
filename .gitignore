@@ -7,3 +7,4 @@ libpeerconnection.log
 .idea/
 erl_crash.dump
 selenium/
+/www/angular/js/compiled.js

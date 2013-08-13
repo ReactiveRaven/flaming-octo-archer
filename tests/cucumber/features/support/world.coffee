@@ -16,6 +16,8 @@ class World
     @browser = ptor
     @By = protractor.By
     @assert = assert
+    @driver = driver
+    
     callback()
 
 module.exports.World = World
