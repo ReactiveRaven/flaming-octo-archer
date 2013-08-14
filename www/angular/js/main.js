@@ -13,6 +13,7 @@ require.config({
 	shim: {
         'angular' : {'exports': 'angular'},
         'angularCookies': {deps: ['angular']},
+        'angularMocks': {deps: ['angular']},
         'CornerCouch': {deps: ['angular']}
 	},
 	priority: [
