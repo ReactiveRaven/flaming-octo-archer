@@ -9,10 +9,6 @@ Feature: Sign up
       Then I should see the sign up and login menu item
       When I click the sign up and login menu item
       Then I should see the sign up and login form
-
-   Scenario: Signing up works
-      Given I am not logged in
-      When I click the sign up and login menu item
-      And I type an unregistered username in the sign up form
+      When I type an unregistered username in the sign up form
       Then the sign up button should be available
       When I click to sign up
