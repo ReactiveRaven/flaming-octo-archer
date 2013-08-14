@@ -25,7 +25,7 @@ module.exports = function (grunt) {
         
         'dev': ['watch:dev'],
         'tests:unit': ['jshint', 'karma:jasmine_once', 'karma:e2e_once'],
-        'tests:acceptance': ['build', 'env:test', 'cucumberjs'],
+        'tests:acceptance': ['requirejs:compile', 'env:test', 'cucumberjs'],
         
         'server': ['connect:server'],
         'selenium': ['shell:selenium'],
@@ -268,6 +268,30 @@ module.exports = function (grunt) {
                     optimize: "none",
                     baseUrl: "./www/angular/js",
                     out: "./www/angular/js/compiled.js",
+                    priority: [
+                        'angular'
+                    ],
+                    paths: {
+                        angular: '../../bower_components/angular/angular',
+                        requirejs: '../../bower_components/requirejs/require',
+                        angularMocks: '../../bower_components/angular-mocks/angular-mocks',
+                        angularCookies: '../../bower_components/angular-cookies/angular-cookies',
+                        angularResource: '../../bower_components/angular-resource/angular-resource',
+                        marked: '../../bower_components/marked/js/marked',
+                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch',
+                    },
+                    shim: {
+                        'angular' : {'exports': 'angular'},
+                        'angularCookies': {deps: ['angular']},
+                        'CornerCouch': {deps: ['angular']}
+                    }
+                }
+            },
+            compress: {
+                options: {
+                    name: "bootstrap",
+                    baseUrl: "./www/angular/js",
+                    out: "./www/angular/js/compressed.js",
                     priority: [
                         'angular'
                     ],
