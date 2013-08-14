@@ -1,5 +1,3 @@
-/* globals e2emocks:false */
-
 define('appmocked', ['angular', 'services/E2EMocks', 'controllers/IndexCtrl', 'controllers/MenuCtrl'], function (angular) {
     "use strict";
     

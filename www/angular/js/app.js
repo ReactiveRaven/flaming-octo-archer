@@ -1,5 +1,3 @@
-/* globals e2emocks:false */
-
 define('app', ['angular', 'controllers/IndexCtrl', 'controllers/MenuCtrl'], function (angular) {
     "use strict";
     
