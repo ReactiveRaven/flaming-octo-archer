@@ -126,7 +126,7 @@ module.exports = function (grunt) {
             all: '<%= files._js_all %>',
             options: {
                 jshintrc: '.jshintrc',
-                ignores: ['www/angular/js/compiled.js'],
+                ignores: ['www/angular/js/compiled.js', 'www/angular/js/compressed.js'],
             }
         },
 
