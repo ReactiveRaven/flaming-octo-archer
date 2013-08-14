@@ -16,10 +16,10 @@ define([], function () {
             menuLoginButtonForgot;
         
         beforeEach(function () {
-            menuLoginFormSelector = element('#menuloginform:visible', 'Menu login form');
+            menuLoginFormSelector = element('#menuLoginForm:visible', 'Menu login form');
             menuLoginToggle = element('#menuLoginToggle:visible', 'Login Toggle');
-            menuLoginButtonLogin = element('#menuloginform:visible button.btn-primary:visible', 'Log in button');
-            menuLoginButtonSignup = element('#menuloginform:visible button.btn-success:visible', 'Active sign up button');
+            menuLoginButtonLogin = element('#menuLoginForm:visible button.btn-primary:visible', 'Log in button');
+            menuLoginButtonSignup = element('#menuLoginForm:visible button.btn-success:visible', 'Active sign up button');
             menuLoginButtonSignupDisabled = element('#menuLoginFormButtonSignupDisabled:visible', 'Disabled sign up button');
             menuLoginButtonForgot = element('#menuLoginFormButtonForgot:visible', 'Forgot password button');
         });

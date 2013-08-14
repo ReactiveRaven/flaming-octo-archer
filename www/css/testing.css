@@ -206,13 +206,13 @@
         font-family: monospace;
     }
     
-    #menuloginform form
+    #menuLoginForm form
     {
         padding: 15px;
         margin: 0;
     }
     
-    #menuloginform input
+    #menuLoginForm input
     {
         margin-bottom: 15px;
         font-size: 25px;
@@ -220,7 +220,7 @@
         line-height: 1.5em;
     }
     
-    #menuloginform button
+    #menuLoginForm button
     {
         clear: left;
         width: 100%;
