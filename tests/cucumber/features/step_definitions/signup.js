@@ -27,8 +27,6 @@ module.exports = function () {
 
     this.When(/^I type an unregistered username in the sign up form$/, function (callback) {
         
-        var tick = (new Date()).getTime();
-        
         var mock_code = function () {
             /* globals angular:false */
             
@@ -40,7 +38,7 @@ module.exports = function () {
         
         this.browser.addMockModule('httpBackendMock', mock_code);
         
-        this.browser.findElement(this.By.binding('loginFormUsername')).sendKeys('a_username_never_used_before' + tick);
+        this.browser.findElement(this.By.css('#menuLoginForm input[placeholder="username"]')).sendKeys('a_username_never_used_before');
         setTimeout(function () {
             callback();
         }, 5000);
