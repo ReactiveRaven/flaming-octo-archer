@@ -8,4 +8,10 @@ module.exports = function () {
         });
     });
     
+    this.When(/^I wait for (\d+) seconds?$/, function (number, callback) {
+        setTimeout(function () {
+            callback();
+        }, number * 1000);
+    });
+    
 };

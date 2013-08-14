@@ -26,6 +26,7 @@ module.exports = function (grunt) {
         'dev': ['watch:dev'],
         'tests:unit': ['jshint', 'karma:jasmine_once', 'karma:e2e_once'],
         'tests:acceptance': ['requirejs:compile', 'env:test', 'cucumberjs'],
+        'tests': ['tests:unit', 'tests:acceptance'],
         
         'server': ['connect:server'],
         'selenium': ['shell:selenium'],

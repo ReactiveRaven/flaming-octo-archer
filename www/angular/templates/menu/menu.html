@@ -41,22 +41,22 @@
                             </ul>
                             <ul class="nav pull-right">
                                 <li class="dropdown" data-ng-show='isLoggedIn()'>
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <a id="menuMyNotificationsToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         Notifications <i class="icon icon-exclamation" style="color: #dcdcdc;"></i>
                                         <b class="caret"></b>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul id="menuMyNotificationsDropdown" class="dropdown-menu">
                                         <li>1</li>
                                         <li>2</li>
                                         <li>3</li>
                                     </ul>
                                 </li>
                                 <li class="dropdown" data-ng-show='isLoggedIn()'>
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <a id="menuMyOffersToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         My Offers
                                         <b class="caret"></b>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul id="menuMyOffersDropdown" class="dropdown-menu">
                                         <li>
                                             <a data-ng-href='#!/artist/{{me.slug}}' >
                                                 View all
@@ -69,11 +69,11 @@
                                     </ul>
                                 </li>
                                 <li class="dropdown" data-ng-show='isLoggedIn()'>
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <a id="menuMyAccountToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         {{me.username|Capitalize}}
                                         <b class="caret"></b>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul id="menuMyAccountDropdown" class="dropdown-menu">
                                         <li><a data-ng-href='#!/my/pictures'>Pictures</a></li>
                                         <li><a data-ng-href='#!/my/settings'>Settings</a></li>
                                         <li><a data-ng-href='#!/logout'>Sign out</a></li>
