@@ -88,7 +88,7 @@ module.exports = function (grunt) {
                 {pattern: "./tests/e2e/conf/angular-scenario-requirejs-fix.js", watched: true, included: true, served: true},
                 {pattern: "./node_modules/karma/adapter/angular-scenario.js", watched: false, included: true, served: true},
                 {pattern: "./node_modules/karma/adapter/lib/require.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma/adapter/require.js", watched: false, included: true, served: true},
+                {pattern: "./node_modules/karma/adapter/require.js", watched: false, included: true, served: true}
             ],
             karma_e2e_editable_files: [
 
@@ -127,7 +127,7 @@ module.exports = function (grunt) {
             all: '<%= files._js_all %>',
             options: {
                 jshintrc: '.jshintrc',
-                ignores: ['www/angular/js/compiled.js', 'www/angular/js/compressed.js'],
+                ignores: ['www/angular/js/compiled.js', 'www/angular/js/compressed.js']
             }
         },
 
@@ -279,7 +279,7 @@ module.exports = function (grunt) {
                         angularCookies: '../../bower_components/angular-cookies/angular-cookies',
                         angularResource: '../../bower_components/angular-resource/angular-resource',
                         marked: '../../bower_components/marked/js/marked',
-                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch',
+                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch'
                     },
                     shim: {
                         'angular' : {'exports': 'angular'},
@@ -303,7 +303,7 @@ module.exports = function (grunt) {
                         angularCookies: '../../bower_components/angular-cookies/angular-cookies',
                         angularResource: '../../bower_components/angular-resource/angular-resource',
                         marked: '../../bower_components/marked/js/marked',
-                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch',
+                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch'
                     },
                     shim: {
                         'angular' : {'exports': 'angular'},
