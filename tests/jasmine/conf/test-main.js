@@ -23,7 +23,8 @@
         shim: {
             'angular' : {'exports': 'angular'},
             'angularMocks': {deps: ['angular'], 'exports': 'angular.mock'},
-            'angularResource': {deps: ['angular'], 'exports': 'angular.resource'}
+            'angularResource': {deps: ['angular'], 'exports': 'angular.resource'},
+            'angularCookies': {deps: ['angular'], 'exports': 'angular.cookies'}
         },
         priority: [
             "angular"

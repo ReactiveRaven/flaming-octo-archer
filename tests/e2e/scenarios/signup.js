@@ -4,7 +4,7 @@ define([], function () {
     'use strict';
     
     beforeEach(function () {
-        browser().navigateTo('/');
+        browser().navigateTo('/index_e2e.html');
     });
     
     describe('[Signup]', function () {
@@ -13,7 +13,8 @@ define([], function () {
             menuLoginButtonLogin,
             menuLoginButtonSignup,
             menuLoginButtonSignupDisabled,
-            menuLoginButtonForgot;
+            menuLoginButtonForgot,
+            menuLoginMessageRegisterSuccess;
         
         beforeEach(function () {
             menuLoginFormSelector = element('#menuLoginForm:visible', 'Menu login form');
@@ -22,6 +23,7 @@ define([], function () {
             menuLoginButtonSignup = element('#menuLoginForm:visible button.btn-success:visible', 'Active sign up button');
             menuLoginButtonSignupDisabled = element('#menuLoginFormButtonSignupDisabled:visible', 'Disabled sign up button');
             menuLoginButtonForgot = element('#menuLoginFormButtonForgot:visible', 'Forgot password button');
+            menuLoginMessageRegisterSuccess = element('#menuLoginFormMessageRegisterSuccess:visible', 'Registration confirmation message');
         });
         
         it('should be at root somewhere', function () {
@@ -78,6 +80,21 @@ define([], function () {
             input('loginFormUsername').enter('');
             
             expect(menuLoginButtonForgot.count()).toBe(0);
+        });
+        
+        it('should display a success prompt when registering', function () {
+            var username = 'a_new_username';
+            
+            menuLoginToggle.click();
+            
+            expect(menuLoginButtonForgot.count()).toBe(0);
+            
+            input('loginFormUsername').enter(username);
+            input('loginFormPassword').enter(username);
+            
+            menuLoginButtonSignup.click();
+            
+            expect(menuLoginMessageRegisterSuccess.count()).toBe(1);
         });
         
     });

@@ -235,6 +235,67 @@ define(['world'], function (world) {
                     expect(failed).toEqual(null);
                 }));
             });
+            
+            describe('[register()]', function () {
+                
+                it('should be a function', inject(function (Authentication) {
+                    expect(Authentication.register).toBeDefined();
+                    expect(typeof Authentication.register).toBe('function');
+                }));
+                
+                it('should return a promise', inject(function (Authentication) {
+                    $httpBackend.expectPOST('/server/register.php').respond({ok: true});
+                    
+                    var result = Authentication.register('username', 'password'),
+                        response = null;
+                    
+                    world.flush();
+                    
+                    expect(result.then).toBeDefined();
+                    expect(typeof result.then).toBe('function');
+                    result.then(function (_response_) { response = _response_; });
+                    
+                    world.digest();
+                    
+                    expect(response).toBe(true);
+                }));
+                
+                it('should post the user+pass to the server', inject(function (Authentication) {
+                    var username = 'username',
+                        password = 'password';
+                    
+                    $httpBackend.expectPOST('/server/register.php', {
+                        username: username,
+                        password: password
+                    }).respond({ok: true});
+                    
+                    Authentication.register(username, password);
+                    world.flush();
+                }));
+                
+                it('should handle failures', inject(function (Authentication) {
+                    var username = 'a_registered_username',
+                        password = 'password',
+                        failureMessage = 'That username is already taken!',
+                        response = null;
+                        
+                    $httpBackend.expectPOST('/server/register.php').respond({error: failureMessage});
+                    
+                    Authentication.register(username, password).then(function (_response_) { response = _response_; });
+                    
+                    world.flush();
+                    
+                    expect(response).toBe(failureMessage);
+                    
+                    $httpBackend.expectPOST('/server/register.php').respond(500, null);
+                    
+                    Authentication.register(username, password).then(function (_response_) { response = _response_; });
+                    
+                    world.flush();
+                    
+                    expect(response).toBe(false);
+                }));
+            });
         });
 
     });

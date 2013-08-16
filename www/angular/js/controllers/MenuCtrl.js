@@ -40,6 +40,21 @@ define(['angular', '../services/Authentication', '../filters/Capitalize'], funct
             });
         };
         
+        $scope.register = function (username, password) {
+                        
+            if (typeof username === "undefined") {
+                username = $scope.loginFormUsername;
+            }
+            if (typeof password === "undefined") {
+                password = $scope.loginFormPassword;
+            }
+            
+            return Authentication.register(username, password).then(function (reply) { 
+                $scope.registerSucceeded = reply;
+                return reply;
+            });
+        };
+        
         (function () {
             var lastUsername = null,
                 lastResponse = null;

@@ -16,8 +16,6 @@ Feature: Sign up
       And I wait for 1 second
       Then I should see a welcome message
       And I should see my account details in the menu
-#      And I should see my notifications in the menu
-#      And I should see my offers in the menu
 
    Scenario: Logging in
       When I visit the site
@@ -31,5 +29,3 @@ Feature: Sign up
       And I click to log in
       Then I should see a welcome message
       And I should see my account details in the menu
-#      And I should see my notifications in the menu
-#      And I should see my offers in the menu

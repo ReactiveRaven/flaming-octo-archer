@@ -56,6 +56,7 @@ define(['world', 'angular'], function (world, angular) {
                 spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
                 spyOn(Authentication, 'login').andReturn(world.resolved(true));
                 spyOn(Authentication, 'userExists').andReturn(world.resolved(true));
+                spyOn(Authentication, 'register').andReturn(world.resolved(true));
             }]));
             
             it('should check if logged in', function () {
@@ -228,6 +229,64 @@ define(['world', 'angular'], function (world, angular) {
                     
                     expect(Authentication.userExists).toHaveBeenCalledWith(username);
                     expect(response).toBe(true);
+                });
+            });
+            
+            describe('[register()]', function () {
+                it('should be a function', function () {
+                    getCtrl();
+                    
+                    expect(typeof scope.register).toBe('function');
+                });
+                
+                it('should pass registration requests to Authentication', function () {
+                    var username = 'username',
+                        password = 'password',
+                        response = null;
+                        
+                    getCtrl();
+                    
+                    scope.register(username, password).then(function (_response_) { response = _response_; });
+                    world.digest();
+                    
+                    expect(Authentication.register).toHaveBeenCalledWith(username, password);
+                    expect(response).toBe(true);
+                });
+                                
+                it('should pull from scope if no arguments given', function () {
+                    var username = 'username',
+                        password = 'password',
+                        response = null;
+                    
+                    getCtrl();
+                    
+                    scope.loginFormUsername = username;
+                    scope.loginFormPassword = password;
+                    
+                    scope.register().then(function (_response_) {
+                        response = _response_;
+                    });
+                    world.digest();
+                    
+                    expect(Authentication.register).toHaveBeenCalledWith(username, password);
+                    expect(response).toBe(true);
+                });
+                
+                it('should set registerSucceeded to match response', function () {
+                    var username = 'username',
+                        password = 'password',
+                        response = null;
+                        
+                    getCtrl();
+                        
+                    scope.registerSucceeded = false;
+                        
+                    scope.register(username, password).then(function (_response_) {
+                        response = _response_;
+                    });
+                    world.digest();
+                    
+                    expect(scope.registerSucceeded).toBe(true);
                 });
             });
             
