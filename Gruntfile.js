@@ -1,3 +1,5 @@
+/* globals module:false */
+
 module.exports = function (grunt) {
     "use strict";
     
