@@ -21,9 +21,10 @@ define(['world'], function (world) {
 
         describe('[constructor]', function () {
 
-            it('should not make unnecessary requests', function () {
+            it('should not make unnecessary requests', inject(function (Couch) {
                 // no flush!
-            });
+                Couch.shut_up_jshint = true;
+            }));
 
             it('should return an object', inject(function (Couch) {
                 expect(Couch).toBeDefined();

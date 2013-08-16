@@ -1,4 +1,5 @@
 module.exports = function () {
+    "use strict";
     
     this.Then(/^I should see the sign up and login form$/, function (callback) {
         var self = this;
