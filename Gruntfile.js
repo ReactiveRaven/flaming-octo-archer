@@ -27,15 +27,24 @@ module.exports = function (grunt) {
         'release': ['tests:unit', 'tests:acceptance'],
         
         
-        'units': ['karma:jasmine_background', 'karma:e2e_background', 'watch:units'],
+        'units': ['units:start', 'watch:units'],
+        'units:start': ['karma:jasmine_background', 'karma:e2e_background'],
         'units:run': ['clear', 'parallel:units'],
-        'units:delayed': ['wait:five', 'units'],
+        //'units:delayed': ['wait:five', 'units'],
+        'units:delayed': ['wait:five', 'parallel:units'],
         'jasmine': ['karma:jasmine_background', 'watch:jasmine'],
-        'jasmine:run': ['clear', 'karma:jasmine_background:run'],
+        'jasmine:run': ['karma:jasmine_background:run'],
         'e2e': ['karma:e2e_background', 'watch:e2e'],
-        'e2e:run': ['clear', 'karma:e2e_background:run'],
+        'e2e:run': ['karma:e2e_background:run'],
         'cucumber': ['cucumber:run', 'watch:cucumber'],
         'cucumber:run': ['requirejs:compile', 'env:test', 'cucumberjs'],
+        
+        'delayed:jasmine:start': ['wait:five', 'karma:jasmine_background', 'wait:forever'],
+        'delayed:e2e:start': ['wait:five', 'karma:e2e_background', 'wait:forever'],
+        'delayed:jasmine': ['wait:ten', 'watch:jasmine'],
+        'delayed:e2e': ['wait:ten', 'watch:e2e'],
+        'delayed:jshint': ['wait:ten', 'watch:jshint'],
+        'delayed:units': ['wait:ten', 'watch:units'],
         
         'server': ['connect:server'],
         'selenium': ['shell:selenium'],
@@ -143,19 +152,13 @@ module.exports = function (grunt) {
                 
         parallel: {
             units: {
-                tasks: [{
-                    grunt: true,
-                    args: ['karma:jasmine_background:run']
-                }, {
-                    grunt: true,
-                    args: ['karma:e2e_background:run']
-                }, {
-                    grunt: true,
-                    args: ['jshint']
-                }]
+                options: {
+                    grunt: true
+                },
+                tasks: ['karma:jasmine_background:run', 'karma:e2e_background:run', 'jshint']
             },
             tests: {
-                tasks: ['connect', 'selenium', 'units:delayed'],
+                tasks: ['delayed:jasmine:start', 'delayed:e2e:start', 'delayed:units', 'connect', 'selenium'],
                 options: {
                     stream: true,
                     grunt: true
@@ -167,6 +170,16 @@ module.exports = function (grunt) {
             five: {
                 options: {
                     delay: 5000
+                }
+            },
+            ten: {
+                options: {
+                    delay: 10000
+                }
+            },
+            forever: {
+                options: {
+                    delay: 1000000000
                 }
             }
         },
@@ -183,7 +196,7 @@ module.exports = function (grunt) {
             jasmine_background: {
                 configFile: 'tests/jasmine/conf/karma.conf.js',
                 singleRun: false,
-                browsers: ['Chrome'],
+                browsers: ['Chrome', 'Firefox', 'Safari'],
                 files: '<%= files.karma_jasmine_files %>',
                 background: true,
                 runnerPort: 9601,
@@ -236,7 +249,8 @@ module.exports = function (grunt) {
             },
             units: {
                 files: '<%= files._watchable_all %>',
-                tasks: ['units:run']
+                tasks: ['clear', 'karma:jasmine_background:run', 'jshint', 'karma:e2e_background:run']
+                //tasks: ['units:run']
             },
             jasmine: {
                 files: '<%= files._watchable_jasmine %>',
