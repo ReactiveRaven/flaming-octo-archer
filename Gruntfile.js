@@ -8,9 +8,7 @@ module.exports = function (grunt) {
         'grunt-contrib-clean',
         'grunt-contrib-connect',
         'grunt-contrib-jshint',
-        'grunt-contrib-less',
         'grunt-contrib-requirejs',
-        'grunt-contrib-uglify',
         'grunt-contrib-watch',
         'grunt-cucumber',
         'grunt-env',
@@ -21,7 +19,7 @@ module.exports = function (grunt) {
     // "postinstall": "./node_modules/protractor/bin/install_selenium_standalone"
     
     var tasks = {
-        'setup': ['shell:install_selenium', 'bower:install', 'build'],
+        'setup': ['shell:install_selenium', 'bower:install'],
         'build': ['requirejs'],
         'release': ['tests:unit', 'tests:acceptance'],
         
@@ -66,10 +64,10 @@ module.exports = function (grunt) {
 
             karma_jasmine_library_files: [
                 // karma-jasmine specific files
-                {pattern: "./node_modules/karma/adapter/lib/jasmine.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma/adapter/jasmine.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma/adapter/lib/require.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma/adapter/require.js", watched: false, included: true, served: true}
+                {pattern: "./node_modules/karma-jasmine/lib/jasmine.js", watched: false, included: true, served: true},
+                {pattern: "./node_modules/karma-jasmine/lib/adapter.js", watched: false, included: true, served: true},
+                {pattern: "./node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
+                {pattern: "./node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
             ],
             karma_jasmine_editable_files: [
 
@@ -86,11 +84,12 @@ module.exports = function (grunt) {
 
             karma_e2e_library_files: [
                 // karma-jasmine specific files
-                {pattern: "./node_modules/karma/adapter/lib/angular-scenario.js", watched: false, included: true, served: true},
+                
+                {pattern: "./node_modules/karma-ng-scenario/lib/angular-scenario.js", watched: false, included: true, served: true},
                 {pattern: "./tests/e2e/conf/angular-scenario-requirejs-fix.js", watched: true, included: true, served: true},
-                {pattern: "./node_modules/karma/adapter/angular-scenario.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma/adapter/lib/require.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma/adapter/require.js", watched: false, included: true, served: true}
+                {pattern: "./node_modules/karma-ng-scenario/lib/adapter.js", watched: false, included: true, served: true},
+                {pattern: "./node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
+                {pattern: "./node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
             ],
             karma_e2e_editable_files: [
 
@@ -145,6 +144,8 @@ module.exports = function (grunt) {
             jasmine: {
                 configFile: 'tests/jasmine/conf/karma.conf.js',
                 singleRun: false,
+                frameworks: [],
+                logLevel: 'karma.LOG_INFO',
                 browsers: ['Chrome'],
                 files: '<%= files.karma_jasmine_files %>'
             },
