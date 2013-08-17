@@ -144,8 +144,6 @@ module.exports = function (grunt) {
             jasmine: {
                 configFile: 'tests/jasmine/conf/karma.conf.js',
                 singleRun: false,
-                frameworks: [],
-                logLevel: 'karma.LOG_INFO',
                 browsers: ['Chrome'],
                 files: '<%= files.karma_jasmine_files %>'
             },
