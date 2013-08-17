@@ -49,7 +49,7 @@ define(['angular', '../services/Authentication', '../filters/Capitalize'], funct
                 password = $scope.loginFormPassword;
             }
             
-            return Authentication.register(username, password).then(function (reply) { 
+            return Authentication.register(username, password).then(function (reply) {
                 $scope.registerSucceeded = reply;
                 return reply;
             });

@@ -41,7 +41,7 @@ define(['angular', 'angularCookies', './Couch'], function (angular) {
             'register': function (username, password) {
                 var deferred = $q.defer();
                 
-                $http.post('/server/register.php', {username: username, password: password}).success(function (data, status, headers) {
+                $http.post('/server/register.php', {username: username, password: password}).success(function (data/** /, status, headers/**/) {
                     deferred.resolve(typeof data.ok !== 'undefined' ? true : data.error);
                 }).error(function () {
                     deferred.resolve(false);
