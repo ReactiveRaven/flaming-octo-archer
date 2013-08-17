@@ -13,7 +13,10 @@ module.exports = function (grunt) {
         'grunt-cucumber',
         'grunt-env',
         'grunt-karma',
-        'grunt-shell'
+        'grunt-shell',
+        'grunt-clear',
+        'grunt-parallel',
+        'grunt-wait'
     ];
     
     // "postinstall": "./node_modules/protractor/bin/install_selenium_standalone"
@@ -23,15 +26,21 @@ module.exports = function (grunt) {
         'build': ['requirejs'],
         'release': ['tests:unit', 'tests:acceptance'],
         
-        'dev': ['watch:dev'],
-        'tests:unit': ['jshint', 'karma:jasmine_once', 'karma:e2e_once'],
-        'tests:acceptance': ['requirejs:compile', 'env:test', 'cucumberjs'],
-        'tests': ['tests:unit', 'tests:acceptance'],
+        
+        'units': ['karma:jasmine_background', 'karma:e2e_background', 'watch:units'],
+        'units:run': ['clear', 'parallel:units'],
+        'units:delayed': ['wait:five', 'units'],
+        'jasmine': ['karma:jasmine_background', 'watch:jasmine'],
+        'jasmine:run': ['clear', 'karma:jasmine_background:run'],
+        'e2e': ['karma:e2e_background', 'watch:e2e'],
+        'e2e:run': ['clear', 'karma:e2e_background:run'],
+        'cucumber': ['cucumber:run', 'watch:cucumber'],
+        'cucumber:run': ['requirejs:compile', 'env:test', 'cucumberjs'],
         
         'server': ['connect:server'],
         'selenium': ['shell:selenium'],
 
-        'default': ['dev']
+        'default': ['jasmine']
     };
     
     var config = {
@@ -131,6 +140,36 @@ module.exports = function (grunt) {
                 ignores: ['www/angular/js/compiled.js', 'www/angular/js/compressed.js']
             }
         },
+                
+        parallel: {
+            units: {
+                tasks: [{
+                    grunt: true,
+                    args: ['karma:jasmine_background:run']
+                }, {
+                    grunt: true,
+                    args: ['karma:e2e_background:run']
+                }, {
+                    grunt: true,
+                    args: ['jshint']
+                }]
+            },
+            tests: {
+                tasks: ['connect', 'selenium', 'units:delayed'],
+                options: {
+                    stream: true,
+                    grunt: true
+                }
+            }
+        },
+                
+        wait: {
+            five: {
+                options: {
+                    delay: 5000
+                }
+            }
+        },
 
         karma: {
 
@@ -139,6 +178,16 @@ module.exports = function (grunt) {
                 singleRun: true,
                 browsers: ['Chrome'],
                 files: '<%= files.karma_jasmine_files %>'
+            },
+            
+            jasmine_background: {
+                configFile: 'tests/jasmine/conf/karma.conf.js',
+                singleRun: false,
+                browsers: ['Chrome'],
+                files: '<%= files.karma_jasmine_files %>',
+                background: true,
+                runnerPort: 9601,
+                port: 9876
             },
             
             jasmine: {
@@ -153,6 +202,16 @@ module.exports = function (grunt) {
                 singleRun: true,
                 browsers: ['Chrome'],
                 files: '<%= files.karma_cucumber_files %>'
+            },
+            
+            e2e_background: {
+                configFile: 'tests/e2e/conf/karma.conf.js',
+                singleRun: false,
+                browsers: ['Chrome'],
+                files: '<%= files.karma_e2e_files %>',
+                background: true,
+                runnerPort: 9100,
+                port: 9876
             },
             
             e2e: {
@@ -175,17 +234,21 @@ module.exports = function (grunt) {
                 files: '<%= files._js_all %>',
                 tasks: ['default']
             },
+            units: {
+                files: '<%= files._watchable_all %>',
+                tasks: ['units:run']
+            },
             jasmine: {
                 files: '<%= files._watchable_jasmine %>',
-                tasks: ['karma:jasmine_once']
+                tasks: ['jasmine:run']
             },
             e2e: {
                 files: '<%= files._watchable_e2e %>',
-                tasks: ['karma:e2e_once']
+                tasks: ['e2e:run']
             },
             cucumber: {
                 files: '<%= files._watchable_cucumber %>',
-                tasks: ['tests:acceptance']
+                tasks: ['cucumber:run']
             },
             jshint: {
                 files: '<%= files._js_all %>',
@@ -194,6 +257,10 @@ module.exports = function (grunt) {
             dev: {
                 files: '<%= files._watchable_all %>',
                 tasks: ['tests:unit']
+            },
+            tests_unit: {
+                files: '<%= files._watchable_all %>',
+                tasks: ['tests:unit:run']
             }
         },
     
