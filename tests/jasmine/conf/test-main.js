@@ -17,14 +17,18 @@
             angularResource: '/base/www/bower_components/angular-resource/angular-resource',
             marked: '/base/www/bower_components/marked/js/marked',
             CornerCouch: '/base/www/bower_components/CornerCouch/angular-cornercouch',
-            world: '/base/tests/jasmine/conf/world'
+            world: '/base/tests/jasmine/conf/world',
+            jquery: '/base/www/bower_components/jquery/jquery',
+            bootstrap: '/base/www/bower_components/bootstrap/bootstrap'
         },
         baseUrl: '/base/www/angular/js',
         shim: {
-            'angular' : {'exports': 'angular'},
-            'angularMocks': {deps: ['angular'], 'exports': 'angular.mock'},
-            'angularResource': {deps: ['angular'], 'exports': 'angular.resource'},
-            'angularCookies': {deps: ['angular'], 'exports': 'angular.cookies'}
+            angular : {exports: 'angular'},
+            angularMocks: {deps: ['angular'], exports: 'angular.mock'},
+            angularResource: {deps: ['angular'], exports: 'angular.resource'},
+            angularCookies: {deps: ['angular'], exports: 'angular.cookies'},
+            jquery: {exports: 'jQuery'},
+            bootstrap: {deps: ['jquery']}
         },
         priority: [
             "angular"

@@ -49,14 +49,17 @@ define(['world', 'angular'], function (world, angular) {
         });
         
         describe('[user state]', function () {
-            var Authentication;
+            var Authentication,
+                $location;
             
-            beforeEach(inject(['Authentication', function (_Authentication_) {
+            beforeEach(inject(['Authentication', '$location', function (_Authentication_, _$location_) {
                 Authentication = _Authentication_;
+                $location = _$location_;
                 spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
                 spyOn(Authentication, 'login').andReturn(world.resolved(true));
                 spyOn(Authentication, 'userExists').andReturn(world.resolved(true));
                 spyOn(Authentication, 'register').andReturn(world.resolved(true));
+                spyOn($location, 'path');
             }]));
             
             it('should check if logged in', function () {
@@ -272,22 +275,24 @@ define(['world', 'angular'], function (world, angular) {
                     expect(response).toBe(true);
                 });
                 
-                it('should set registerSucceeded to match response', function () {
+                it('should forward to the profile setup page when successful', inject(function ($location) {
                     var username = 'username',
                         password = 'password',
                         response = null;
-                        
+                    
                     getCtrl();
-                        
-                    scope.registerSucceeded = false;
-                        
-                    scope.register(username, password).then(function (_response_) {
+                    
+                    scope.loginFormUsername = username;
+                    scope.loginFormPassword = password;
+                    
+                    scope.register().then(function (_response_) {
                         response = _response_;
                     });
                     world.digest();
                     
-                    expect(scope.registerSucceeded).toBe(true);
-                });
+                    expect(response).toBe(true);
+                    expect($location.path).toHaveBeenCalledWith("/welcome");
+                }));
             });
             
         });

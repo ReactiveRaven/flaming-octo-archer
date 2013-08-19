@@ -1,7 +1,5 @@
-define('app', ['angular', 'controllers/IndexCtrl', 'controllers/MenuCtrl'], function (angular) {
+define('app', ['angular', 'bootstrap', 'controllers/IndexCtrl', 'controllers/MenuCtrl'], function (angular) {
     "use strict";
-    
-    
     
     var App = angular.module('commissar', ['commissar.controllers.IndexCtrl', 'commissar.controllers.MenuCtrl']);
     App.config(['$locationProvider', function ($locationProvider) {

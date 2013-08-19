@@ -3,7 +3,7 @@ module.exports = function () {
     
     this.When(/^I visit the site$/, function (callback) {
         // express the regexp above with the code you wish you had
-        this.browser.get('http://localhost:9001/index_e2e.html').then(function () {
+        this.browser.get('http://localhost:9001/index_cucumber.html').then(function () {
             callback();
         });
     });

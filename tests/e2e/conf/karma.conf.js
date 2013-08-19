@@ -5,7 +5,7 @@
    basePath:true, files:true, exclude:true, reporters:true, port:true, 
    runnerPort:true, colors:true, logLevel:true, autoWatch:true, 
    browsers:true, captureTimeout:true, singleRun:true,
-   LOG_INFO:false, proxies:true, urlRoot:true, junitReporter:true
+   LOG_WARN:false, proxies:true, urlRoot:true, junitReporter:true
  */
 
 
@@ -42,7 +42,7 @@ colors = true;
 
 // level of logging
 // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-logLevel = LOG_INFO;
+logLevel = LOG_WARN;
 
 
 // enable / disable watching file and executing tests whenever any file changes

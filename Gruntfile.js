@@ -61,6 +61,8 @@ module.exports = function (grunt) {
                 {pattern: './www/bower_components/angular/**/*.js', watched: false, included: false, served: true},
                 {pattern: './www/bower_components/angular-*/**/*.js', watched: false, included: false, served: true},
                 {pattern: './www/bower_components/CornerCouch/*.js', watched: false, included: false, served: true},
+                {pattern: './www/bower_components/jquery/jquery.js', watched: false, included: false, served: true},
+                {pattern: './www/bower_components/bootstrap/bootstrap.js', watched: false, included: false, served: true},
                 {pattern: './www/bower_components/marked/**/*.js', watched: false, included: false, served: true}
             ],
             karma_app_files: [
@@ -196,9 +198,10 @@ module.exports = function (grunt) {
             jasmine_background: {
                 configFile: 'tests/jasmine/conf/karma.conf.js',
                 singleRun: false,
-                browsers: ['Chrome', 'Firefox', 'Safari'],
+                browsers: ['Chrome'],
                 files: '<%= files.karma_jasmine_files %>',
                 background: true,
+                autoWatch: false,
                 runnerPort: 9601,
                 port: 9876
             },
@@ -223,6 +226,7 @@ module.exports = function (grunt) {
                 browsers: ['Chrome'],
                 files: '<%= files.karma_e2e_files %>',
                 background: true,
+                autoWatch: false,
                 runnerPort: 9100,
                 port: 9876
             },
@@ -249,7 +253,7 @@ module.exports = function (grunt) {
             },
             units: {
                 files: '<%= files._watchable_all %>',
-                tasks: ['clear', 'karma:jasmine_background:run', 'jshint', 'karma:e2e_background:run']
+                tasks: ['clear', 'jshint', 'karma:jasmine_background:run', 'karma:e2e_background:run']
                 //tasks: ['units:run']
             },
             jasmine: {
@@ -361,12 +365,16 @@ module.exports = function (grunt) {
                         angularCookies: '../../bower_components/angular-cookies/angular-cookies',
                         angularResource: '../../bower_components/angular-resource/angular-resource',
                         marked: '../../bower_components/marked/js/marked',
-                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch'
+                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch',
+                        jquery: '../../bower_components/jquery/jquery',
+                        bootstrap: '../../bower_components/bootstrap/bootstrap'
                     },
                     shim: {
-                        'angular' : {'exports': 'angular'},
-                        'angularCookies': {deps: ['angular']},
-                        'CornerCouch': {deps: ['angular']}
+                        angular : {exports: 'angular'},
+                        angularCookies: {deps: ['angular']},
+                        CornerCouch: {deps: ['angular']},
+                        jquery: {exports: 'jQuery'},
+                        bootstrap: {deps: ['jquery']}
                     }
                 }
             },

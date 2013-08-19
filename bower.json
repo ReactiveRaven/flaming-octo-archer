@@ -10,7 +10,8 @@
     "marked": "~0.2.9",
     "CornerCouch": "git://github.com/ReactiveRaven/CornerCouch.git",
     "angular-cookies": "~1.0.7",
-    "requirejs": "~2.1.8"
+    "requirejs": "~2.1.8",
+    "waitFor": "git://github.com/cybus10/waitFor.git"
   },
   "exportsOverride": {
     "marked": {

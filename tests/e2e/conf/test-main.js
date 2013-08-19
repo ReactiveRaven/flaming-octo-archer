@@ -17,6 +17,8 @@
             angularResource: '/base/www/bower_components/angular-resource/angular-resource.js',
             marked: '/base/www/bower_components/marked/js/marked',
             CornerCouch: '/base/www/bower_components/CornerCouch/angular-cornercouch',
+            jquery: '/base/www/bower_components/jquery/jquery',
+            bootstrap: '/base/www/bower_components/bootstrap/bootstrap',
 
             // not inside bower_components
             world: '/base/tests/e2e/conf/world',
@@ -24,21 +26,23 @@
         },
         baseUrl: '/base/www/angular/js',
         shim: {
-            'angular': {'exports': 'angular'},
-            'angularMocks': {deps: ['angular'], 'exports': 'angular.mock'},
-            'angularCookies': {deps: ['angular']},
-            'CornerCouch': {deps: ['angular']}
+            angular: {exports: 'angular'},
+            angularMocks: {deps: ['angular'], exports: 'angular.mock'},
+            angularCookies: {deps: ['angular']},
+            CornerCouch: {deps: ['angular']},
+            jquery: {exports: 'jQuery'},
+            bootstrap: {deps: ['jquery']}
         },
         priority: [
             "angular"
         ],
         deps: [
-            'bootstrap',
+            'startup',
             'angularMocks'
         ].concat(tests),
-        callback: function (bootstrap) {
+        callback: function (startup) {
             
-            bootstrap();
+            startup();
             
             window.__karma__.start();
         }

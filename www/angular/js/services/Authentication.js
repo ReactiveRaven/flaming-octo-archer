@@ -1,9 +1,9 @@
-define(['angular', 'angularCookies', './Couch'], function (angular) {
+define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (angular) {
     "use strict";
     
-    var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch', 'ngCookies']);
+    var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch', 'commissar.services.PostSerializer', 'ngCookies']);
     
-    AuthenticationModule.factory('Authentication', function (Couch, $q, $cookies, $http) {
+    AuthenticationModule.factory('Authentication', function (Couch, $q, $cookies, $http, PostSerializer) {
             
         var Authentication = {
             'userExists': function (username) {
@@ -41,7 +41,7 @@ define(['angular', 'angularCookies', './Couch'], function (angular) {
             'register': function (username, password) {
                 var deferred = $q.defer();
                 
-                $http.post('/server/register.php', {username: username, password: password}).success(function (data/** /, status, headers/**/) {
+                $http.post('/server/register.php', PostSerializer.serialize({username: username, password: password})).success(function (data/** /, status, headers/**/) {
                     deferred.resolve(typeof data.ok !== 'undefined' ? true : data.error);
                 }).error(function () {
                     deferred.resolve(false);

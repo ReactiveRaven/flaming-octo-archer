@@ -6,7 +6,7 @@ define(['angular', '../services/Authentication', '../filters/Capitalize'], funct
         ['commissar.services.Authentication', 'commissar.directives.Markdown', 'commissar.filters.Capitalize']
     );
     
-    MenuCtrlModule.controller('MenuCtrl', ['$scope', 'Authentication', function ($scope, Authentication) {
+    MenuCtrlModule.controller('MenuCtrl', function ($scope, Authentication, $location) {
         $scope.name = 'MenuCtrl';
         
         $scope.loggedIn = null;
@@ -49,10 +49,15 @@ define(['angular', '../services/Authentication', '../filters/Capitalize'], funct
                 password = $scope.loginFormPassword;
             }
             
-            return Authentication.register(username, password).then(function (reply) {
-                $scope.registerSucceeded = reply;
-                return reply;
+            var deferred = Authentication.register(username, password);
+            
+            deferred.then(function (reply) {
+                if (reply === true) {
+                    $location.path("/welcome");
+                }
             });
+            
+            return deferred;
         };
         
         (function () {
@@ -89,7 +94,7 @@ define(['angular', '../services/Authentication', '../filters/Capitalize'], funct
                 $scope.isUsernameRecognised();
             });
         })();
-    }]);
+    });
     
     return MenuCtrlModule;
 });

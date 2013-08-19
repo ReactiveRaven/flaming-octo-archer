@@ -199,7 +199,7 @@ define(['world'], function (world) {
                     expect(response).toEqual(true);
                 }));
                 
-                it('should return true if the login succeeded', inject(function ($rootScope, Couch) {
+                it('should return false if the login failed', inject(function ($rootScope, Couch) {
                     spyOn($rootScope.cornercouch, 'login').andReturn(world.rejected(null));
                     
                     var response = null;

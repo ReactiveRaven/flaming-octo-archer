@@ -264,10 +264,7 @@ define(['world'], function (world) {
                     var username = 'username',
                         password = 'password';
                     
-                    $httpBackend.expectPOST('/server/register.php', {
-                        username: username,
-                        password: password
-                    }).respond({ok: true});
+                    $httpBackend.expectPOST('/server/register.php', 'username=' + username + '&password=' + password).respond({ok: true});
                     
                     Authentication.register(username, password);
                     world.flush();
