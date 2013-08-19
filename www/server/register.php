@@ -28,17 +28,13 @@ if (!isset($_REQUEST["password"])) {
     jsondie(array("forbidden" => "Must supply a 'password' argument"));
 }
 $registerPassword = $_REQUEST["password"];
-if (!isset($_REQUEST["email"])) {
-    jsondie(array("forbidden" => "Must supply a 'email' argument"));
-}
-$registerEmail = $_REQUEST["email"];
 
 $CouchUser = new CouchUser($couchdbsettings["url"], $couchdbsettings["adminuser"], $couchdbsettings["adminpass"]);
 $CouchUser->setUser($registerUsername, $registerPassword);
 
-$checkExistingUser = $CouchUser->becomeAdmin()->doGet("_users/org.couchdb.user:" . $registerUsername);
+$checkExistingUser = $CouchUser->becomeAdmin()->doGet("commissar_user_" . $registerUsername);
 if ($checkExistingUser["response"]["status"]["status"] != 404) {
-    jsondie(array("forbidden" => "User already exists"));
+    jsondie(array("forbidden" => "User already exists"), $checkExistingUser);
 }
 
 $userArray = array(
@@ -46,8 +42,7 @@ $userArray = array(
     "_id" => "org.couchdb.user:" . $registerUsername,
     "name" => $registerUsername,
     "password" => $registerPassword,
-    "roles" => array(),
-    "email" => $registerEmail
+    "roles" => array()
 );
 
 $createNewUser = $CouchUser->doPut("_users/org.couchdb.user:" . $registerUsername, $userArray);
