@@ -36,8 +36,8 @@ module.exports = function (grunt) {
         'jasmine:run': ['karma:jasmine_background:run'],
         'e2e': ['karma:e2e_background', 'watch:e2e'],
         'e2e:run': ['karma:e2e_background:run'],
-        'cucumber': ['cucumber:run', 'watch:cucumber'],
-        'cucumber:run': ['requirejs:compile', 'env:test', 'cucumberjs'],
+        'cucumber': ['cucumber:run'/** /, 'watch:cucumber'/**/],
+        'cucumber:run': ['requirejs:compile', /** /'env:test', /**/'cucumberjs', 'shell:close_all_cucumber_browsers'],
         
         'delayed:jasmine:start': ['wait:five', 'karma:jasmine_background', 'wait:forever'],
         'delayed:e2e:start': ['wait:five', 'karma:e2e_background', 'wait:forever'],
@@ -148,7 +148,7 @@ module.exports = function (grunt) {
             all: '<%= files._js_all %>',
             options: {
                 jshintrc: '.jshintrc',
-                ignores: ['www/angular/js/compiled.js', 'www/angular/js/compressed.js']
+                ignores: ['www/js/compiled.js', 'www/js/compressed.js']
             }
         },
                 
@@ -200,6 +200,7 @@ module.exports = function (grunt) {
                 singleRun: false,
                 browsers: ['Chrome'],
                 files: '<%= files.karma_jasmine_files %>',
+                exclude: ['www/js/compiled.js', 'www/js/compressed.js'],
                 background: true,
                 autoWatch: false,
                 runnerPort: 9601,
@@ -225,6 +226,7 @@ module.exports = function (grunt) {
                 singleRun: false,
                 browsers: ['Chrome'],
                 files: '<%= files.karma_e2e_files %>',
+                exclude: ['www/js/compiled.js', 'www/js/compressed.js'],
                 background: true,
                 autoWatch: false,
                 runnerPort: 9100,
@@ -253,7 +255,7 @@ module.exports = function (grunt) {
             },
             units: {
                 files: '<%= files._watchable_all %>',
-                tasks: ['clear', 'jshint', 'karma:jasmine_background:run', 'karma:e2e_background:run']
+                tasks: ['clear', 'jshint', 'karma:jasmine_background:run', 'karma:e2e_background:run', 'cucumber']
                 //tasks: ['units:run']
             },
             jasmine: {
@@ -328,12 +330,19 @@ module.exports = function (grunt) {
             selenium: {
                 command: 'java -jar selenium/selenium-server-standalone-*.jar -Dwebdriver.chrome.driver=./selenium/chromedriver',
                 options: {
-                    stdout: true,
-                    stderr: true
+                    stdout: false,
+                    stderr: false
                 }
             },
             reinstall: {
                 command: 'rm -rf selenium && rm -rf www/bower_components && rm -rf node_modules && npm install;',
+                options: {
+                    stdout: true,
+                    stderr: true
+                }
+            },
+            close_all_cucumber_browsers: {
+                command: '/bin/ps -e | /usr/bin/grep "Google Chrome --remote-debugging-port" | /usr/bin/grep -v "grep" | /usr/bin/cut -f 1 -d " " | /usr/bin/xargs /bin/kill',
                 options: {
                     stdout: true,
                     stderr: true
@@ -347,14 +356,15 @@ module.exports = function (grunt) {
                 format: 'progress'
             }
         },
-                
+
         requirejs: {
             compile: {
                 options: {
-                    name: "bootstrap",
+                    name: "startup",
                     optimize: "none",
                     baseUrl: "./www/angular/js",
-                    out: "./www/angular/js/compiled.js",
+                    out: "./www/js/compiled.js",
+                    logLevel: 2,
                     priority: [
                         'angular'
                     ],
@@ -380,9 +390,10 @@ module.exports = function (grunt) {
             },
             compress: {
                 options: {
-                    name: "bootstrap",
+                    name: "startup",
                     baseUrl: "./www/angular/js",
-                    out: "./www/angular/js/compressed.js",
+                    out: "./www/js/compressed.js",
+                    logLevel: 2,
                     priority: [
                         'angular'
                     ],
@@ -393,12 +404,16 @@ module.exports = function (grunt) {
                         angularCookies: '../../bower_components/angular-cookies/angular-cookies',
                         angularResource: '../../bower_components/angular-resource/angular-resource',
                         marked: '../../bower_components/marked/js/marked',
-                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch'
+                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch',
+                        jquery: '../../bower_components/jquery/jquery',
+                        bootstrap: '../../bower_components/bootstrap/bootstrap'
                     },
                     shim: {
-                        'angular' : {'exports': 'angular'},
-                        'angularCookies': {deps: ['angular']},
-                        'CornerCouch': {deps: ['angular']}
+                        angular : {exports: 'angular'},
+                        angularCookies: {deps: ['angular']},
+                        CornerCouch: {deps: ['angular']},
+                        jquery: {exports: 'jQuery'},
+                        bootstrap: {deps: ['jquery']}
                     }
                 }
             }

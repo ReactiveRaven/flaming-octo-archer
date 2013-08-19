@@ -93,19 +93,6 @@ define([], function () {
             input('loginFormPassword').enter(username);
             
             menuLoginButtonSignup.click();
-        });
-        
-        it('should display a success prompt when registering', function () {
-            var username = 'a_new_username';
-            
-            menuLoginToggle.click();
-            
-            expect(menuLoginButtonForgot.count()).toBe(0);
-            
-            input('loginFormUsername').enter(username);
-            input('loginFormPassword').enter(username);
-            
-            menuLoginButtonSignup.click();
             
             expect(browser().location().url()).toBe('/welcome');
         });

@@ -11,3 +11,5 @@ selenium/
 www/angular/js/compressed.js
 nbproject
 npm-debug.log
+www/js/compiled.js
+www/js/compressed.js
