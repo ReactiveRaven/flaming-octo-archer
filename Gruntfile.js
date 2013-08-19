@@ -48,6 +48,7 @@ module.exports = function (grunt) {
         
         'server': ['connect:server'],
         'selenium': ['shell:selenium'],
+        'reinstall': ['shell:reinstall'],
 
         'default': ['jasmine']
     };
