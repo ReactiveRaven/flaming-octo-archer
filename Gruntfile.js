@@ -354,7 +354,7 @@ module.exports = function (grunt) {
         cucumberjs: {
             files: 'tests/cucumber/features/**/*.feature',
             options: {
-                format: 'progress'
+                format: 'pretty'
             }
         },
 

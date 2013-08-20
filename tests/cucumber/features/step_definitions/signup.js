@@ -23,10 +23,16 @@ module.exports = function () {
     this.Then(/^the sign up button should be available$/, function (callback) {
         var self = this;
         this.browser.findElement(self.By.id('menuLoginFormButtonSignup')).isDisplayed().then(function (result) {
-            self.assert.equal(result, true);
+            if (result !== true) {
+                callback.fail("Non-disabled Login button was not visible");
+            }
             self.browser.findElement(self.By.id('menuLoginFormButtonSignupDisabled')).isDisplayed().then(function (result) {
-                self.assert.equal(result, false);
-                callback();
+                if (result !== false) {
+                    callback.fail("Disabled Login button was visible");
+                } else {
+                    callback();
+                }
+                
             });
         });
     });
@@ -34,10 +40,15 @@ module.exports = function () {
     this.Then(/^the sign up button should not be available$/, function (callback) {
         var self = this;
         this.browser.findElement(self.By.id('menuLoginFormButtonSignup')).isDisplayed().then(function (result) {
-            self.assert.equal(result, false);
+            if (result !== false) {
+                callback.fail("Non-disabled Sign up button was visible");
+            }
             self.browser.findElement(self.By.id('menuLoginFormButtonSignupDisabled')).isDisplayed().then(function (result) {
-                self.assert.equal(result, true);
-                callback();
+                if (result !== true) {
+                    callback.fail("Disabled Sign up button was not visibile");
+                } else {
+                    callback();
+                }
             });
         });
     });
@@ -49,6 +60,16 @@ module.exports = function () {
     
     this.When(/^I click to sign up$/, function (callback) {
         this.browser.findElement(this.By.id('menuLoginFormButtonSignup')).click();
+        callback();
+    });
+    
+    this.When(/^I type a registered username in the sign up form$/, function (callback) {
+        this.browser.findElement(this.By.css('#menuLoginForm input[placeholder="username"]')).sendKeys('john');
+        callback();
+    });
+    
+    this.When(/^I click to log in$/, function (callback) {
+        this.browser.findElement(this.By.id('menuLoginFormButtonLogin')).click();
         callback();
     });
 

@@ -55,7 +55,7 @@ define([], function () {
         });
         
         it('should disable signup when entered an existing username', function () {
-            var username = 'fish';
+            var username = 'john';
             
             menuLoginToggle.click();
             input('loginFormUsername').enter(username);
@@ -66,7 +66,7 @@ define([], function () {
         });
         
         it('should offer \'forgot password\' when entered an existing username', function () {
-            var username = 'fish';
+            var username = 'john';
             
             menuLoginToggle.click();
             
@@ -78,7 +78,7 @@ define([], function () {
             expect(menuLoginButtonForgot.text()).toContain('Forgot your password?');
             
             input('loginFormUsername').enter('');
-            
+             
             expect(menuLoginButtonForgot.count()).toBe(0);
         });
         

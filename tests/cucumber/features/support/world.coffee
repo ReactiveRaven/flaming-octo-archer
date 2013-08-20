@@ -1,4 +1,3 @@
-assert = require 'assert'
 path = require 'path'
 
 protractor = require 'protractor'
@@ -15,7 +14,6 @@ class World
   constructor: (callback) ->
     @browser = ptor
     @By = protractor.By
-    @assert = assert
     @driver = driver
     
     callback()
