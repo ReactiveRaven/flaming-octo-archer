@@ -1,6 +1,6 @@
 /* global inject:false, afterEach:false */
 
-define(['world', 'angular'], function (world, angular) {
+define(['world', 'angular', '/base/www/angular/templates/directives/LoginForm.html'], function (world, angular) {
     "use strict";
 
     var element, scope, $httpBackend, $templateCache;
@@ -8,7 +8,7 @@ define(['world', 'angular'], function (world, angular) {
     describe('[commissar.directives.LoginForm]', function () {
         beforeEach(function () {
 
-            module('commissar.directives.LoginForm');
+            module('commissar.directives.LoginForm', '/base/www/angular/templates/directives/LoginForm.html');
 
             inject(function (_$httpBackend_, $rootScope, _$templateCache_) {
 
@@ -20,8 +20,8 @@ define(['world', 'angular'], function (world, angular) {
 
             });
             
-            var tpl = $templateCache.get('base/www/angular/templates/directives/LoginForm.html');
-            console.log(tpl, $templateCache);
+            var tpl = $templateCache.get('/Users/iMac/code/flaming-octo-archer/www/angular/templates/directives/LoginForm.html');
+            console.log(tpl, $templateCache, $templateCache.get(), $templateCache.caches);
             window.lol = $templateCache;
             $templateCache.put('angular/templates/directives/LoginForm.html', tpl);
             
