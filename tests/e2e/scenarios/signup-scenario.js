@@ -14,7 +14,8 @@ define([], function () {
             menuLoginButtonSignup,
             menuLoginButtonSignupDisabled,
             menuLoginButtonForgot,
-            menuLoginMessageRegisterSuccess;
+            menuLoginMessageRegisterSuccess,
+            menuMyAccountToggle;
         
         beforeEach(function () {
             menuLoginFormSelector = element('#menuLoginForm:visible', 'Menu login form');
@@ -24,6 +25,7 @@ define([], function () {
             menuLoginButtonSignupDisabled = element('#menuLoginFormButtonSignupDisabled:visible', 'Disabled sign up button');
             menuLoginButtonForgot = element('#menuLoginFormButtonForgot:visible', 'Forgot password button');
             menuLoginMessageRegisterSuccess = element('#menuLoginFormMessageRegisterSuccess:visible', 'Registration confirmation message');
+            menuMyAccountToggle = element('#menuMyAccountToggle:visible', 'My account menu toggle');
         });
         
         it('should be at root somewhere', function () {
@@ -87,14 +89,25 @@ define([], function () {
             
             menuLoginToggle.click();
             
-            expect(menuLoginButtonForgot.count()).toBe(0);
-            
             input('loginFormUsername').enter(username);
             input('loginFormPassword').enter(username);
             
             menuLoginButtonSignup.click();
             
             expect(browser().location().url()).toBe('/welcome');
+        });
+        
+        it('should log in after registering', function () {
+            var username = 'a_new_username';
+            
+            menuLoginToggle.click();
+            
+            input('loginFormUsername').enter(username);
+            input('loginFormPassword').enter(username);
+            
+            menuLoginButtonSignup.click();
+            
+            expect(menuMyAccountToggle.count()).toBe(1);
         });
         
     });

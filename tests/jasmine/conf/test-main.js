@@ -27,6 +27,7 @@
             angularMocks: {deps: ['angular'], exports: 'angular.mock'},
             angularResource: {deps: ['angular'], exports: 'angular.resource'},
             angularCookies: {deps: ['angular'], exports: 'angular.cookies'},
+            CornerCouch: {deps: ['angular']},
             jquery: {exports: 'jQuery'},
             bootstrap: {deps: ['jquery']}
         },

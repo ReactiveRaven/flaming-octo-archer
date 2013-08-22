@@ -59,17 +59,21 @@ module.exports = function (grunt) {
             karma_types: ['cucumber', 'jasmine', 'e2e'],
             karma_library_files: [
                 // include library files
-                {pattern: './www/bower_components/angular/**/*.js', watched: false, included: false, served: true},
-                {pattern: './www/bower_components/angular-*/**/*.js', watched: false, included: false, served: true},
-                {pattern: './www/bower_components/CornerCouch/*.js', watched: false, included: false, served: true},
-                {pattern: './www/bower_components/jquery/jquery.js', watched: false, included: false, served: true},
-                {pattern: './www/bower_components/bootstrap/bootstrap.js', watched: false, included: false, served: true},
-                {pattern: './www/bower_components/marked/**/*.js', watched: false, included: false, served: true}
+                {pattern: 'www/bower_components/angular/**/*.js', watched: false, included: false, served: true},
+                {pattern: 'www/bower_components/angular-*/**/*.js', watched: false, included: false, served: true},
+                {pattern: 'www/bower_components/CornerCouch/*.js', watched: false, included: false, served: true},
+                {pattern: 'www/bower_components/jquery/jquery.js', watched: false, included: false, served: true},
+                {pattern: 'www/bower_components/bootstrap/bootstrap.js', watched: false, included: false, served: true},
+                {pattern: 'www/bower_components/marked/**/*.js', watched: false, included: false, served: true}
             ],
             karma_app_files: [
                 // application files
-                {pattern: './www/angular/js/*.js', watched: true, included: false, served: true},
-                {pattern: './www/angular/js/**/*.js', watched: true, included: false, served: true}
+                {pattern: 'www/angular/js/*.js', watched: true, included: false, served: true},
+                {pattern: 'www/angular/js/**/*.js', watched: true, included: false, served: true}
+            ],
+                    
+            karma_app_template_files: [
+                {pattern: 'www/angular/templates/**/*.html', watched: true, included: false, served: true}
             ],
 
             // NOT USED IN KARMA ANYMORE!
@@ -85,56 +89,52 @@ module.exports = function (grunt) {
 
             karma_jasmine_library_files: [
                 // karma-jasmine specific files
-                {pattern: "./node_modules/karma-jasmine/lib/jasmine.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma-jasmine/lib/adapter.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
+                {pattern: "node_modules/karma-jasmine/lib/jasmine.js", watched: false, included: true, served: true},
+                {pattern: "node_modules/karma-jasmine/lib/adapter.js", watched: false, included: true, served: true},
+                {pattern: "node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
+                {pattern: "node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
             ],
             karma_jasmine_editable_files: [
 
                 // test files
-                {pattern: './tests/jasmine/support/**/*.js', watched: true, included: false, served: true},
-                {pattern: './tests/jasmine/specs/**/*.js',  watched: true, included: false, served: true},
+                {pattern: 'tests/jasmine/support/**/*.js', watched: true, included: false, served: true},
+                {pattern: 'tests/jasmine/specs/**/*.js',  watched: true, included: false, served: true},
 
                 // Config files
-                {pattern: './Gruntfile.js', watched: true, included: false, served: false},
-                {pattern: './tests/jasmine/conf/test-main.js', watched: true, included: true, served: true},
-                {pattern: './tests/jasmine/conf/world.js', watched: true, included: false, served: true},
-                {pattern: './tests/jasmine/conf/karma.conf.js', watched: true, included: false, served: false}
+                {pattern: 'Gruntfile.js', watched: true, included: false, served: false},
+                {pattern: 'tests/jasmine/conf/test-main.js', watched: true, included: true, served: true},
+                {pattern: 'tests/jasmine/conf/world.js', watched: true, included: false, served: true},
+                {pattern: 'tests/jasmine/conf/karma.conf.js', watched: true, included: false, served: false}
             ],
 
             karma_e2e_library_files: [
                 // karma-jasmine specific files
                 
-                {pattern: "./node_modules/karma-ng-scenario/lib/angular-scenario.js", watched: false, included: true, served: true},
-                {pattern: "./tests/e2e/conf/angular-scenario-requirejs-fix.js", watched: true, included: true, served: true},
-                {pattern: "./node_modules/karma-ng-scenario/lib/adapter.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
-                {pattern: "./node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
+                {pattern: "node_modules/karma-ng-scenario/lib/angular-scenario.js", watched: false, included: true, served: true},
+                {pattern: "tests/e2e/conf/angular-scenario-requirejs-fix.js", watched: true, included: true, served: true},
+                {pattern: "node_modules/karma-ng-scenario/lib/adapter.js", watched: false, included: true, served: true},
+                {pattern: "node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
+                {pattern: "node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
             ],
             karma_e2e_editable_files: [
 
                 // test files
-                {pattern: './tests/e2e/support/**/*.js', watched: true, included: false, served: true},
-                {pattern: './tests/e2e/scenarios/**/*.js',  watched: true, included: false, served: true},
+                {pattern: 'tests/e2e/support/**/*.js', watched: true, included: false, served: true},
+                {pattern: 'tests/e2e/scenarios/**/*.js',  watched: true, included: false, served: true},
 
                 // Config files
-                {pattern: './Gruntfile.js', watched: true, included: false, served: false},
-                {pattern: './tests/e2e/conf/test-main.js', watched: true, included: true, served: true},
-                {pattern: './tests/e2e/conf/world.js', watched: true, included: false, served: true},
-                {pattern: './tests/e2e/conf/karma.conf.js', watched: true, included: false, served: false},
-                
-                // Templates
-                {pattern: './www/angular/templates/**/*.html', watched: true, included: false, served: false},
-                {pattern: './www/angular/templates/*.html', watched: true, included: false, served: false}
+                {pattern: 'Gruntfile.js', watched: true, included: false, served: false},
+                {pattern: 'tests/e2e/conf/test-main.js', watched: true, included: true, served: true},
+                {pattern: 'tests/e2e/conf/world.js', watched: true, included: false, served: true},
+                {pattern: 'tests/e2e/conf/karma.conf.js', watched: true, included: false, served: false}
             ],
                     
             
 
             _combine: [
-                {'to': 'karma_jasmine_files', 'from': ['karma_jasmine_library_files', 'karma_library_files', 'karma_app_files', 'karma_jasmine_editable_files']},
-                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', 'karma_library_files', 'karma_app_files', 'karma_e2e_editable_files']},
-                {'to': 'karma_cucumber_files', 'from': ['karma_cucumber_library_files', 'karma_library_files', 'karma_app_files', 'karma_cucumber_editable_files']}
+                {'to': 'karma_jasmine_files', 'from': ['karma_jasmine_library_files', 'karma_library_files', 'karma_app_files', 'karma_app_template_files', 'karma_jasmine_editable_files']},
+                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', 'karma_library_files', 'karma_app_files', 'karma_app_template_files', 'karma_e2e_editable_files']},
+                {'to': 'karma_cucumber_files', 'from': ['karma_cucumber_library_files', 'karma_library_files', 'karma_app_files', 'karma_app_template_files', 'karma_cucumber_editable_files']}
             ],
             _delete: [
                 '_combine', 'karma_jasmine_library_files',
@@ -205,7 +205,11 @@ module.exports = function (grunt) {
                 background: true,
                 autoWatch: false,
                 runnerPort: 9601,
-                port: 9876
+                port: 9876,
+                preprocessors: {
+                    'base/www/angular/templates/**/*.html': 'ng-html2js',
+                    'base/www/angular/templates/directives/**/*.html': 'ng-html2js'
+                }
             },
             
             jasmine: {

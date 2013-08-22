@@ -1,4 +1,4 @@
-define(['angular', '../services/Authentication', '../directives/Markdown', '../filters/Capitalize'], function (angular) {
+define(['angular', 'constants', 'services/Authentication', 'directives/Markdown', 'filters/Capitalize'], function (angular, constants) {
     "use strict";
     
     var WelcomeCtrlModule = angular.module(
@@ -10,11 +10,9 @@ define(['angular', '../services/Authentication', '../directives/Markdown', '../f
         $scope.name = 'WelcomeCtrl';
     }]);
 
-    WelcomeCtrlModule.config(['$routeProvider', function ($routeProvider) {
-        var routeprefix = "angular/templates/";
-
-        $routeProvider.when('/welcome', {templateUrl: routeprefix + 'welcome.html',  controller: 'WelcomeCtrl'});
-    }]);
+    WelcomeCtrlModule.config(function ($routeProvider) {
+        $routeProvider.when('/welcome', {templateUrl: constants.templatePrefix + 'welcome.html',  controller: 'WelcomeCtrl'});
+    });
     
     return WelcomeCtrlModule;
 });
