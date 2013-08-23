@@ -1,6 +1,6 @@
 /* globals module:false */
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     "use strict";
 
     var npmTasks = [
@@ -36,9 +36,7 @@ module.exports = function(grunt) {
         'e2e:run': ['karma:e2e_background:run'],
         'cucumber': ['cucumber:run'/** /, 'watch:cucumber'/**/],
         'cucumber:run': ['requirejs:compile', /** /'env:test', /**/'cucumberjs', 'shell:close_all_cucumber_browsers'],
-        'delayed:jasmine:start': ['wait:five', 'karma:jasmine_background', 'wait:forever'],
         'delayed:e2e:start': ['wait:five', 'karma:e2e_background', 'wait:forever'],
-        'delayed:jasmine': ['wait:ten', 'watch:jasmine'],
         'delayed:e2e': ['wait:ten', 'watch:e2e'],
         'delayed:jshint': ['wait:ten', 'watch:jshint'],
         'delayed:units': ['wait:ten', 'watch:units'],
@@ -65,9 +63,6 @@ module.exports = function(grunt) {
                 {pattern: 'www/angular/js/*.js', watched: true, included: false, served: true},
                 {pattern: 'www/angular/js/**/*.js', watched: true, included: false, served: true}
             ],
-            karma_app_template_files: [
-                {pattern: 'www/angular/templates/**/*.html', watched: true, included: false, served: false}
-            ],
             // NOT USED IN KARMA ANYMORE!
             karma_cucumber_editable_files: [
                 // tests
@@ -82,7 +77,10 @@ module.exports = function(grunt) {
                 {pattern: "node_modules/karma-jasmine/lib/jasmine.js", watched: false, included: true, served: true},
                 {pattern: "node_modules/karma-jasmine/lib/adapter.js", watched: false, included: true, served: true},
                 {pattern: "node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
-                {pattern: "node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
+                {pattern: "node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true},
+                {pattern: "www/bower_components/angular/angular.js", watched: false, included: true, served: true},
+                // Templates
+                {pattern: 'www/angular/templates/**/*.html', watched: true, included: true, served: true}
             ],
             karma_jasmine_editable_files: [
                 // test files
@@ -92,7 +90,7 @@ module.exports = function(grunt) {
                 {pattern: 'Gruntfile.js', watched: true, included: false, served: false},
                 {pattern: 'tests/jasmine/conf/test-main.js', watched: true, included: true, served: true},
                 {pattern: 'tests/jasmine/conf/world.js', watched: true, included: false, served: true},
-                {pattern: 'tests/jasmine/conf/karma.conf.js', watched: true, included: false, served: false}
+                {pattern: 'tests/jasmine/conf/karma.conf.js', watched: true, included: false, served: false},
             ],
             karma_e2e_library_files: [
                 // karma-jasmine specific files
@@ -114,9 +112,9 @@ module.exports = function(grunt) {
                 {pattern: 'tests/e2e/conf/karma.conf.js', watched: true, included: false, served: false}
             ],
             _combine: [
-                {'to': 'karma_jasmine_files', 'from': ['karma_jasmine_library_files', 'karma_library_files', 'karma_app_files', 'karma_app_template_files', 'karma_jasmine_editable_files']},
-                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', 'karma_library_files', 'karma_app_files', 'karma_app_template_files', 'karma_e2e_editable_files']},
-                {'to': 'karma_cucumber_files', 'from': ['karma_cucumber_library_files', 'karma_library_files', 'karma_app_files', 'karma_app_template_files', 'karma_cucumber_editable_files']}
+                {'to': 'karma_jasmine_files', 'from': ['karma_jasmine_library_files', 'karma_library_files', 'karma_app_files', 'karma_jasmine_editable_files']},
+                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', 'karma_library_files', 'karma_app_files', 'karma_e2e_editable_files']},
+                {'to': 'karma_cucumber_files', 'from': ['karma_cucumber_library_files', 'karma_library_files', 'karma_app_files', 'karma_cucumber_editable_files']}
             ],
             _delete: [
                 '_combine', 'karma_jasmine_library_files',
@@ -138,7 +136,7 @@ module.exports = function(grunt) {
                 options: {
                     grunt: true
                 },
-                tasks: ['karma:jasmine_background:run', 'karma:e2e_background:run', 'jshint']
+                tasks: ['karma:e2e_background:run', 'jshint']
             },
             tests: {
                 tasks: ['delayed:jasmine:start', 'delayed:e2e:start', 'delayed:units', 'connect', 'selenium'],
@@ -172,38 +170,37 @@ module.exports = function(grunt) {
                 browsers: ['Chrome'],
                 files: '<%= files.karma_jasmine_files %>',
                 preprocessors: {
-                    'base/www/angular/templates/**/*.html': 'html2js',
-                    'base/www/angular/templates/directives/**/*.html': 'html2js'
+                    'www/angular/templates/directives/**/*.html': 'ng-html2js'
                 },
                 ngHtml2JsPreprocessor: {
                     // strip this from the file path
-                    stripPrefix: 'public/',
+                    stripPrefix: 'www/',
                     // prepend this to the
-                    prependPrefix: 'served/',
-                    // or define a custom transform function
-                    cacheIdFromPath: function(filepath) {
-                        return cacheId;
-                    },
-                    // setting this option will create only a single module that contains templates
-                    // from all the files, so you can load them all with module('foo')
-                    moduleName: 'foo'
+                    prependPrefix: '',
+                    moduleName: 'templates'
                 }
             },
-            jasmine_background: {
-                configFile: 'tests/jasmine/conf/karma.conf.js',
-                singleRun: false,
-                browsers: ['Chrome'],
-                files: '<%= files.karma_jasmine_files %>',
-                exclude: ['www/js/compiled.js', 'www/js/compressed.js'],
-                background: true,
-                autoWatch: false,
-                runnerPort: 9601,
-                port: 9876,
-                preprocessors: {
-                    'base/www/angular/templates/**/*.html': 'ng-html2js',
-                    'base/www/angular/templates/directives/**/*.html': 'ng-html2js'
-                }
-            },
+//            jasmine_background: {
+//                configFile: 'tests/jasmine/conf/karma.conf.js',
+//                singleRun: false,
+//                browsers: ['Chrome'],
+//                files: '<%= files.karma_jasmine_files %>',
+//                exclude: ['www/js/compiled.js', 'www/js/compressed.js'],
+//                background: true,
+//                autoWatch: false,
+//                runnerPort: 9601,
+//                port: 9876,
+//                preprocessors: {
+//                    'www/angular/templates/**/*.html': 'ng-html2js'
+//                },
+//                ngHtml2JsPreprocessor: {
+//                    // strip this from the file path
+//                    stripPrefix: 'www/',
+//                    // prepend this to the
+//                    prependPrefix: '',
+//                    moduleName: 'templates'
+//                }
+//            },
             jasmine: {
                 configFile: 'tests/jasmine/conf/karma.conf.js',
                 singleRun: false,
@@ -211,7 +208,13 @@ module.exports = function(grunt) {
                 files: '<%= files.karma_jasmine_files %>',
                 preprocessors: {
                     'www/angular/templates/**/*.html': 'ng-html2js',
-                    'www/angular/templates/directives/**/*.html': 'ng-html2js'
+                },
+                ngHtml2JsPreprocessor: {
+                    // strip this from the file path
+                    stripPrefix: 'www/',
+                    // prepend this to the
+                    prependPrefix: '',
+                    moduleName: 'templates'
                 }
             },
             cuke_once: {
@@ -343,7 +346,7 @@ module.exports = function(grunt) {
         cucumberjs: {
             files: 'tests/cucumber/features/**/*.feature',
             options: {
-                format: 'pretty'
+                format: 'progress'
             }
         },
         requirejs: {
@@ -416,10 +419,10 @@ module.exports = function(grunt) {
     files._watchable_all = [];
     files._js_all = [];
 
-    (function() {
+    (function () {
 
         // KARMA SETUP
-        (function() {
+        (function () {
             for (var i = 0; i < files.karma_types.length; i++) {
                 var curType = files.karma_types[i];
                 var patterns = files.karma_app_files.concat(files["karma_" + curType + "_editable_files"]);
@@ -441,7 +444,7 @@ module.exports = function(grunt) {
         })();
 
         // COMBINE ARRAYS TOGETHER
-        (function() {
+        (function () {
             for (var i = 0; i < files._combine.length; i++) {
                 var current = files._combine[i];
                 files[current.to] = [];
@@ -452,7 +455,7 @@ module.exports = function(grunt) {
         })();
 
         // DELETE USELESS ARRAYS
-        (function() {
+        (function () {
             for (var i = 0; i < files._delete.length; i++) {
                 delete files[files._delete[i]];
             }
@@ -466,7 +469,7 @@ module.exports = function(grunt) {
     grunt.initConfig(config);
 
     // LOAD NPM TASKS
-    (function() {
+    (function () {
         var index;
 
         for (index in npmTasks) {
@@ -475,7 +478,7 @@ module.exports = function(grunt) {
     })();
 
     // DEFINE CUSTOM TASKS
-    (function() {
+    (function () {
         var taskName;
 
         for (taskName in tasks) {
