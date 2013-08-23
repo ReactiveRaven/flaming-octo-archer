@@ -139,7 +139,7 @@ module.exports = function (grunt) {
                 tasks: ['karma:e2e_background:run', 'jshint']
             },
             tests: {
-                tasks: ['delayed:jasmine:start', 'delayed:e2e:start', 'delayed:units', 'connect', 'selenium'],
+                tasks: [/** /'delayed:jasmine:start', 'delayed:e2e:start', /**/'delayed:units', 'connect', 'selenium'],
                 options: {
                     stream: true,
                     grunt: true
@@ -254,7 +254,7 @@ module.exports = function (grunt) {
             },
             units: {
                 files: '<%= files._watchable_all %>',
-                tasks: ['clear', 'jshint', 'karma:jasmine_background:run', 'karma:e2e_background:run', 'cucumber']
+                tasks: ['clear', 'jshint', /** /'karma:jasmine_background:run', 'karma:e2e_background:run', /**/'cucumber']
                         //tasks: ['units:run']
             },
             jasmine: {
