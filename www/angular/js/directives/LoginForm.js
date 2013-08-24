@@ -50,7 +50,9 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
             
             deferred.then(function (reply) {
                 if (reply === true) {
-                    $location.path("/welcome");
+                    Authentication.login(username, password).then(function () {
+                        $location.path("/welcome");
+                    });
                 }
             });
                     
@@ -68,7 +70,7 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
                     username = $scope.loginFormUsername;
                 }
                 
-                if (username === lastUsername) { 
+                if (username === lastUsername) {
                     response = lastResponse;
                 } else {
                     lastUsername = username;

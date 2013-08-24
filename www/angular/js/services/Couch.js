@@ -11,8 +11,10 @@ define(['angular', 'CornerCouch'], function (angular) {
         function isDefined(value) {
             return typeof value !== 'undefined';
         }
-
-        return {
+        
+        window.cornercouch = $rootScope.cornercouch;
+        
+        var Couch = {
             databaseExists: function (databaseName) {
                 var deferred = $q.defer();
                 
@@ -52,6 +54,8 @@ define(['angular', 'CornerCouch'], function (angular) {
                 return deferred.promise;
             }
         };
+
+        return Couch;
     });
     
     

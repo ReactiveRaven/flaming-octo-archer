@@ -133,7 +133,8 @@ define(['world', 'angular'], function (world, angular) {
                     });
                     world.digest();
                     
-                    expect(scope.loggedIn).toBe(true);
+                    expect(response).toBe(true);
+                    expect(scope.loggedIn).toBe(response);
                 });
             });
             
@@ -300,6 +301,25 @@ define(['world', 'angular'], function (world, angular) {
                     expect(response).toBe(true);
                     expect($location.path).toHaveBeenCalledWith("/welcome");
                 }));
+                
+                it('should login after successfully registering', function () {
+                    var username = 'username',
+                        password = 'password',
+                        response = null;
+                    
+                    getCtrl();
+                    
+                    scope.loginFormUsername = username;
+                    scope.loginFormPassword = password;
+                    
+                    scope.register().then(function (_response_) {
+                        response = _response_;
+                    });
+                    world.digest();
+                    
+                    expect(response).toBe(true);
+                    expect(Authentication.login).toHaveBeenCalledWith(username, password);
+                });
             });
             
         });

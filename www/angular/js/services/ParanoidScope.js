@@ -13,7 +13,19 @@ define(['angular'], function (angular) {
                 }
                 
                 if (!localScope.$$phase && !localScope.$root.$$phase) {
-                    localScope.apply(func);
+                    localScope.$apply(func);
+                } else {
+                    func();
+                }
+            },
+            digest: function (localScope, func) {
+                
+                if (typeof func === 'undefined') {
+                    func = function () {};
+                }
+                
+                if (!localScope.$$phase && !localScope.$root.$$phase) {
+                    localScope.$digest(func);
                 } else {
                     func();
                 }

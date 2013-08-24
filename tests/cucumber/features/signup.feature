@@ -28,5 +28,4 @@ Feature: Sign up
       When I type a password in the sign up form
       And I click to log in
       And I wait for 1 second
-      Then I should see a welcome message
       And I should see my account details in the menu

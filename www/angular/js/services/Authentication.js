@@ -3,7 +3,7 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
     
     var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch', 'commissar.services.PostSerializer', 'ngCookies']);
     
-    AuthenticationModule.factory('Authentication', function (Couch, $q, $cookies, $http, PostSerializer) {
+    AuthenticationModule.factory('Authentication', function (Couch, $q, $cookies, $http, PostSerializer, $rootScope) {
             
         var Authentication = {
             'userExists': function (username) {
@@ -17,7 +17,7 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
             'loggedIn': function () {
                 var deferred = $q.defer();
 
-                if (typeof $cookies.AuthSession !== 'undefined') {
+                if (typeof $cookies.wasLoggedIn !== 'undefined') {
                     Couch.getSession().then(function (userCtx) {
                         deferred.resolve(userCtx.name !== null);
                     });
@@ -31,7 +31,11 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
                 var deferred = $q.defer();
 
                 Couch.login(username, password).then(function (response) {
+                    if (response) {
+                        $cookies.wasLoggedIn = true;
+                    }
                     deferred.resolve(response);
+                    $rootScope.$broadcast('AuthChange');
                 }, function () {
                     deferred.resolve(false);
                 });

@@ -2,20 +2,25 @@ module.exports = function () {
     'use strict';
     
     var lookForId = function (self, id, callback) {
-        self.browser.findElements(self.By.css('#' + id)).then(function (results) {
-            if (results.length <= 0) {
-                callback.fail('Could not find #' + id);
-            }
-            self.browser.findElement(self.By.css('#' + id)).isDisplayed().then(function (result) {
-                if (result === true) {
-                    callback();
+        var selector = self.By.css('#' + id);
+        self.browser.findElements(selector).then(
+            function (results) {
+                if (results.length <= 0) {
+                    callback.fail('Could not find #' + id);
                 } else {
-                    callback.fail('Couldn\'t find #' + id);
+                    self.browser.findElement(selector).isDisplayed().then(function (result) {
+                        if (result === true) {
+                            callback();
+                        } else {
+                            callback.fail('Couldn\'t find #' + id);
+                        }
+                    });
                 }
-            }, function () {
+            },
+            function () {
                 callback.fail('Internal protractor stuff failed while looking for #' + id);
-            });
-        });
+            }
+        );
         
     };
     

@@ -24,7 +24,9 @@
                         if (e.data &&
                             e.source === frame.prop('contentWindow') &&
                             e.data.type === 'apploaded') {
-                            fn.call(frame, e);
+                            setTimeout(function () {
+                                fn.call(frame, e);
+                            }, 100);
                         }
                     });
                     return this;

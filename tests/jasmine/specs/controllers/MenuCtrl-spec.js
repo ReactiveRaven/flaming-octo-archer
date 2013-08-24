@@ -40,12 +40,57 @@ define(['world', 'angular'], function (world, angular) {
         
         describe('[setup]', function () {
             it('should set the scope name', function () {
-                getCtrl(); 
+                getCtrl();
 
                 expect(scope).toBeDefined();
                 expect(scope.name).toBeDefined();
                 expect(scope.name).toBe('MenuCtrl');
             });
+        });
+        
+        describe('[user menus]', function () {
+            
+            it('should listen for AuthChange', function () {
+                spyOn(scope, '$on');
+                
+                getCtrl();
+                
+                expect(scope.$on).toHaveBeenCalledWith('AuthChange', scope.onAuthChange);
+            });
+            
+            describe('[onAuthChange()]', function () {
+                it('should be a function', function () {
+                    getCtrl();
+
+                    expect(scope.onAuthChange).toBeDefined();
+                    expect(typeof scope.onAuthChange).toBe('function');
+                });
+                
+                it('should cause a digest on the scope when AuthChange broadcasted', inject(function ($rootScope) {
+                    getCtrl();
+                    
+                    spyOn(scope, '$digest');
+                    
+                    expect(scope.$digest).not.toHaveBeenCalled();
+                    
+                    $rootScope.$broadcast('AuthChange');
+                    
+                    expect(scope.$digest).toHaveBeenCalled();
+                }));
+                
+                it('should not trigger an apply on AuthChange when already in progress', inject(function ($rootScope) {
+                    getCtrl();
+                    
+                    spyOn(scope, '$digest');
+                    
+                    scope.$$phase = "$apply";
+                    
+                    $rootScope.$broadcast('AuthChange');
+                    
+                    expect(scope.$digest).not.toHaveBeenCalled();
+                }));
+            });
+
         });
     });
 });
