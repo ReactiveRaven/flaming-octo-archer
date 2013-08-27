@@ -3,10 +3,8 @@ define('startup', ['angular', 'app', 'angularMocks'], function (angular, app) {
     
     return function () {
         
-        var _console = console;
-        
         if (window.e2emocks) {
-            _console.log("RUNNING MOCKED");
+            console.log("RUNNING MOCKED");
             var mockedApp = angular.module('commissar_mocked', ['commissar', 'ngMockE2E']);
             mockedApp.run(function ($httpBackend) {
                 $httpBackend.whenGET('/couchdb/_all_dbs').respond(200, ['_replicator', '_users', 'commissar', 'commissar_user_john', 'commissar_validation_global', 'commissar_validation_users']);
@@ -30,7 +28,7 @@ define('startup', ['angular', 'app', 'angularMocks'], function (angular, app) {
             top.postMessage({
                 type: 'apploaded'
             }, '*');
-            _console.log("Posted message!")
+            console.log("Posted message!");
         }
         
         angular.bootstrap(document, [app['name']]);

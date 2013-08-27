@@ -1,10 +1,15 @@
 module.exports = function () {
     'use strict';
+    
+    var galleryButtonUpload;
 
     this.When(/^I click to upload an image$/, function (callback) {
-        callback.fail("TODO! I click to upload an image");
-        //var self = this;
-        
+        if (this.browser.findElement(this.By.id('galleryButtonUpload')).isDisplayed()) {
+            this.browser.findElement(this.By.id('galleryButtonUpload')).click();
+            callback();
+        } else {
+            callback.fail("Couldn't see the galleryButtonUpload when trying to click it in 'I click to upload an image'");
+        }
     });
     
     this.When(/^I fill in the upload image form$/, function (callback) {

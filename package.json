@@ -29,7 +29,8 @@
     "grunt-parallel": "~0.3.0",
     "grunt-wait": "~0.1.0",
     "karma-ng-html2js-preprocessor": "~0.1.0",
-    "grunt-bg-shell": "~2.1.0"
+    "grunt-bg-shell": "~2.1.0",
+    "karma-safari-launcher": "~0.1.1"
   },
   "scripts": {
     "install": "./node_modules/grunt-cli/bin/grunt setup"

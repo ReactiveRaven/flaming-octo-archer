@@ -82,5 +82,9 @@ module.exports = function () {
     this.Then(/^I should see an option to upload an image$/, function (callback) {
         lookForId(this, '#galleryButtonUpload', callback);
     });
+    
+    this.Then(/^I should see the image upload form$/, function (callback) {
+        lookForId(this, '#galleryFormUpload', callback);
+    });
 
 };
