@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-ng-app="commissar_mocked">
     <head>
         <link rel="stylesheet" href="/bower_components/bootstrap/bootstrap.css" />
         <link rel="stylesheet" href="/css/testing.css" />
@@ -8,31 +8,13 @@
         <meta name="fragment" content="!" />
     </head>
     <body>
-        <div data-ng-include="'/angular/templates/menu/menu.html'">
-        </div>
-        <div id="loading" class="container" data-loading-indicator="yes">
-            <div id="bowlG">
-                <div id="bowl_ringG">
-                    <div class="ball_holderG">
-                        <div class="ballG">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div data-ng-include="'/angular/templates/menu/menu.html'"></div>
         <div data-ng-view id="main_view_container"></div>
 
         <script>
             window.e2emocks = true;
+            window.pause_for_angular_scenario = true;
         </script>
-        <script src="/bower_components/jquery/jquery.js"></script>
-        <script src="/bower_components/bootstrap/bootstrap.js"></script>
-        <script src="/bower_components/requirejs/require.js"></script>
-        <script src="/angular/js/compiled.js"></script>
-        <script>
-            require(['bootstrap'], function (bootstrap) { bootstrap(); });
-        </script>
-        
-        <script src="/js/resizable-inputs.js"></script>
+        <script data-main="/angular/js/main.js" src="bower_components/requirejs/require.js"></script>
     </body>
 </html>

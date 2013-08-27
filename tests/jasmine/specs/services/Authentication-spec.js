@@ -112,7 +112,7 @@ define(['world'], function (world) {
                         Couch = _Couch_;
                     });
                     
-                    $cookies.AuthSession = 'SOME_VALUE_HERE';
+                    $cookies.wasLoggedIn = true;
                     
                     spyOn(Couch, 'getSession').andReturn(world.resolved({
                         name: 'john',
@@ -133,7 +133,7 @@ define(['world'], function (world) {
                         Authentication = _Authentication_;
                     });
                     
-                    delete $cookies.AuthSession;
+                    delete $cookies.wasLoggedIn;
                     
                     Authentication.loggedIn().then(function (response) {
                         expect(response).toEqual(false);
@@ -146,7 +146,7 @@ define(['world'], function (world) {
                     beforeEach(function () {
                         inject(function (_$cookies_) {
                             $cookies = _$cookies_;
-                            $cookies.AuthSession = 'SOME_VALUE_HERE';
+                            $cookies.wasLoggedIn = true;
                         });
                     });
                     
@@ -234,6 +234,18 @@ define(['world'], function (world) {
                     expect(succeeded).toEqual(false);
                     expect(failed).toEqual(null);
                 }));
+                
+                it('should trigger event AuthChange', inject(function ($rootScope, Couch, Authentication) {
+                    spyOn($rootScope, "$broadcast");
+                    spyOn(Couch, 'login').andReturn(world.resolved(true));
+                    
+                    Authentication.login('john', 'password');
+                    
+                    world.digest();
+                    
+                    expect($rootScope.$broadcast).toHaveBeenCalledWith('AuthChange');
+                    
+                }));
             });
             
             describe('[register()]', function () {
@@ -264,10 +276,7 @@ define(['world'], function (world) {
                     var username = 'username',
                         password = 'password';
                     
-                    $httpBackend.expectPOST('/server/register.php', {
-                        username: username,
-                        password: password
-                    }).respond({ok: true});
+                    $httpBackend.expectPOST('/server/register.php', 'username=' + username + '&password=' + password).respond({ok: true});
                     
                     Authentication.register(username, password);
                     world.flush();
@@ -294,6 +303,31 @@ define(['world'], function (world) {
                     world.flush();
                     
                     expect(response).toBe(false);
+                }));
+            });
+            
+            describe('[getSession()]', function () {
+                it('should be a function', inject(function (Authentication) {
+                    expect(Authentication.getSession).toBeDefined();
+                    expect(typeof Authentication.getSession).toBe('function');
+                }));
+                
+                it('should return a promise', inject(function (Authentication, Couch) {
+                    
+                    var ctx = {name: 'john', roles: []};
+                    
+                    spyOn(Couch, 'getSession').andReturn(world.resolved(ctx));
+                    
+                    var result = Authentication.getSession(),
+                        response = null;
+                    
+                    expect(result).toBeDefined();
+                    expect(result.then).toBeDefined();
+                    result.then(function (_response_) { response = _response_; });
+                    
+                    world.digest();
+                    
+                    expect(response).toBe(ctx);
                 }));
             });
         });

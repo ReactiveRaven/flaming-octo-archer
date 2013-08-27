@@ -40,7 +40,7 @@
                                 </li>
                             </ul>
                             <ul class="nav pull-right">
-                                <li class="dropdown" data-ng-show='isLoggedIn()'>
+                                <li class="dropdown" data-ng-show='loggedIn'>
                                     <a id="menuMyNotificationsToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         Notifications <i class="icon icon-exclamation" style="color: #dcdcdc;"></i>
                                         <b class="caret"></b>
@@ -51,7 +51,7 @@
                                         <li>3</li>
                                     </ul>
                                 </li>
-                                <li class="dropdown" data-ng-show='isLoggedIn()'>
+                                <li class="dropdown" data-ng-show='loggedIn'>
                                     <a id="menuMyOffersToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         My Offers
                                         <b class="caret"></b>
@@ -68,31 +68,23 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="dropdown" data-ng-show='isLoggedIn()'>
+                                <li class="dropdown" data-ng-show='loggedIn'>
                                     <a id="menuMyAccountToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         {{me.username|Capitalize}}
                                         <b class="caret"></b>
                                     </a>
                                     <ul id="menuMyAccountDropdown" class="dropdown-menu">
-                                        <li><a data-ng-href='#!/my/pictures'>Pictures</a></li>
+                                        <li><a id="menuMyAccountItemGallery" data-ng-href='#!/my/gallery'>Gallery</a></li>
                                         <li><a data-ng-href='#!/my/settings'>Settings</a></li>
                                         <li><a data-ng-href='#!/logout'>Sign out</a></li>
                                     </ul>
                                 </li>
-                                <li class='dropdown' data-ng-show='!isLoggedIn()'>
+                                <li class='dropdown' data-ng-show='!loggedIn'>
                                     <a href='#' id="menuLoginToggle" class='dropdown-toggle' data-toggle='dropdown'>
                                         Sign up &amp; Log in <i class='icon icon-key'></i>
                                     </a>
                                     <div class='dropdown-menu' id='menuLoginForm'>
-                                        <form accept-charset="UTF-8">
-                                            <input type="text" name="user[username]" size="30" placeholder="username" data-ng-model="loginFormUsername" />
-                                            <input type="password" name="user[password]" size="30" placeholder="password" data-ng-model="loginFormPassword" />
-
-                                            <button id="menuLoginFormButtonLogin" class="btn btn-primary">Log in</button>
-                                            <button id="menuLoginFormButtonSignup" class="btn btn-success" data-ng-hide="isUsernameRecognised(loginFormUsername)">Sign up</button>
-                                            <button id="menuLoginFormButtonSignupDisabled" class="btn btn-success" disabled="disabled" data-ng-show="isUsernameRecognised(loginFormUsername)">Already signed up!</button>
-                                            <button id="menuLoginFormButtonForgot" class="btn btn-link" data-ng-show="isUsernameRecognised(loginFormUsername)">Forgot your password?</button>
-                                        </form>
+                                        <div data-login-form=""></div>
                                     </div>
                                 </li>
                             </ul>

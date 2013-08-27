@@ -11,8 +11,8 @@ define(['angular', 'CornerCouch'], function (angular) {
         function isDefined(value) {
             return typeof value !== 'undefined';
         }
-
-        return {
+        
+        var Couch = {
             databaseExists: function (databaseName) {
                 var deferred = $q.defer();
                 
@@ -31,8 +31,8 @@ define(['angular', 'CornerCouch'], function (angular) {
                 if (typeof $rootScope.cornercouch.userCtx !== 'undefined') {
                     deferred.resolve($rootScope.cornercouch.userCtx);
                 } else {
-                    $rootScope.cornercouch.session().then(function () {
-                        deferred.resolve($rootScope.cornercouch.userCtx);
+                    $rootScope.cornercouch.session().then(function (response) {
+                        deferred.resolve(response.userCtx);
                     }, function (reason) {
                         deferred.reject(reason);
                     });
@@ -52,6 +52,8 @@ define(['angular', 'CornerCouch'], function (angular) {
                 return deferred.promise;
             }
         };
+
+        return Couch;
     });
     
     

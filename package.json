@@ -2,7 +2,7 @@
   "dependencies": {
     "cucumber": "~0.3.1",
     "grunt": "~0.4.1",
-    "grunt-karma": "~0.4.4",
+    "grunt-karma": "~0.7.0",
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-contrib-watch": "~0.4.4",
@@ -23,12 +23,13 @@
     "karma-coffee-preprocessor": "~0.1.0",
     "karma-phantomjs-launcher": "~0.1.0",
     "karma": "~0.10.1",
-    "karma-ng-scenario": "~0.1.0",
-    "protractor": "~0.7.0",
+    "karma-ng-scenario": "*",
+    "protractor": "*",
     "grunt-clear": "~0.2.1",
     "grunt-parallel": "~0.3.0",
-    "wait": "~0.1.0",
-    "grunt-wait": "~0.1.0"
+    "grunt-wait": "~0.1.0",
+    "karma-ng-html2js-preprocessor": "~0.1.0",
+    "grunt-bg-shell": "~2.1.0"
   },
   "scripts": {
     "install": "./node_modules/grunt-cli/bin/grunt setup"

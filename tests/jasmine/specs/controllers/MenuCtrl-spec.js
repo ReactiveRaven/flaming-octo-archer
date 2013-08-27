@@ -48,248 +48,57 @@ define(['world', 'angular'], function (world, angular) {
             });
         });
         
-        describe('[user state]', function () {
-            var Authentication;
+        describe('[user menus]', function () {
             
-            beforeEach(inject(['Authentication', function (_Authentication_) {
-                Authentication = _Authentication_;
-                spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
-                spyOn(Authentication, 'login').andReturn(world.resolved(true));
-                spyOn(Authentication, 'userExists').andReturn(world.resolved(true));
-                spyOn(Authentication, 'register').andReturn(world.resolved(true));
-            }]));
-            
-            it('should check if logged in', function () {
+            it('should listen for AuthChange', function () {
+                spyOn(scope, '$on');
+                
                 getCtrl();
-                world.digest();
                 
-                expect(Authentication.loggedIn).toHaveBeenCalled();
-                expect(scope.loggedIn).toBe(true);
+                expect(scope.$on).toHaveBeenCalledWith('AuthChange', scope.onAuthChange);
             });
             
-            describe('[login()]', function () {
+            describe('[onAuthChange()]', function () {
+                
+                var ctx = {name: 'john', roles: []};
+                
+                beforeEach(inject(function (Authentication) {
+                    spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
+                    spyOn(Authentication, 'getSession').andReturn(world.resolved(ctx));
+                }));
+                
                 it('should be a function', function () {
                     getCtrl();
-                    
-                    expect(typeof scope.login).toBe('function');
+
+                    expect(scope.onAuthChange).toBeDefined();
+                    expect(typeof scope.onAuthChange).toBe('function');
                 });
                 
-                it('should pass login requests to Authentication', function () {
-                    var username = 'username',
-                        password = 'password',
-                        response = null;
-                    
+                it('should not trigger an apply on AuthChange when already in progress', inject(function ($rootScope) {
                     getCtrl();
                     
-                    scope.login(username, password).then(function (_response_) {
-                        response = _response_;
-                    });
-                    world.digest();
+                    spyOn(scope, '$digest');
                     
-                    expect(Authentication.login).toHaveBeenCalledWith(username, password);
-                    expect(response).toBe(true);
-                });
+                    scope.$$phase = "$apply";
+                    
+                    $rootScope.$broadcast('AuthChange');
+                    
+                    expect(scope.$digest).not.toHaveBeenCalled();
+                }));
                 
-                it('should pull from scope if no arguments given', function () {
-                    var username = 'username',
-                        password = 'password',
-                        response = null;
-                    
+                it('should update the userCtx when logged in', inject(function ($rootScope, Authentication) {
                     getCtrl();
                     
-                    scope.loginFormUsername = username;
-                    scope.loginFormPassword = password;
+                    $rootScope.$broadcast('AuthChange');
                     
-                    scope.login().then(function (_response_) {
-                        response = _response_;
-                    });
                     world.digest();
                     
-                    expect(Authentication.login).toHaveBeenCalledWith(username, password);
-                    expect(response).toBe(true);
-                });
-                
-                it('should set loggedIn to match response', function () {
-                    var username = 'username',
-                        password = 'password',
-                        response = null;
-                        
-                    getCtrl();
-                        
-                    scope.loggedIn = false;
-                        
-                    scope.login(username, password).then(function (_response_) {
-                        response = _response_;
-                    });
-                    world.digest();
-                    
-                    expect(scope.loggedIn).toBe(true);
-                });
+                    expect(Authentication.loggedIn).toHaveBeenCalled();
+                    expect(Authentication.getSession).toHaveBeenCalled();
+                    expect(scope.userCtx).toBe(ctx);
+                }));
             });
-            
-            describe('[userExists()]', function () {
-                it('should be a function', function () {
-                    getCtrl();
-                    
-                    expect(typeof scope.userExists).toBe('function');
-                });
-                
-                it('should pass login requests to Authentication', function () {
-                    var username = 'username',
-                        response = null;
-                    
-                    getCtrl();
-                    
-                    scope.userExists(username).then(function (_response_) {
-                        response = _response_;
-                    });
-                    world.digest();
-                    
-                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
-                    expect(response).toBe(true);
-                });
-                
-                it('should pull from scope if no arguments given', function () {
-                    var username = 'username',
-                        response = null;
-                    
-                    getCtrl();
-                    
-                    scope.loginFormUsername = username;
-                    
-                    scope.userExists().then(function (_response_) {
-                        response = _response_;
-                    });
-                    world.digest();
-                    
-                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
-                    expect(response).toBe(true);
-                });
-            });
-            
-            describe('[isUsernameRecognised()]', function () {
-                it('should be a function', function () {
-                    getCtrl();
-                    
-                    expect(typeof scope.isUsernameRecognised).toBe('function');
-                });
-                
-                it('should pass login requests to Authentication', function () {
-                    var username = 'username',
-                        response = null;
-                    
-                    getCtrl();
-                    
-                    response = scope.isUsernameRecognised(username);
-                    world.digest();
-                    
-                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
-                    expect(response).toBe(false);
-                });
-                
-                it('should return real values', function () {
-                    var username = 'username',
-                        response = null;
-                    
-                    getCtrl();
-                    
-                    response = scope.isUsernameRecognised(username);
-                    world.digest();
-                    
-                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
-                    expect(response).toBe(false);
-                });
-                
-                it('should pull from scope if no arguments given', function () {
-                    var username = 'username',
-                        response = null;
-                    
-                    getCtrl();
-                    
-                    scope.loginFormUsername = username;
-                    
-                    response = scope.isUsernameRecognised();
-                    world.digest();
-                    
-                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
-                    expect(response).toBe(false);
-                });
-                
-                it('should update once a response is received from the server', function () {
-                    var username = 'username',
-                        response = null;
-                    
-                    getCtrl();
-                    
-                    scope.loginFormUsername = username;
-                    
-                    scope.isUsernameRecognised();
-                    world.digest();
-                    response = scope.isUsernameRecognised();
-                    
-                    expect(Authentication.userExists).toHaveBeenCalledWith(username);
-                    expect(response).toBe(true);
-                });
-            });
-            
-            describe('[register()]', function () {
-                it('should be a function', function () {
-                    getCtrl();
-                    
-                    expect(typeof scope.register).toBe('function');
-                });
-                
-                it('should pass registration requests to Authentication', function () {
-                    var username = 'username',
-                        password = 'password',
-                        response = null;
-                        
-                    getCtrl();
-                    
-                    scope.register(username, password).then(function (_response_) { response = _response_; });
-                    world.digest();
-                    
-                    expect(Authentication.register).toHaveBeenCalledWith(username, password);
-                    expect(response).toBe(true);
-                });
-                                
-                it('should pull from scope if no arguments given', function () {
-                    var username = 'username',
-                        password = 'password',
-                        response = null;
-                    
-                    getCtrl();
-                    
-                    scope.loginFormUsername = username;
-                    scope.loginFormPassword = password;
-                    
-                    scope.register().then(function (_response_) {
-                        response = _response_;
-                    });
-                    world.digest();
-                    
-                    expect(Authentication.register).toHaveBeenCalledWith(username, password);
-                    expect(response).toBe(true);
-                });
-                
-                it('should set registerSucceeded to match response', function () {
-                    var username = 'username',
-                        password = 'password',
-                        response = null;
-                        
-                    getCtrl();
-                        
-                    scope.registerSucceeded = false;
-                        
-                    scope.register(username, password).then(function (_response_) {
-                        response = _response_;
-                    });
-                    world.digest();
-                    
-                    expect(scope.registerSucceeded).toBe(true);
-                });
-            });
-            
+
         });
     });
 });

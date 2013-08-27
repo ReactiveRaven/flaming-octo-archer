@@ -10,3 +10,7 @@ selenium/
 /www/angular/js/compiled.js
 www/angular/js/compressed.js
 nbproject
+npm-debug.log
+www/js/compiled.js
+www/js/compressed.js
+bower_components/

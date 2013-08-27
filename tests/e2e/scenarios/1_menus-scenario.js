@@ -3,17 +3,13 @@
 define([], function () {
     'use strict';
     
-    beforeEach(function () {
-        browser().navigateTo('/');
-    });
-    
     describe('[Menus]', function () {
         var menuArtistToggle,
             menuArtistDropdown,
             menuOffersToggle,
             menuOffersDropdown,
             menuLeftToggles;
-        
+            
         beforeEach(function () {
             menuArtistToggle = element('#menuArtistToggle:visible', 'Artist menu toggle');
             menuArtistDropdown = element('#menuArtistDropdown:visible', 'Artist menu dropdown');
@@ -24,6 +20,20 @@ define([], function () {
         
         describe('[Left]', function () {
             
+            describe('[logged out]', function () {
+                
+                it('should start off on the test page', function () {
+                    browser().navigateTo('/index_e2e.html');
+                });
+
+                it('should show default menus', function () {
+                    expect(menuArtistToggle.count()).toBe(1);
+                    expect(menuOffersToggle.count()).toBe(1);
+                    expect(menuLeftToggles.count()).toBe(2);
+                });
+
+            });
+            
             it('should open menus when clicked', function () {
                 expect(menuArtistDropdown.count()).toBe(0);
                 expect(menuOffersDropdown.count()).toBe(0);
@@ -32,24 +42,6 @@ define([], function () {
                 menuOffersToggle.click();
                 expect(menuArtistDropdown.count()).toBe(0);
                 expect(menuOffersDropdown.count()).toBe(1);
-            });
-            
-            describe('[logged out]', function () {
-
-                it('should show default menus', function () {
-                    expect(menuArtistToggle.count()).toBe(1);
-                    expect(menuOffersToggle.count()).toBe(1);
-                    expect(menuLeftToggles.count()).toBe(2);
-                });
-                
-            });
-
-            describe('[logged in]', function () {
-                
-                it('should show logged in menus', function () {
-                    
-                });
-                
             });
         });
         

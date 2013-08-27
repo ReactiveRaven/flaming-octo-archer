@@ -8,9 +8,16 @@
         <meta name="fragment" content="!" />
     </head>
     <body>
-        <div data-ng-include="'/angular/templates/menu/menu.html'"></div>
+        <div data-ng-include="'/angular/templates/menu/menu.html'">
+        </div>
         <div data-ng-view id="main_view_container"></div>
-
-        <script data-main="/angular/js/main.js" src="bower_components/requirejs/require.js"></script>
+        <script>
+            window.e2emocks = true;
+        </script>
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/compiled.js"></script>
+        <script>
+            require(['startup'], function (startup) { startup(); });
+        </script>
     </body>
 </html>

@@ -1,95 +1,37 @@
-define(['angular', '../services/Authentication', '../filters/Capitalize'], function (angular) {
+define(['angular', 'services/Authentication', 'filters/Capitalize', 'directives/LoginForm', 'services/ParanoidScope'], function (angular) {
     "use strict";
     
     var MenuCtrlModule = angular.module(
         'commissar.controllers.MenuCtrl',
-        ['commissar.services.Authentication', 'commissar.directives.Markdown', 'commissar.filters.Capitalize']
+        ['commissar.services.Authentication', 'commissar.directives.Markdown', 'commissar.filters.Capitalize', 'commissar.directives.LoginForm', 'commissar.services.ParanoidScope']
     );
     
-    MenuCtrlModule.controller('MenuCtrl', ['$scope', 'Authentication', function ($scope, Authentication) {
+    MenuCtrlModule.controller('MenuCtrl', function ($scope, Authentication, ParanoidScope, $q) {
         $scope.name = 'MenuCtrl';
         
-        $scope.loggedIn = null;
-        Authentication.loggedIn().then(function (response) {
-            $scope.loggedIn = response;
-        });
+        $scope.loggedIn = false;
         
-        $scope.login = function (username, password) {
+        $scope.onAuthChange = function () {
             
-            if (typeof username === "undefined") {
-                username = $scope.loginFormUsername;
-            }
-            if (typeof password === "undefined") {
-                password = $scope.loginFormPassword;
-            }
-            
-            return Authentication.login(username, password).then(function (reply) {
-                $scope.loggedIn = reply;
-                return reply;
-            });
-        };
-        
-        $scope.userExists = function (username) {
-            
-            if (typeof username === "undefined") {
-                username = $scope.loginFormUsername;
-            }
-            
-            return Authentication.userExists(username).then(function (reply) {
-                return reply;
-            });
-        };
-        
-        $scope.register = function (username, password) {
-                        
-            if (typeof username === "undefined") {
-                username = $scope.loginFormUsername;
-            }
-            if (typeof password === "undefined") {
-                password = $scope.loginFormPassword;
-            }
-            
-            return Authentication.register(username, password).then(function (reply) { 
-                $scope.registerSucceeded = reply;
-                return reply;
-            });
-        };
-        
-        (function () {
-            var lastUsername = null,
-                lastResponse = null;
-                
-            $scope.isUsernameRecognised = function (username) {
-                var response = null;
-                
-                if (typeof username === "undefined") {
-                    username = $scope.loginFormUsername;
+            $q.all(
+                [
+                    Authentication.loggedIn(),
+                    Authentication.getSession()
+                ]
+            ).then(
+                function (returnValues) {
+                    $scope.loggedIn = returnValues[0];
+                    $scope.userCtx = returnValues[1];
+                    ParanoidScope.apply($scope);
+                    ParanoidScope.digest($scope);
                 }
-                
-                if (username === lastUsername) {
-                    response = lastResponse;
-                } else {
-                    lastUsername = username;
-                    lastResponse = false;
-                    Authentication.userExists(username).then(function (reply) {
-                        lastResponse = reply;
-                        if (!$scope.$$phase) {
-                            $scope.$apply();
-                        }
-                    });
-                    response = false;
-                }
-                
-                return response;
-            };
+            );
             
-            // Needed to trigger the form to update as it doesn't actually 
-            // contain 'loginFormUsername' as a binding!
-            $scope.$watch('loginFormUsername', function () {
-                $scope.isUsernameRecognised();
-            });
-        })();
-    }]);
+        };
+        
+        $scope.$on('AuthChange', $scope.onAuthChange);
+        
+    });
     
     return MenuCtrlModule;
 });
