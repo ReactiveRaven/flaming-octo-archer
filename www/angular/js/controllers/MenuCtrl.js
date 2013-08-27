@@ -6,24 +6,30 @@ define(['angular', 'services/Authentication', 'filters/Capitalize', 'directives/
         ['commissar.services.Authentication', 'commissar.directives.Markdown', 'commissar.filters.Capitalize', 'commissar.directives.LoginForm', 'commissar.services.ParanoidScope']
     );
     
-    MenuCtrlModule.controller('MenuCtrl', function ($scope, Authentication, ParanoidScope) {
+    MenuCtrlModule.controller('MenuCtrl', function ($scope, Authentication, ParanoidScope, $q) {
         $scope.name = 'MenuCtrl';
         
         $scope.loggedIn = false;
         
         $scope.onAuthChange = function () {
             
-            ParanoidScope.apply($scope, function () {
-                Authentication.loggedIn().then(function (response) {
-                    $scope.loggedIn = response;
-                });
-            });
-            ParanoidScope.digest($scope);
+            $q.all(
+                [
+                    Authentication.loggedIn(),
+                    Authentication.getSession()
+                ]
+            ).then(
+                function (returnValues) {
+                    $scope.loggedIn = returnValues[0];
+                    $scope.userCtx = returnValues[1];
+                    ParanoidScope.apply($scope);
+                    ParanoidScope.digest($scope);
+                }
+            );
+            
         };
         
         $scope.$on('AuthChange', $scope.onAuthChange);
-        
-        window.MenuScope = $scope;
         
     });
     

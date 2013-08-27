@@ -107,12 +107,10 @@ define(['world'], function (world) {
             
             describe('[getSession()]', function () {
                 
-                it('should be a function', inject(function (Couch) {
-                    expect(Couch.getSession).toBeDefined();
-                    expect(typeof Couch.getSession).toEqual('function');
-                }));
+                var ctx = {name: 'john', roles: ['user']};
                 
-                it('should return a promise', inject(function ($rootScope, Couch) {
+                beforeEach(inject(function ($rootScope, Couch) {
+                    Couch.shut_up_jshint = true;
                     
                     spyOn(
                         $rootScope.cornercouch,
@@ -120,11 +118,18 @@ define(['world'], function (world) {
                     ).andReturn(
                         world.resolved({
                             ok: true,
-                            userCtx: {name: 'john', roles: ['user']},
+                            userCtx: ctx,
                             info: {authentication_db: '_users', authentication_handlers: ['oauth', 'cookie', 'default']}
                         })
                     );
-                    
+                }));
+                
+                it('should be a function', inject(function (Couch) {
+                    expect(Couch.getSession).toBeDefined();
+                    expect(typeof Couch.getSession).toEqual('function');
+                }));
+                
+                it('should return a promise', inject(function ($rootScope, Couch) {
                     var response = Couch.getSession();
                     world.digest();
                     
@@ -133,17 +138,6 @@ define(['world'], function (world) {
                 }));
                 
                 it('should check the server for the current session', inject(function (Couch, $rootScope) {
-                    spyOn(
-                        $rootScope.cornercouch,
-                        'session'
-                    ).andReturn(
-                        world.resolved({
-                            ok: true,
-                            userCtx: {name: 'john', roles: ['user']},
-                            info: {authentication_db: '_users', authentication_handlers: ['oauth', 'cookie', 'default']}
-                        })
-                    );
-                    
                     Couch.getSession();
                     
                     world.digest();
@@ -154,11 +148,21 @@ define(['world'], function (world) {
                 it('should skip checking the server if the session is already loaded', inject(function (Couch, $rootScope) {
                     $rootScope.cornercouch.userCtx = {name: null, roles: []};
                     
-                    spyOn($rootScope.cornercouch, 'session');
-                    
                     Couch.getSession();
                     
                     expect($rootScope.cornercouch.session).not.toHaveBeenCalled();
+                }));
+                
+                it('should return the session it received from the server', inject(function (Couch) {
+                    Couch.getSession();
+                    
+                    var response = null;
+                    
+                    Couch.getSession().then(function (_response_) { response = _response_; });
+                    
+                    world.digest();
+                    
+                    expect(response).toBe(ctx);
                 }));
                 
             });

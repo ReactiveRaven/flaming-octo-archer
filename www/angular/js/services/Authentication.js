@@ -56,6 +56,15 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
                 });
                 
                 return deferred.promise;
+            },
+            'getSession': function () {
+                var deferred = $q.defer();
+                
+                Couch.getSession().then(function (userCtx) {
+                    deferred.resolve(userCtx);
+                });
+                
+                return deferred.promise;
             }
         };
 

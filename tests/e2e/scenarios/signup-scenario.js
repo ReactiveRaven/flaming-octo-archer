@@ -12,20 +12,24 @@ define([], function () {
             menuLoginButtonSignupDisabled,
             menuLoginButtonForgot,
             menuLoginMessageRegisterSuccess,
-            menuMyAccountToggle;
+            menuMyAccountToggle,
+            menuMyAccountDropdown,
+            menuLoginDropdown;
         
         beforeEach(function () {
             menuLoginFormSelector = element('#menuLoginForm:visible', 'Menu login form');
             menuLoginToggle = element('#menuLoginToggle:visible', 'Login Toggle');
+            menuLoginDropdown = element('#menuLoginDropdown:visible', 'Login Dropdown');
             menuLoginButtonLogin = element('#menuLoginForm:visible button.btn-primary:visible', 'Log in button');
             menuLoginButtonSignup = element('#menuLoginForm:visible button.btn-success:visible', 'Active sign up button');
             menuLoginButtonSignupDisabled = element('#menuLoginFormButtonSignupDisabled:visible', 'Disabled sign up button');
             menuLoginButtonForgot = element('#menuLoginFormButtonForgot:visible', 'Forgot password button');
             menuLoginMessageRegisterSuccess = element('#menuLoginFormMessageRegisterSuccess:visible', 'Registration confirmation message');
             menuMyAccountToggle = element('#menuMyAccountToggle:visible', 'My account menu toggle');
+            menuMyAccountDropdown = element('#menuMyAccountDropdown:visible', 'My account menu dropdown');
         });
         
-        describe('[observing]', function () {
+        describe('[before]', function () {
             it('should start off on the test page', function () {
                 browser().navigateTo('/index_e2e.html');
             });
@@ -98,12 +102,10 @@ define([], function () {
             });
         });
         
-        describe('[active]', function () {
-            beforeEach(function () {
+        describe('[during]', function () {
+            it('should start off just after clicking signup', function () {
                 browser().navigateTo('/index_e2e.html');
-            });
-
-            it('should forward to the welcome page when successful', function () {
+                
                 var username = 'a_new_username';
 
                 menuLoginToggle.click();
@@ -112,21 +114,18 @@ define([], function () {
                 input('loginFormPassword').enter(username);
 
                 menuLoginButtonSignup.click();
+            });
 
+            it('should forward to the welcome page when successful', function () {
                 expect(browser().location().url()).toBe('/welcome');
             });
 
             it('should log in after registering', function () {
-                var username = 'a_new_username';
-
-                menuLoginToggle.click();
-
-                input('loginFormUsername').enter(username);
-                input('loginFormPassword').enter(username);
-
-                menuLoginButtonSignup.click();
-
                 expect(menuMyAccountToggle.count()).toBe(1);
+            });
+            
+            it('should hide the login form after registering', function () {
+                expect(menuLoginDropdown.count()).toBe(0);
             });
             
         });

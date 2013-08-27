@@ -16,7 +16,8 @@ module.exports = function (grunt) {
         'grunt-shell',
         'grunt-clear',
         'grunt-parallel',
-        'grunt-wait'
+        'grunt-wait',
+        'grunt-bg-shell'
     ];
 
     // "postinstall": "./node_modules/protractor/bin/install_selenium_standalone"
@@ -34,8 +35,8 @@ module.exports = function (grunt) {
         'jasmine:run': ['karma:jasmine_background:run'],
         'e2e': ['karma:e2e_background', 'watch:e2e'],
         'e2e:run': ['karma:e2e_background:run'],
-        'cucumber': ['cucumber:run'/** /, 'watch:cucumber'/**/],
-        'cucumber:run': ['requirejs:compile', /** /'env:test', /**/'cucumberjs', 'shell:close_all_cucumber_browsers'],
+        'cucumber': ['watch:cucumber'/** /, 'watch:cucumber'/**/],
+        'cucumber:run': ['connect', 'bgShell:selenium', 'jshint', 'requirejs:compile', /** /'env:test', /**/'cucumberjs', /**/'shell:close_all_cucumber_browsers', /**/'shell:selenium_stop'],
         'delayed:e2e:start': ['wait:five', 'karma:e2e_background', 'wait:forever'],
         'delayed:e2e': ['wait:ten', 'watch:e2e'],
         'delayed:jshint': ['wait:ten', 'watch:jshint'],
@@ -43,7 +44,8 @@ module.exports = function (grunt) {
         'server': ['connect:server'],
         'selenium': ['shell:selenium'],
         'reinstall': ['shell:reinstall'],
-        'default': ['jasmine']
+        'default': ['jasmine'],
+        'rrr': ['connect', 'cucumber:run']
     };
 
     var config = {
@@ -69,6 +71,8 @@ module.exports = function (grunt) {
                 {pattern: 'tests/cucumber/features/support/*', watched: true, included: true, served: true},
                 {pattern: 'tests/cucumber/features/*.feature', watched: true, included: false, served: true},
                 {pattern: 'tests/cucumber/features/step_definitions/*.js', watched: true, included: false, served: true},
+                // Templates
+                {pattern: 'www/angular/templates/**/*.html', watched: true, included: false, served: true},
                 // Config files
                 {pattern: './Gruntfile.js', watched: true, included: false, served: false}
             ],
@@ -99,7 +103,9 @@ module.exports = function (grunt) {
                 {pattern: "tests/e2e/conf/angular-scenario-requirejs-fix.js", watched: true, included: true, served: true},
                 {pattern: "node_modules/karma-ng-scenario/lib/adapter.js", watched: false, included: true, served: true},
                 {pattern: "node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
-                {pattern: "node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true}
+                {pattern: "node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true},
+                // Templates
+                {pattern: 'www/angular/templates/**/*.html', watched: true, included: false, served: true}
             ],
             karma_e2e_editable_files: [
                 // test files
@@ -170,7 +176,7 @@ module.exports = function (grunt) {
                 browsers: ['Chrome'],
                 files: '<%= files.karma_jasmine_files %>',
                 preprocessors: {
-                    'www/angular/templates/directives/**/*.html': 'ng-html2js'
+                    'www/angular/templates/**/*.html': 'ng-html2js',
                 },
                 ngHtml2JsPreprocessor: {
                     // strip this from the file path
@@ -178,7 +184,9 @@ module.exports = function (grunt) {
                     // prepend this to the
                     prependPrefix: '',
                     moduleName: 'templates'
-                }
+                },
+                runnerPort: 9602,
+                port: 9878,
             },
 //            jasmine_background: {
 //                configFile: 'tests/jasmine/conf/karma.conf.js',
@@ -244,7 +252,9 @@ module.exports = function (grunt) {
                 configFile: 'tests/e2e/conf/karma.conf.js',
                 singleRun: true,
                 browsers: ['Chrome'],
-                files: '<%= files.karma_e2e_files %>'
+                files: '<%= files.karma_e2e_files %>',
+                runnerPort: 9101,
+                port: 9877
             }
         },
         watch: {
@@ -302,7 +312,7 @@ module.exports = function (grunt) {
         connect: {
             server: {
                 options: {
-                    keepalive: true,
+                    keepalive: false,
                     port: 9001,
                     base: 'www'
                 }
@@ -328,19 +338,37 @@ module.exports = function (grunt) {
                     stderr: false
                 }
             },
+            selenium_stop: {
+                command: '/bin/ps -e | /usr/bin/grep "java -jar selenium" | /usr/bin/grep -v "grep" | /usr/bin/cut -f 1 -d " " | /usr/bin/xargs /bin/kill',
+                options: {
+                    stdout: true,
+                    stderr: true
+                }
+            },
+            close_all_cucumber_browsers: { // selenium/chromedriver
+                command: '/bin/ps -e | /usr/bin/grep -e "Google Chrome --remote-debugging-port" -e "selenium/chromedriver" | /usr/bin/grep -v "grep" | /usr/bin/cut -f 1 -d " " | /usr/bin/xargs /bin/kill',
+                options: {
+                    stdout: true,
+                    stderr: true
+                }
+            },
             reinstall: {
                 command: 'rm -rf selenium && rm -rf www/bower_components && rm -rf node_modules && npm install;',
                 options: {
                     stdout: true,
                     stderr: true
                 }
+            }
+        },
+        bgShell: {
+            _defaults: {
+                bg: true,
+                stdout: false,
+                stderr: false,
+                fail: false
             },
-            close_all_cucumber_browsers: {
-                command: '/bin/ps -e | /usr/bin/grep "Google Chrome --remote-debugging-port" | /usr/bin/grep -v "grep" | /usr/bin/cut -f 1 -d " " | /usr/bin/xargs /bin/kill',
-                options: {
-                    stdout: true,
-                    stderr: true
-                }
+            selenium: {
+                cmd: 'java -jar selenium/selenium-server-standalone-*.jar -Dwebdriver.chrome.driver=./selenium/chromedriver'
             }
         },
         cucumberjs: {

@@ -1,7 +1,8 @@
 (function () {
     "use strict";
 
-    var tests = [], specMatcher = /\/scenarios\/.+\.js$/, file;
+    var tests = [],
+        specMatcher = /\/scenarios\/.+\.js$/, file;
 
     for (file in window.__karma__.files) {
         if (specMatcher.test(file)) {
@@ -42,9 +43,11 @@
         ].concat(tests),
         callback: function (startup) {
             
-            startup();
-            
             window.__karma__.start();
+            
+//            setTimeout(function () {
+//                startup();
+//            }, 100);
         }
     });
 

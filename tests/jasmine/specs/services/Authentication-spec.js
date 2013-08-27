@@ -305,6 +305,31 @@ define(['world'], function (world) {
                     expect(response).toBe(false);
                 }));
             });
+            
+            describe('[getSession()]', function () {
+                it('should be a function', inject(function (Authentication) {
+                    expect(Authentication.getSession).toBeDefined();
+                    expect(typeof Authentication.getSession).toBe('function');
+                }));
+                
+                it('should return a promise', inject(function (Authentication, Couch) {
+                    
+                    var ctx = {name: 'john', roles: []};
+                    
+                    spyOn(Couch, 'getSession').andReturn(world.resolved(ctx));
+                    
+                    var result = Authentication.getSession(),
+                        response = null;
+                    
+                    expect(result).toBeDefined();
+                    expect(result.then).toBeDefined();
+                    result.then(function (_response_) { response = _response_; });
+                    
+                    world.digest();
+                    
+                    expect(response).toBe(ctx);
+                }));
+            });
         });
 
     });

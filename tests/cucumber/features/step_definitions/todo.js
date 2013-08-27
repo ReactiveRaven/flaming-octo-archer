@@ -1,5 +1,7 @@
 module.exports = function () {
     "use strict";
-    
-    this.World = require('../support/world.coffee').World;
+
+    this.World = require('../support/world.js').World;
+
+
 };

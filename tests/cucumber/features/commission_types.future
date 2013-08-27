@@ -1,0 +1,12 @@
+Feature: Offers
+   In order to start selling
+   As a artist
+   I want to add commission types to my profile
+
+   Scenario: Creating a commission type
+      When I visit the site
+      Given I am logged in as an artist
+      Then I should see my account details in the menu
+      When I create a new commission type
+      Then I should see a new commission type in the menu
+      And I should see a new commission type on my page

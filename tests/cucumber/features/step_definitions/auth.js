@@ -1,12 +1,24 @@
 module.exports = function () {
     "use strict";
+    
+    this.Given(/^I am logged in$/, function (callback) {
+        if (this.browser.findElement(this.By.id('menuLoginToggle')).isDisplayed()) {
+            this.browser.findElement(this.By.id('menuLoginToggle')).click();
+            this.browser.findElement(this.By.css('#menuLoginForm input[placeholder="username"]')).sendKeys('a_registered_username');
+            this.browser.findElement(this.By.css('#menuLoginForm input[placeholder="password"]')).sendKeys('a_registered_password');
+            this.browser.findElement(this.By.id('menuLoginFormButtonLogin')).click();
+            callback();
+        } else {
+            callback();
+        }
+    });
 
     this.Given(/^I am not logged in$/, function (callback) {
         // express the regexp above with the code you wish you had
         if (this.browser.findElement(this.By.id('menuLoginToggle')).isDisplayed()) {
             callback();
         } else {
-            callback.pending("don't know how to log out yet");
+            callback.fail("don't know how to log out yet");
         }
     });
 
@@ -32,7 +44,6 @@ module.exports = function () {
                 } else {
                     callback();
                 }
-                
             });
         });
     });

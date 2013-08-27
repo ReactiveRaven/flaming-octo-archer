@@ -1,7 +1,7 @@
-(function() {
+(function(angular) {
     var setUpAndRun = angular.scenario.setUpAndRun;
 
-    angular.scenario.setUpAndRun = function(config) {
+    angular.scenario.setUpAndRun = function() {
         amdSupport();
         return setUpAndRun.apply(this, arguments);
     };
@@ -37,4 +37,4 @@
             return frame;
         };
     }
-})();
+})(angular);

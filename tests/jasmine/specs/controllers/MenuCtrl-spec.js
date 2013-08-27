@@ -59,24 +59,20 @@ define(['world', 'angular'], function (world, angular) {
             });
             
             describe('[onAuthChange()]', function () {
+                
+                var ctx = {name: 'john', roles: []};
+                
+                beforeEach(inject(function (Authentication) {
+                    spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
+                    spyOn(Authentication, 'getSession').andReturn(world.resolved(ctx));
+                }));
+                
                 it('should be a function', function () {
                     getCtrl();
 
                     expect(scope.onAuthChange).toBeDefined();
                     expect(typeof scope.onAuthChange).toBe('function');
                 });
-                
-                it('should cause a digest on the scope when AuthChange broadcasted', inject(function ($rootScope) {
-                    getCtrl();
-                    
-                    spyOn(scope, '$digest');
-                    
-                    expect(scope.$digest).not.toHaveBeenCalled();
-                    
-                    $rootScope.$broadcast('AuthChange');
-                    
-                    expect(scope.$digest).toHaveBeenCalled();
-                }));
                 
                 it('should not trigger an apply on AuthChange when already in progress', inject(function ($rootScope) {
                     getCtrl();
@@ -88,6 +84,18 @@ define(['world', 'angular'], function (world, angular) {
                     $rootScope.$broadcast('AuthChange');
                     
                     expect(scope.$digest).not.toHaveBeenCalled();
+                }));
+                
+                it('should update the userCtx when logged in', inject(function ($rootScope, Authentication) {
+                    getCtrl();
+                    
+                    $rootScope.$broadcast('AuthChange');
+                    
+                    world.digest();
+                    
+                    expect(Authentication.loggedIn).toHaveBeenCalled();
+                    expect(Authentication.getSession).toHaveBeenCalled();
+                    expect(scope.userCtx).toBe(ctx);
                 }));
             });
 

@@ -14,4 +14,15 @@ module.exports = function () {
         }, number * 1000);
     });
     
+    this.When(/^I visit my gallery$/, function (callback) {
+        var self = this;
+        self.browser.findElement(self.By.id('menuMyAccountDropdown')).isDisplayed().then(function (isDisplayed) {
+            if (!isDisplayed) {
+                self.browser.findElement(self.By.id('menuMyAccountToggle')).click();
+            }
+            self.browser.findElement(self.By.id('menuMyAccountItemGallery')).click();
+            callback();
+        });
+    });
+    
 };
