@@ -25,7 +25,7 @@ define('startup', ['angular', 'app', 'angularMocks'], function (angular, app) {
 
         html.setAttribute('ng-app', app['name']);
         html.dataset.ngApp = app['name'];
-
+        
         if (top !== window) {
             top.postMessage({
                 type: 'apploaded'

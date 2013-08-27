@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-ng-app="commissar_mocked">
     <head>
         <link rel="stylesheet" href="/bower_components/bootstrap/bootstrap.css" />
         <link rel="stylesheet" href="/css/testing.css" />
@@ -13,11 +13,8 @@
 
         <script>
             window.e2emocks = true;
+            window.pause_for_angular_scenario = true;
         </script>
-        <script src="/bower_components/requirejs/require.js"></script>
-        <script src="/js/compiled.js"></script>
-        <script>
-            require(['startup'], function (startup) { startup(); });
-        </script>
+        <script data-main="/angular/js/main.js" src="bower_components/requirejs/require.js"></script>
     </body>
 </html>

@@ -3,9 +3,8 @@ module.exports = function () {
 
     this.When(/^I click to upload an image$/, function (callback) {
         callback.fail("TODO! I click to upload an image");
-        var self = this;
+        //var self = this;
         
-        self.ok = true;
     });
     
     this.When(/^I fill in the upload image form$/, function (callback) {

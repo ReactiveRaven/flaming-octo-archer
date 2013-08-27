@@ -1,7 +1,5 @@
 (function() {
-  var World, driver, path, protractor, ptor, webdriver;
-
-  path = require('path');
+  var World, driver, protractor, ptor, webdriver;
 
   protractor = require('protractor');
 

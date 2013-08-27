@@ -13,7 +13,6 @@ Feature: Sign up
       Then the sign up button should be available
       When I type a password in the sign up form
       And I click to sign up
-      And I wait for 1 second
       Then I should see a welcome message
       And I should not see the sign up and login form
       And I should see my account details in the menu
@@ -28,5 +27,4 @@ Feature: Sign up
       Then the sign up button should not be available
       When I type a password in the sign up form
       And I click to log in
-      And I wait for 1 second
       And I should see my account details in the menu

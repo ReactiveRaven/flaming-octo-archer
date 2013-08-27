@@ -27,7 +27,7 @@ require.config({
 
 require([
     'startup'
-], function (bootstrap) {
-    // All handled in 'bootstrap'
-    bootstrap();
+], function (startup) {
+    // All handled in 'startup'
+    startup();
 });

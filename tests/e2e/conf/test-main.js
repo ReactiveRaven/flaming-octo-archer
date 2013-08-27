@@ -11,44 +11,9 @@
     }
 
     require.config({
-        paths: {
-            angular: '/base/www/bower_components/angular/angular',
-            angularMocks: '/base/www/bower_components/angular-mocks/angular-mocks',
-            angularCookies: '/base/www/bower_components/angular-cookies/angular-cookies',
-            angularResource: '/base/www/bower_components/angular-resource/angular-resource.js',
-            marked: '/base/www/bower_components/marked/js/marked',
-            CornerCouch: '/base/www/bower_components/CornerCouch/angular-cornercouch',
-            jquery: '/base/www/bower_components/jquery/jquery',
-            bootstrap: '/base/www/bower_components/bootstrap/bootstrap',
-
-            // not inside bower_components
-            world: '/base/tests/e2e/conf/world',
-            angularScenarioRequirejsFix: '/base/tests/e2e/conf/angular-scenario-requirejs-fix'
-        },
         baseUrl: '/base/www/angular/js',
-        shim: {
-            angular: {exports: 'angular'},
-            angularMocks: {deps: ['angular'], exports: 'angular.mock'},
-            angularCookies: {deps: ['angular']},
-            CornerCouch: {deps: ['angular']},
-            jquery: {exports: 'jQuery'},
-            bootstrap: {deps: ['jquery']}
-        },
-        priority: [
-            "angular"
-        ],
-        deps: [
-            'startup',
-            'angularMocks'
-        ].concat(tests),
-        callback: function (startup) {
-            
-            window.__karma__.start();
-            
-//            setTimeout(function () {
-//                startup();
-//            }, 100);
-        }
+        deps: tests,
+        callback: window.__karma__.start
     });
 
     require.onError = function (err) {

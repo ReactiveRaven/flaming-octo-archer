@@ -105,7 +105,7 @@ module.exports = function (grunt) {
                 {pattern: "node_modules/karma-requirejs/lib/require.js", watched: false, included: true, served: true},
                 {pattern: "node_modules/karma-requirejs/lib/adapter.js", watched: false, included: true, served: true},
                 // Templates
-                {pattern: 'www/angular/templates/**/*.html', watched: true, included: false, served: true}
+                {pattern: 'www/angular/templates/**/*.html', watched: true, included: false, served: false}
             ],
             karma_e2e_editable_files: [
                 // test files
@@ -119,7 +119,7 @@ module.exports = function (grunt) {
             ],
             _combine: [
                 {'to': 'karma_jasmine_files', 'from': ['karma_jasmine_library_files', 'karma_library_files', 'karma_app_files', 'karma_jasmine_editable_files']},
-                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', 'karma_library_files', 'karma_app_files', 'karma_e2e_editable_files']},
+                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', /** /'karma_library_files', 'karma_app_files', /**/'karma_e2e_editable_files']},
                 {'to': 'karma_cucumber_files', 'from': ['karma_cucumber_library_files', 'karma_library_files', 'karma_app_files', 'karma_cucumber_editable_files']}
             ],
             _delete: [
