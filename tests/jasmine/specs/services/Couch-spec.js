@@ -62,8 +62,7 @@ define(['world'], function (world) {
                 }));
 
                 it('should be a function', inject(function (Couch) {
-                    expect(Couch.databaseExists).toBeDefined();
-                    expect(typeof Couch.databaseExists).toEqual('function');
+                    world.shouldBeAFunction(Couch, 'databaseExists');
                 }));
                 
                 it('should return a promise', inject(function (Couch) {
@@ -125,8 +124,7 @@ define(['world'], function (world) {
                 }));
                 
                 it('should be a function', inject(function (Couch) {
-                    expect(Couch.getSession).toBeDefined();
-                    expect(typeof Couch.getSession).toEqual('function');
+                    world.shouldBeAFunction(Couch, 'getSession');
                 }));
                 
                 it('should return a promise', inject(function ($rootScope, Couch) {
@@ -169,8 +167,7 @@ define(['world'], function (world) {
             
             describe('[login()]', function () {
                 it('should be a function', inject(function (Couch) {
-                    expect(Couch.login).toBeDefined();
-                    expect(typeof Couch.login).toEqual('function');
+                    world.shouldBeAFunction(Couch, 'login');
                 }));
                 
                 it('should return a promise', inject(function ($rootScope, Couch) {

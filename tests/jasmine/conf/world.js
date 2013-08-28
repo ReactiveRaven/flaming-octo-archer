@@ -41,6 +41,11 @@ define('world', ['angular', 'angularCookies', 'angularMocks'], function () {
             inject(function ($rootScope) {
                 $rootScope.$digest();
             });
+        },
+        'shouldBeAFunction': function (object, functionName) {
+            expect(object).toBeDefined();
+            expect(object[functionName]).toBeDefined();
+            expect(typeof object[functionName]).toBe('function');
         }
     };
 });

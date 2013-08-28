@@ -69,9 +69,7 @@ define(['world', 'angular'], function (world, angular) {
                 
                 it('should be a function', function () {
                     getCtrl();
-
-                    expect(scope.onAuthChange).toBeDefined();
-                    expect(typeof scope.onAuthChange).toBe('function');
+                    world.shouldBeAFunction(scope, 'onAuthChange');
                 });
                 
                 it('should not trigger an apply on AuthChange when already in progress', inject(function ($rootScope) {

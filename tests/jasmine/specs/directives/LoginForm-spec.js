@@ -80,8 +80,7 @@ define(['world', 'angular'], function (world, angular) {
             describe('[login()]', function () {
                 it('should be a function', function () {
                     getCtrl();
-                    
-                    expect(typeof scope.login).toBe('function');
+                    world.shouldBeAFunction(scope, 'login');
                 });
                 
                 it('should pass login requests to Authentication', function () {
@@ -141,8 +140,7 @@ define(['world', 'angular'], function (world, angular) {
             describe('[userExists()]', function () {
                 it('should be a function', function () {
                     getCtrl();
-                    
-                    expect(typeof scope.userExists).toBe('function');
+                    world.shouldBeAFunction(scope, 'userExists');
                 });
                 
                 it('should pass login requests to Authentication', function () {
@@ -181,8 +179,7 @@ define(['world', 'angular'], function (world, angular) {
             describe('[isUsernameRecognised()]', function () {
                 it('should be a function', function () {
                     getCtrl();
-                    
-                    expect(typeof scope.isUsernameRecognised).toBe('function');
+                    world.shouldBeAFunction(scope, 'isUsernameRecognised');
                 });
                 
                 it('should pass login requests to Authentication', function () {
@@ -246,8 +243,7 @@ define(['world', 'angular'], function (world, angular) {
             describe('[register()]', function () {
                 it('should be a function', function () {
                     getCtrl();
-                    
-                    expect(typeof scope.register).toBe('function');
+                    world.shouldBeAFunction(scope, 'register');
                 });
                 
                 it('should pass registration requests to Authentication', function () {

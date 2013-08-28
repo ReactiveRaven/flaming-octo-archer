@@ -24,6 +24,13 @@ define(['angular', 'constants', 'services/Authentication', 'directives/Markdown'
             }
         );
         $routeProvider.when(
+            '/my/gallery/upload',
+            {
+                templateUrl: constants.templatePrefix + 'gallery/upload.html',
+                controller: 'GalleryCtrl'
+            }
+        );
+        $routeProvider.when(
             '/:userslug/gallery',
             {
                 templateUrl: constants.templatePrefix + 'gallery/index.html',

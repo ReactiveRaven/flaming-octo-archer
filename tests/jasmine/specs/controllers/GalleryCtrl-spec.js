@@ -60,10 +60,16 @@ define(['world'], function (world) {
                 expect($location.path()).toBe('/someone_elses/gallery');
                 expect($route.current.templateUrl).toBe('angular/templates/gallery/index.html');
                 expect($route.current.controller).toBe('GalleryCtrl');
+                
+                $httpBackend.expectGET('angular/templates/gallery/upload.html').respond(200, '');
+                $location.path('/my/gallery/upload');
+                world.digest();
+                world.flush();
+                expect($location.path()).toBe('/my/gallery/upload');
+                expect($route.current.templateUrl).toBe('angular/templates/gallery/upload.html');
+                expect($route.current.controller).toBe('GalleryCtrl');
             }));
         });
         
-        describe('[functions]', function () {
-        });
     });
 });

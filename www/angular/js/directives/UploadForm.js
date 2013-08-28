@@ -8,7 +8,7 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
         
         $scope.valid = function () {
             return ((!!$scope.uploadFormName) && (!!$scope.uploadFormFile));
-        }
+        };
     });
 
     UploadFormModule.directive("uploadForm", function (/** /$rootScope/**/) {

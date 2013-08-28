@@ -34,8 +34,7 @@ define(['world'], function (world) {
             describe('[userExists()]', function () {
 
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.userExists).toBeDefined();
-                    expect(typeof Authentication.userExists).toEqual('function');
+                    world.shouldBeAFunction(Authentication, 'userExists');
                 }));
                 
                 it('should return a promise', inject(function (Couch, Authentication) {
@@ -91,8 +90,7 @@ define(['world'], function (world) {
                 // decide how to handle cookies etc
                 
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.loggedIn).toBeDefined();
-                    expect(typeof Authentication.loggedIn).toEqual('function');
+                    world.shouldBeAFunction(Authentication, 'loggedIn');
                 }));
                 
                 it('should return a promise', inject(function (Authentication) {
@@ -182,8 +180,7 @@ define(['world'], function (world) {
             
             describe('[login()]', function () {
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.login).toBeDefined();
-                    expect(typeof Authentication.login).toEqual('function');
+                    world.shouldBeAFunction(Authentication, 'login');
                 }));
                 
                 it('should return a promise', inject(function (Couch, Authentication) {
@@ -251,8 +248,7 @@ define(['world'], function (world) {
             describe('[register()]', function () {
                 
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.register).toBeDefined();
-                    expect(typeof Authentication.register).toBe('function');
+                    world.shouldBeAFunction(Authentication, 'register');
                 }));
                 
                 it('should return a promise', inject(function (Authentication) {
@@ -308,8 +304,7 @@ define(['world'], function (world) {
             
             describe('[getSession()]', function () {
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.getSession).toBeDefined();
-                    expect(typeof Authentication.getSession).toBe('function');
+                    world.shouldBeAFunction(Authentication, 'getSession');
                 }));
                 
                 it('should return a promise', inject(function (Authentication, Couch) {
@@ -333,8 +328,7 @@ define(['world'], function (world) {
             
             describe('[getDatabaseName()]', function () {
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.getDatabaseName).toBeDefined();
-                    expect(typeof Authentication.getDatabaseName).toBe('function');
+                    world.shouldBeAFunction(Authentication, 'getDatabaseName');
                 }));
                 
                 it('should decorate a string', inject(function (Authentication) {

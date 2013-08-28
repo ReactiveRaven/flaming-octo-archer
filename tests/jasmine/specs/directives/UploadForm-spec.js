@@ -66,8 +66,7 @@ define(['world', 'angular'], function (world, angular) {
                 });
                 
                 it('should be a function', function () {
-                    expect(scope.valid).toBeDefined();
-                    expect(typeof scope.valid).toBe('function');
+                    world.shouldBeAFunction(scope, 'valid');
                 });
                 
                 it('should return false if the name is falsy', function () {
@@ -84,6 +83,13 @@ define(['world', 'angular'], function (world, angular) {
                 
                 it('should return true when both inputs are okay', function () {
                     expect(scope.valid()).toBe(true);
+                });
+            });
+            
+            describe('[upload()]', function () {
+                it('should be a function', function () {
+                    getCtrl()
+                    world.shouldBeAFunction(scope, 'upload');
                 });
             });
         });
