@@ -38,7 +38,7 @@ define(['angular', 'marked'], function (angular, marked) {
             render();
         };
         return {
-            restrict: 'E',
+            restrict: 'A',
             require: 'ngModel',
             link: link
         };

@@ -14,3 +14,4 @@ npm-debug.log
 www/js/compiled.js
 www/js/compressed.js
 bower_components/
+tests/jasmine/reports/coverage/*.json

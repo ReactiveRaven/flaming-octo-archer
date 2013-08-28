@@ -18,8 +18,6 @@ module.exports = function (grunt) {
         'grunt-bg-shell'
     ];
 
-    // "postinstall": "./node_modules/protractor/bin/install_selenium_standalone"
-
     var tasks = {
         'setup': ['shell:install_selenium', 'bower:install'],
         'units': ['units:start', 'watch:units'],
@@ -35,10 +33,8 @@ module.exports = function (grunt) {
         'cucumber:run_before': ['connect', 'bgShell:selenium'],
         'cucumber:run_after': ['shell:selenium_stop'],
         'cucumber:run_basic': ['requirejs:compile', 'cucumberjs'],
-        'selenium': ['shell:selenium'],
         'reinstall': ['shell:reinstall'],
-        'default': ['jasmine'],
-        'rrr': ['karma:jasmine_background', 'karma:e2e_background', 'watch:units']
+        'default': ['units']
     };
 
     var config = {
@@ -185,6 +181,7 @@ module.exports = function (grunt) {
                 files: '<%= files.karma_jasmine_files %>',
                 preprocessors: {
                     'www/angular/templates/**/*.html': 'ng-html2js',
+                    'www/angular/js/**/*.js': ['coverage']
                 },
                 ngHtml2JsPreprocessor: {
                     // strip this from the file path
@@ -193,8 +190,13 @@ module.exports = function (grunt) {
                     prependPrefix: '',
                     moduleName: 'templates'
                 },
+                reporters: ['coverage', 'progress'],
                 runnerPort: 9624,
                 port: 9894,
+                coverageReporter: {
+                    type: 'text',
+                    dir: 'tests/jasmine/reports/coverage/'
+                }
             },
             cuke_once: {
                 configFile: 'tests/cucumber/conf/karma.conf.js',
@@ -233,7 +235,8 @@ module.exports = function (grunt) {
         watch: {
             options: {
                 debounceDelay: 100,
-                spawn: true
+                spawn: true,
+                interrupt: true
             },
             js: {
                 files: '<%= files._js_all %>',
@@ -302,7 +305,7 @@ module.exports = function (grunt) {
                     stderr: true
                 }
             },
-            selenium_stop: { // selenium/chromedriver
+            selenium_stop: {
                 command: '/bin/ps -e | /usr/bin/grep -e "Google Chrome --remote-debugging-port" -e "selenium/chromedriver" -e "java -jar selenium" | /usr/bin/grep -v "grep" | /usr/bin/cut -f 1 -d " " | /usr/bin/xargs /bin/kill',
                 options: {
                     stdout: true,
@@ -331,7 +334,7 @@ module.exports = function (grunt) {
         cucumberjs: {
             files: 'tests/cucumber/features/**/*.feature',
             options: {
-                format: 'pretty'
+                format: 'progress'
             }
         },
         requirejs: {

@@ -4,8 +4,7 @@ define(['angular'], function (angular) {
     var CapitalizeModule = angular.module('commissar.filters.Capitalize', []);
     
     CapitalizeModule.filter('Capitalize', function () {
-        return function (input, scope) {
-            scope = scope; // not used
+        return function (input) {
             if (input) {
                 return input.substring(0, 1).toUpperCase() + input.substring(1);
             }

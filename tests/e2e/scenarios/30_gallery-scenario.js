@@ -74,6 +74,8 @@ define([], function () {
             expect(galleryButtonUpload.count()).toBe(1);
         });
         
+        it('should redirect to the ')
+        
     });
     
 });
