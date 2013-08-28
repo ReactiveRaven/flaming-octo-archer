@@ -101,5 +101,14 @@ define(['world', 'angular'], function (world, angular) {
             expect(element[0].innerText).not.toContain("longer than five words");
         });
         
+        it('should return word-limited text unchanged when told to do so and already short enough', function () {
+            var text = "this is some text";
+            
+            compileDirective(text, '<div data-markdown="" data-wordlimit="5" data-ng-model="content">Goodbye</div>');
+            
+            expect(element[0].innerText).toContain("this is some text");
+            expect(element[0].innerText).not.toContain("...");
+        });
+        
     });
 });

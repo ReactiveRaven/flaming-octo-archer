@@ -181,7 +181,7 @@ module.exports = function (grunt) {
                 files: '<%= files.karma_jasmine_files %>',
                 preprocessors: {
                     'www/angular/templates/**/*.html': 'ng-html2js',
-                    'www/angular/js/**/*.js': ['coverage']
+                    'www/angular/js/*/**/*.js': ['coverage']
                 },
                 ngHtml2JsPreprocessor: {
                     // strip this from the file path
@@ -205,7 +205,7 @@ module.exports = function (grunt) {
                 files: '<%= files.karma_jasmine_files %>',
                 preprocessors: {
                     'www/angular/templates/**/*.html': 'ng-html2js',
-                    'www/angular/js/**/*.js': ['coverage']
+                    'www/angular/js/*/**/*.js': ['coverage']
                 },
                 ngHtml2JsPreprocessor: {
                     // strip this from the file path

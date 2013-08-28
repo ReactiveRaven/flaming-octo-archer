@@ -316,6 +316,28 @@ define(['world', 'angular'], function (world, angular) {
                     expect(response).toBe(true);
                     expect(Authentication.login).toHaveBeenCalledWith(username, password);
                 });
+                
+                it('should do nothing if not successful', inject(function (Authentication) {
+                    var username = 'username',
+                        password = 'password',
+                        response = null;
+                        
+                    Authentication.register.andReturn(world.resolved(false));
+                    
+                    getCtrl();
+                    
+                    scope.loginFormUsername = username;
+                    scope.loginFormPassword = password;
+                    
+                    scope.register().then(function (_response_) {
+                        response = _response_;
+                    });
+                    world.digest();
+                    
+                    expect(response).toBe(false);
+                    expect($location.path).not.toHaveBeenCalled();
+                    expect(Authentication.register).toHaveBeenCalledWith(username, password);
+                }));
             });
             
         });

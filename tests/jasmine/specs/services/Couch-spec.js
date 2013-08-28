@@ -29,6 +29,21 @@ define(['world'], function (world) {
                 expect(Couch).toBeDefined();
                 expect(typeof Couch).toEqual('object');
             }));
+            
+            it('should create an instance of cornercouch on rootscope', inject(function (Couch, $rootScope) {
+                Couch.shut_up_jshint = true;
+                expect($rootScope.cornercouch).toBeDefined();
+            }));
+            
+            it('should not overwrite an existing value in rootscope', inject(function ($rootScope) {
+                var value = {some_value: "to test"};
+                $rootScope.cornercouch = value;
+                
+                inject(function (Couch) {
+                    Couch.shut_up_jshint = true;
+                    expect($rootScope.cornercouch).toBe(value);
+                });
+            }));
 
         });
 
@@ -101,6 +116,25 @@ define(['world'], function (world) {
                     
                     expect(response).toEqual(false);
                 }));
+                
+                it('should fetch the databases if not already downloaded', inject(function ($rootScope, Couch) {
+                    var oldDatabases = $rootScope.cornercouch.databases,
+                        response = null;
+                    delete $rootScope.cornercouch.databases;
+                    spyOn($rootScope.cornercouch, 'getDatabases').andCallFake(function () {
+                        $rootScope.cornercouch.databases = oldDatabases;
+                        return world.resolved(oldDatabases);
+                    });
+                    
+                    Couch.databaseExists('_users').then(function (resp) {
+                        response = resp;
+                    });
+                    
+                    world.digest();
+                    
+                    expect($rootScope.cornercouch.getDatabases).toHaveBeenCalled();
+                    expect(response).toBe(true);
+                }));
 
             });
             
@@ -152,8 +186,6 @@ define(['world'], function (world) {
                 }));
                 
                 it('should return the session it received from the server', inject(function (Couch) {
-                    Couch.getSession();
-                    
                     var response = null;
                     
                     Couch.getSession().then(function (_response_) { response = _response_; });
@@ -161,6 +193,21 @@ define(['world'], function (world) {
                     world.digest();
                     
                     expect(response).toBe(ctx);
+                }));
+                
+                it('should reject when the server complains', inject(function (Couch, $rootScope) {
+                    var reason = 'a reason',
+                        response = null;
+                    $rootScope.cornercouch.session.andReturn(world.rejected(reason));
+                    
+                    Couch.getSession().then(function () { }, function (resp) {
+                        response = resp;
+                    });
+                    
+                    world.digest();
+                    
+                    expect(response).toBe(reason);
+                    
                 }));
                 
             });

@@ -138,7 +138,7 @@ define(['world'], function (world) {
                     });
                 });
                 
-                describe('[return values]', function () {
+                describe('', function () {
                     var $cookies;
                         
                     beforeEach(function () {
@@ -149,30 +149,41 @@ define(['world'], function (world) {
                     });
                     
                     it('should return false when logged out', inject(function (Couch, Authentication) {
+                        
+                        var response = null;
+                        
                         spyOn(Couch, 'getSession').andReturn(world.resolved({
                             name: null,
                             roles: []
                         }));
                         
-                        Authentication.loggedIn().then(function (response) {
-                            expect(response).toEqual(false);
+                        Authentication.loggedIn().then(function (resp) {
+                            response = resp;
                         });
                         
+                        world.digest();
+                        
                         expect(Couch.getSession).toHaveBeenCalled();
+                        expect(response).toEqual(false);
                     }));
                     
                     it('should return true when logged in', inject(function (Couch, Authentication) {
-                            
+                        
+                        var response = null;
+                        
                         spyOn(Couch, 'getSession').andReturn(world.resolved({
                             name: 'john',
                             roles: ['user']
                         }));
                             
-                        Authentication.loggedIn().then(function (response) {
-                            expect(response).toEqual(true);
+                        Authentication.loggedIn().then(function (resp) {
+                            response = resp;
                         });
                         
+                        world.digest();
+                        
                         expect(Couch.getSession).toHaveBeenCalled();
+                        expect(response).toEqual(true);
                     }));
                 });
                 
@@ -241,6 +252,25 @@ define(['world'], function (world) {
                     world.digest();
                     
                     expect($rootScope.$broadcast).toHaveBeenCalledWith('AuthChange');
+                    
+                }));
+                
+                it('should return false on errors', inject(function (Couch, Authentication) {
+                    spyOn(Couch, 'login').andReturn(world.rejected(false));
+                    
+                    var succeeded = null,
+                        failed = null;
+                    
+                    Authentication.login('john', 'password').then(function (response) {
+                        succeeded = response;
+                    }, function (response) {
+                        failed = response;
+                    });
+                    
+                    world.digest();
+                    
+                    expect(succeeded).toEqual(false);
+                    expect(failed).toEqual(null);
                     
                 }));
             });
