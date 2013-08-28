@@ -198,6 +198,30 @@ module.exports = function (grunt) {
                     dir: 'tests/jasmine/reports/coverage/'
                 }
             },
+            jasmine_htmlreport: {
+                configFile: 'tests/jasmine/conf/karma.conf.js',
+                singleRun: false,
+                browsers: ['PhantomJS'],
+                files: '<%= files.karma_jasmine_files %>',
+                preprocessors: {
+                    'www/angular/templates/**/*.html': 'ng-html2js',
+                    'www/angular/js/**/*.js': ['coverage']
+                },
+                ngHtml2JsPreprocessor: {
+                    // strip this from the file path
+                    stripPrefix: 'www/',
+                    // prepend this to the
+                    prependPrefix: '',
+                    moduleName: 'templates'
+                },
+                reporters: ['coverage', 'progress'],
+                runnerPort: 9634,
+                port: 9904,
+                coverageReporter: {
+                    type: 'html',
+                    dir: 'tests/jasmine/reports/coverage/'
+                }
+            },
             cuke_once: {
                 configFile: 'tests/cucumber/conf/karma.conf.js',
                 singleRun: true,
