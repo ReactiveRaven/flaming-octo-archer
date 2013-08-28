@@ -62,5 +62,8 @@ define(['world'], function (world) {
                 expect($route.current.controller).toBe('GalleryCtrl');
             }));
         });
+        
+        describe('[functions]', function () {
+        });
     });
 });

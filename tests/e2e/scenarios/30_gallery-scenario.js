@@ -19,7 +19,8 @@ define([], function () {
             menuMyAccountToggle,
             menuMyAccountDropdown,
             menuMyAccountItemGallery,
-            galleryButtonUpload;
+            galleryButtonUpload,
+            galleryFormUpload;
             
         beforeEach(function () {
             menuArtistToggle = element('#menuArtistToggle:visible', 'Artist menu toggle');
@@ -38,6 +39,7 @@ define([], function () {
             menuMyAccountDropdown = element('#menuMyAccountDropdown:visible', 'My account menu dropdown');
             menuMyAccountItemGallery = element('#menuMyAccountItemGallery:visible', 'My Gallery menu item');
             galleryButtonUpload = element('#galleryButtonUpload:visible', 'Gallery upload button');
+            galleryFormUpload = element('#galleryFormUpload:visible', 'Gallery upload form');
         });
         
         function reset() {
@@ -74,7 +76,10 @@ define([], function () {
             expect(galleryButtonUpload.count()).toBe(1);
         });
         
-        it('should redirect to the ')
+        it('should show the upload form when clicking the upload button', function () {
+            galleryButtonUpload.click();
+            expect(galleryFormUpload.count()).toBe(1);
+        });
         
     });
     

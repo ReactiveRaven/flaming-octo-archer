@@ -1,0 +1,7 @@
+<form accept-charset="UTF-8">
+    <input type="text" name="name" size="30" data-ng-model="uploadFormName" />
+    <input type="file" name="file" />
+
+    <button id="uploadFormButtonUpload" class="btn btn-primary" data-ng-click="upload()" data-ng-show="valid()">Upload</button>
+    <button id="uploadFormButtonUploadDisabled" class="btn btn-primary" disabled="disabled" data-ng-hide="valid()">Upload</button>
+</form>

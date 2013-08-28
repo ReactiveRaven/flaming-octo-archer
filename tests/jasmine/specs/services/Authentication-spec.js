@@ -330,6 +330,25 @@ define(['world'], function (world) {
                     expect(response).toBe(ctx);
                 }));
             });
+            
+            describe('[getDatabaseName()]', function () {
+                it('should be a function', inject(function (Authentication) {
+                    expect(Authentication.getDatabaseName).toBeDefined();
+                    expect(typeof Authentication.getDatabaseName).toBe('function');
+                }));
+                
+                it('should decorate a string', inject(function (Authentication) {
+                    var username = "john";
+                    
+                    expect(Authentication.getDatabaseName(username)).toBe("commissar_user_" + username)
+                }));
+                
+                it('should convert to lower case', inject(function (Authentication) {
+                    var username = 'JohnSmith';
+                    
+                    expect(Authentication.getDatabaseName(username)).toBe("commissar_user_" + username.toLowerCase());
+                }));
+            })
         });
 
     });
