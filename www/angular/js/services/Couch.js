@@ -19,7 +19,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                         _id: '_design/validation_global',
                         _rev: 12345,
                         language: 'javascript',
-                        validate_doc_update: function (oldDoc, newDoc, userCtx) {
+                        validate_doc_update: function (newDoc, oldDoc, userCtx) {
                             if (typeof newDoc['_deleted'] === 'undefined') {
                                 if (typeof newDoc.type === 'undefined') {
                                     throw ({forbidden: 'All documents must have a type'});
@@ -47,7 +47,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                         _id: '_design/validation_user',
                         _rev: 12345,
                         language: 'javascript',
-                        validate_doc_update: function (oldDoc, newDoc, userCtx) {
+                        validate_doc_update: function (newDoc, oldDoc, userCtx) {
                             if (typeof newDoc.author === 'undefined') {
                                 throw ({forbidden: 'Cannot create a document without an author field'});
                             }
@@ -69,7 +69,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                     }
                 }
             },
-            validateDoc: function (oldDoc, newDoc, database) {
+            validateDoc: function (newDoc, oldDoc, database) {
                 var deferred = $q.defer(),
                     viewDocs = Couch._designDocs;
             
@@ -88,14 +88,14 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                             for (docId in viewDocs.user) {
                                 doc = viewDocs.user[docId];
                                 if (typeof doc.validate_doc_update === 'function') {
-                                    doc.validate_doc_update(oldDoc, newDoc, userCtx);
+                                    doc.validate_doc_update(newDoc, oldDoc, userCtx);
                                 }
                             }
                         }
                         for (docId in viewDocs.global) {
                             doc = viewDocs.global[docId];
                             if (typeof doc.validate_doc_update === 'function') {
-                                doc.validate_doc_update(oldDoc, newDoc, userCtx);
+                                doc.validate_doc_update(newDoc, oldDoc, userCtx);
                             }
                         }
                         

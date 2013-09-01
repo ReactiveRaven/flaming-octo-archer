@@ -282,12 +282,14 @@ define(['world', 'jquery'], function (world, jquery) {
                     };
                 }));
                 
+                "zzyaayyybbyzzc";
+                
                 it('should be a function', inject(function (Couch) {
                     world.shouldBeAFunction(Couch, 'validateDoc');
                 }));
                 
                 it('should return a promise', inject(function (Couch) {
-                    var returned = Couch.validateDoc(null, exampleDoc, 'commissar_public');
+                    var returned = Couch.validateDoc(exampleDoc, null, 'commissar_public');
                     
                     expect(typeof returned.then).toBe('function');
                 }));
@@ -305,7 +307,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     };
                     spyOn(Couch._designDocs.global.mock, 'validate_doc_update').andReturn(true);
                     
-                    Couch.validateDoc(null, exampleDoc, 'commissar_public');
+                    Couch.validateDoc(exampleDoc, null, 'commissar_public');
                     
                     world.digest();
                     
@@ -326,16 +328,16 @@ define(['world', 'jquery'], function (world, jquery) {
                     };
                     spyOn(Couch._designDocs.user.mock, 'validate_doc_update').andReturn(true);
                     
-                    Couch.validateDoc(null, exampleDoc, 'commissar_public');
+                    Couch.validateDoc(exampleDoc, null, 'commissar_public');
                     
                     world.digest();
                     
                     expect(Couch._designDocs.user.mock.validate_doc_update).not.toHaveBeenCalled();
                     
-                    Couch.validateDoc(null, {
+                    Couch.validateDoc({
                         _id: 12345,
                         type: 'test'
-                    }, 'commissar_user_john');
+                    }, null, 'commissar_user_john');
                     
                     world.digest();
                     
@@ -353,7 +355,7 @@ define(['world', 'jquery'], function (world, jquery) {
                         var success,
                             failure;
                         
-                        Couch.validateDoc(null, exampleDoc, 'commissar_public').then(function (_success_) {
+                        Couch.validateDoc(exampleDoc, null, 'commissar_public').then(function (_success_) {
                             success = _success_;
                         }, function (_failure_) {
                             failure = _failure_;
@@ -382,7 +384,7 @@ define(['world', 'jquery'], function (world, jquery) {
                         }
                     };
 
-                    Couch.validateDoc(null, exampleDoc, 'commissar_public').then(function (_success_) {
+                    Couch.validateDoc(exampleDoc, null, 'commissar_public').then(function (_success_) {
                         success = _success_;
                     }, function (_failure_) {
                         failure = _failure_;
@@ -407,7 +409,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     
                     var success, failure;
                     
-                    Couch.validateDoc(null, exampleDoc, 'commissar_public').then(function (_success_) {
+                    Couch.validateDoc(exampleDoc, null, 'commissar_public').then(function (_success_) {
                         success = _success_;
                     }, function (_failure_) {
                         failure = _failure_;
@@ -437,7 +439,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     
                     var success, failure;
                     
-                    Couch.validateDoc(null, exampleDoc, 'commissar_user_john').then(function (_success_) {
+                    Couch.validateDoc(exampleDoc, null, 'commissar_user_john').then(function (_success_) {
                         success = _success_;
                     }, function (_failure_) {
                         failure = _failure_;
@@ -490,7 +492,7 @@ define(['world', 'jquery'], function (world, jquery) {
                 },
                 globalDb = 'commissar_public',
                 userDb = 'commissar_user_john',
-                testValidate = function (oldDoc, newDoc, db, resolve, reject) {
+                testValidate = function (newDoc, oldDoc, db, resolve, reject) {
                     
                     var success,
                         failure;
@@ -508,7 +510,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     spyOn(functions, 'failure').andCallThrough();
                     
                     inject(function (Couch) {
-                        Couch.validateDoc(oldDoc, newDoc, db).then(functions.success, functions.failure);
+                        Couch.validateDoc(newDoc, oldDoc, db).then(functions.success, functions.failure);
                     });
                     
                     world.digest();
@@ -543,7 +545,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     var noType = jquery.extend({}, validDocument);
                     delete noType.type;
                     
-                    testValidate(null, noType, globalDb, undefined, 'All documents must have a type');
+                    testValidate(noType, null, globalDb, undefined, 'All documents must have a type');
                 });
                 
                 it('should allow deleted documents', function () {
@@ -552,19 +554,19 @@ define(['world', 'jquery'], function (world, jquery) {
                         '_deleted': true
                     };
                     
-                    testValidate(validDocument, deleted, globalDb, true, undefined);
+                    testValidate(deleted, validDocument, globalDb, true, undefined);
                 });
                 
                 it('should not allow writes outside your own db unless admin', inject(function ($rootScope) {
-                    testValidate(null, validDocument, globalDb, undefined, 'Cannot alter documents outside your own database');
+                    testValidate(validDocument, null, globalDb, undefined, 'Cannot alter documents outside your own database');
                     $rootScope.cornercouch.userCtx.roles = ['_admin'];
-                    testValidate(null, validDocument, globalDb, true, undefined);
+                    testValidate(validDocument, null, globalDb, true, undefined);
                 }));
                                
                 it('should reject created timestamp in anything but unix timestamp', function () {
                     var badCreated = jquery.extend({}, validDocument);
                     badCreated.created = "2000-01-01 00:00:00";
-                    testValidate(null, badCreated, userDb, undefined, 'Created timestamp must be in unix format');
+                    testValidate(badCreated, null, userDb, undefined, 'Created timestamp must be in unix format');
                 });
                 
                 it('should reject when changing created time unless admin', function () {
@@ -572,13 +574,13 @@ define(['world', 'jquery'], function (world, jquery) {
                     firstCreated.created = "12345";
                     var secondCreated = jquery.extend({}, validDocument);
                     secondCreated.created = "12346";
-                    testValidate(firstCreated, secondCreated, userDb, undefined, 'Cannot alter created timestamp once set');
+                    testValidate(secondCreated, firstCreated, userDb, undefined, 'Cannot alter created timestamp once set');
                 });
                                     
                 it('should reject updated timestamp in anything but unix timestamp', function () {
                     var badUpdated = jquery.extend({}, validDocument);
                     badUpdated.updated = "2000-01-01 00:00:00";
-                    testValidate(null, badUpdated, userDb, undefined, 'Updated timestamp must be in unix format');
+                    testValidate(badUpdated, null, userDb, undefined, 'Updated timestamp must be in unix format');
                 });
             });
             
@@ -591,35 +593,35 @@ define(['world', 'jquery'], function (world, jquery) {
                     var noAuthor = jquery.extend({}, validDocument);
                     delete noAuthor.author;
                     
-                    testValidate(null, noAuthor, userDb, undefined, 'Cannot create a document without an author field');
+                    testValidate(noAuthor, null, userDb, undefined, 'Cannot create a document without an author field');
                 });
                 
                 it('should require author to match own name, unless admin', function () {
                     var yours = jquery.extend({}, validDocument);
                     yours.author = 'susan';
-                    testValidate(null, yours, userDb, undefined, 'Cannot forge authorship as another user');
+                    testValidate(yours, null, userDb, undefined, 'Cannot forge authorship as another user');
                 });
                 
                 it('should require ids start with username', function () {
                     var badId = jquery.extend({}, validDocument);
                     badId['_id'] = 'gibberish';
-                    testValidate(null, badId, userDb, undefined, 'IDs must start with your username');
+                    testValidate(badId, null, userDb, undefined, 'IDs must start with your username');
                 });
                 
                 it('should reject changing the type field', function () {
                     var typeChanged = jquery.extend({}, validDocument);
                     typeChanged.type = 'newType';
-                    testValidate(validDocument, typeChanged, userDb, undefined, 'Cannot change the type of a document');
+                    testValidate(typeChanged, validDocument, userDb, undefined, 'Cannot change the type of a document');
                 });
                 
                 it('should reject changing the author field', function () {
                     var susansDocument = jquery.extend({}, validDocument);
                     susansDocument.author = 'susan';
-                    testValidate(susansDocument, validDocument, userDb, undefined, 'Cannot change the author of a document');
+                    testValidate(validDocument, susansDocument, userDb, undefined, 'Cannot change the author of a document');
                 });
                 
                 it('should accept well-formed documents', function () {
-                    testValidate(null, validDocument, userDb, true, undefined);
+                    testValidate(validDocument, null, userDb, true, undefined);
                     testValidate(validDocument, validDocument, userDb, true, undefined);
                 });
                 
@@ -633,24 +635,20 @@ define(['world', 'jquery'], function (world, jquery) {
                         created: '1378005326'
                     };
                     
-                    it('should have a media document', inject(function (Couch) {
-                        expect(Couch._designDocs.user['_design/validation_user_media']).toBeDefined();
-                    }));
-                    
                     it('should require a title and author', function () {
-                        testValidate(null, validDocument, userDb, true, undefined);
+                        testValidate(validDocument, null, userDb, true, undefined);
                         var noTitle = jquery.extend({}, validDocument);
                         delete noTitle.title;
-                        testValidate(null, noTitle, userDb, undefined, 'Media must have a title');
+                        testValidate(noTitle, null, userDb, undefined, 'Media must have a title');
                         var noAuthor = jquery.extend({}, validDocument);
                         delete noAuthor.author;
-                        testValidate(null, noAuthor, userDb, undefined, 'Cannot create a document without an author field');
+                        testValidate(noAuthor, null, userDb, undefined, 'Cannot create a document without an author field');
                     });
                     
                     it('should require created timestamp', function () {
                         var noCreated = jquery.extend({}, validDocument);
                         delete noCreated.created;
-                        testValidate(null, noCreated, userDb, undefined, 'Media must have a created timestamp');
+                        testValidate(noCreated, null, userDb, undefined, 'Media must have a created timestamp');
                     });
                 });
             });
