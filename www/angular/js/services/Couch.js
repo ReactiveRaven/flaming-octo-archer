@@ -28,14 +28,14 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                                     throw ({forbidden: 'Cannot alter documents outside your own database'});
                                 }
                                 if (typeof newDoc.created !== 'undefined') {
-                                    if (String(parseInt(newDoc.created), 10) !== String(newDoc.created)) {
+                                    if (String(parseInt(newDoc.created, 10)) !== String(newDoc.created)) {
                                         throw ({forbidden: 'Created timestamp must be in unix format'});
                                     }
                                     if (oldDoc && typeof oldDoc.created !== 'undefined' && newDoc.created !== oldDoc.created) {
                                         throw ({forbidden: 'Cannot alter created timestamp once set'});
                                     }
                                 }
-                                if (typeof newDoc.updated !== 'undefined' && String(parseInt(newDoc.updated)) !== String(newDoc.updated)) {
+                                if (typeof newDoc.updated !== 'undefined' && String(parseInt(newDoc.updated, 10)) !== String(newDoc.updated)) {
                                     throw ({forbidden: 'Updated timestamp must be in unix format'});
                                 }
                             }
