@@ -20,7 +20,9 @@ define([], function () {
             menuMyAccountDropdown,
             menuMyAccountItemGallery,
             galleryButtonUpload,
-            galleryFormUpload;
+            formUpload,
+            formUploadName,
+            formUploadButtonSubmit;
             
         beforeEach(function () {
             menuArtistToggle = element('#menuArtistToggle:visible', 'Artist menu toggle');
@@ -39,7 +41,9 @@ define([], function () {
             menuMyAccountDropdown = element('#menuMyAccountDropdown:visible', 'My account menu dropdown');
             menuMyAccountItemGallery = element('#menuMyAccountItemGallery:visible', 'My Gallery menu item');
             galleryButtonUpload = element('#galleryButtonUpload:visible', 'Gallery upload button');
-            galleryFormUpload = element('#galleryFormUpload:visible', 'Gallery upload form');
+            formUpload = element('#formUpload:visible', 'Upload form');
+            formUploadName = element('#formUploadName:visible', 'Upload form name input');
+            formUploadButtonSubmit = element('#formUploadButtonSubmit:visible', 'Upload form submit button');
         });
         
         function reset() {
@@ -55,32 +59,67 @@ define([], function () {
             });
         }
         
-        reset();
+        describe('[mine]', function () {
+            reset();
+
+            it('should show up in the my account menu', function () {
+                expect(menuMyAccountItemGallery.count()).toBe(0);
+                menuMyAccountToggle.click();
+                expect(menuMyAccountItemGallery.count()).toBe(1);
+                menuMyAccountToggle.click();
+                expect(menuMyAccountItemGallery.count()).toBe(0);
+            });
+
+            it('should be on gallery page after clicking \'gallery\' in my account menu', function () {
+                expect(browser().location().url()).toBe('/');
+                menuMyAccountToggle.click();
+                menuMyAccountItemGallery.click();
+                expect(browser().location().url()).toBe('/my/gallery');
+            });
+
+            it('should have an upload button on the gallery page', function () {
+                expect(galleryButtonUpload.count()).toBe(1);
+            });
+
+            it('should show the upload form when clicking the upload button', function () {
+                galleryButtonUpload.click();
+                expect(formUpload.count()).toBe(1);
+            });
+
+            it('should have the submit button available when filled in', function () {
+
+                formUploadName.val("test");
+
+                expect(formUploadButtonSubmit.count()).toBe(1);
+            });
+        }); // describe [mine]
         
-        it('should show up in the my account menu', function () {
-            expect(menuMyAccountItemGallery.count()).toBe(0);
-            menuMyAccountToggle.click();
-            expect(menuMyAccountItemGallery.count()).toBe(1);
-            menuMyAccountToggle.click();
-            expect(menuMyAccountItemGallery.count()).toBe(0);
+        ddescribe('[view]', function () {
+            reset();
+            
+            var galleryView,
+                galleryImagePublic,
+                galleryImagePrivate;
+            
+            beforeEach(function () {
+                galleryView = element('#gallery:visible', 'Gallery Element');
+                galleryImagePublic = element('#gallery:visible .image.public:visible', 'Gallery Image (Public)');
+                galleryImagePrivate = element('#gallery:visible .image.private:visible', 'Gallery Image (Private)');
+            });
+            
+            it('should bind to {username}/gallery route', function () {
+                browser().navigateTo('/index_e2e.html#!/someone/gallery');
+                expect(browser().location().url()).toBe('/someone/gallery');
+            });
+            
+            it('should show public images from the current user', function () {
+                expect(galleryView.count()).toBe(1);
+                expect(galleryImagePublic.count()).toBeGreaterThan(0);
+                expect(galleryImagePrivate.count()).toBe(0);
+            });
         });
         
-        it('should be on gallery page after clicking \'gallery\' in my account menu', function () {
-            expect(browser().location().url()).toBe('/');
-            menuMyAccountToggle.click();
-            menuMyAccountItemGallery.click();
-            expect(browser().location().url()).toBe('/my/gallery');
-        });
-        
-        it('should have an upload button on the gallery page', function () {
-            expect(galleryButtonUpload.count()).toBe(1);
-        });
-        
-        it('should show the upload form when clicking the upload button', function () {
-            galleryButtonUpload.click();
-            expect(galleryFormUpload.count()).toBe(1);
-        });
-        
-    });
+
+    }); // describe [Gallery]
     
 });

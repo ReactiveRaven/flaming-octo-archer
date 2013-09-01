@@ -47,7 +47,8 @@ module.exports = function (grunt) {
                 {pattern: 'www/bower_components/CornerCouch/*.js', watched: false, included: false, served: true},
                 {pattern: 'www/bower_components/jquery/jquery.js', watched: false, included: false, served: true},
                 {pattern: 'www/bower_components/bootstrap/bootstrap.js', watched: false, included: false, served: true},
-                {pattern: 'www/bower_components/marked/**/*.js', watched: false, included: false, served: true}
+                {pattern: 'www/bower_components/marked/**/*.js', watched: false, included: false, served: true},
+                {pattern: "www/bower_components/ngUpload/ng-upload.js", watched: false, included: false, served: true}
             ],
             karma_app_files: [
                 // application files
@@ -83,7 +84,7 @@ module.exports = function (grunt) {
                 {pattern: 'Gruntfile.js', watched: true, included: false, served: false},
                 {pattern: 'tests/jasmine/conf/test-main.js', watched: true, included: true, served: true},
                 {pattern: 'tests/jasmine/conf/world.js', watched: true, included: false, served: true},
-                {pattern: 'tests/jasmine/conf/karma.conf.js', watched: true, included: false, served: false},
+                {pattern: 'tests/jasmine/conf/karma.conf.js', watched: true, included: false, served: false}
             ],
             karma_e2e_library_files: [
                 // karma-jasmine specific files
@@ -108,7 +109,7 @@ module.exports = function (grunt) {
             ],
             _combine: [
                 {'to': 'karma_jasmine_files', 'from': ['karma_jasmine_library_files', 'karma_library_files', 'karma_app_files', 'karma_jasmine_editable_files']},
-                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', /** /'karma_library_files', 'karma_app_files', /**/'karma_e2e_editable_files']},
+                {'to': 'karma_e2e_files', 'from': ['karma_e2e_library_files', 'karma_app_files', /** /'karma_library_files', 'karma_app_files', /**/'karma_e2e_editable_files']},
                 {'to': 'karma_cucumber_files', 'from': ['karma_cucumber_library_files', 'karma_library_files', 'karma_app_files', 'karma_cucumber_editable_files']}
             ],
             _delete: [
@@ -141,7 +142,7 @@ module.exports = function (grunt) {
                 browsers: ['PhantomJS'],
                 files: '<%= files.karma_jasmine_files %>',
                 preprocessors: {
-                    'www/angular/templates/**/*.html': 'ng-html2js',
+                    'www/angular/templates/**/*.html': 'ng-html2js'
                 },
                 ngHtml2JsPreprocessor: {
                     // strip this from the file path
@@ -151,7 +152,7 @@ module.exports = function (grunt) {
                     moduleName: 'templates'
                 },
                 runnerPort: 9604,
-                port: 9884,
+                port: 9884
             },
             jasmine_background: {
                 configFile: 'tests/jasmine/conf/karma.conf.js',
@@ -237,7 +238,7 @@ module.exports = function (grunt) {
                 background: true,
                 autoWatch: false,
                 runnerPort: 9603,
-                port: 9873,
+                port: 9873
             },
             e2e: {
                 configFile: 'tests/e2e/conf/karma.conf.js',
@@ -245,7 +246,7 @@ module.exports = function (grunt) {
                 browsers: ['Chrome'],
                 files: '<%= files.karma_e2e_files %>',
                 runnerPort: 9613,
-                port: 9883,
+                port: 9883
             },
             e2e_once: {
                 configFile: 'tests/e2e/conf/karma.conf.js',
@@ -253,14 +254,13 @@ module.exports = function (grunt) {
                 browsers: ['Chrome'],
                 files: '<%= files.karma_e2e_files %>',
                 runnerPort: 9623,
-                port: 9893,
+                port: 9893
             }
         },
         watch: {
             options: {
                 debounceDelay: 100,
-                spawn: true,
-                interrupt: true
+                interrupt: false
             },
             js: {
                 files: '<%= files._js_all %>',
@@ -280,11 +280,11 @@ module.exports = function (grunt) {
             },
             cucumber: {
                 files: '<%= files._watchable_cucumber %>',
-                tasks: ['clear', 'cucumber:run']
+                tasks: ['cucumber:run_before', 'requirejs:compile', 'clear', 'cucumberjs', 'cucumber:run_after']
             },
             jshint: {
                 files: '<%= files._js_all %>',
-                tasks: ['jshint']
+                tasks: ['clear', 'jshint']
             },
             dev: {
                 files: '<%= files._watchable_all %>',
@@ -358,7 +358,7 @@ module.exports = function (grunt) {
         cucumberjs: {
             files: 'tests/cucumber/features/**/*.feature',
             options: {
-                format: 'progress'
+                format: 'pretty'
             }
         },
         requirejs: {

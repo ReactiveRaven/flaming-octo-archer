@@ -1,7 +1,12 @@
-<form accept-charset="UTF-8">
-    <input type="text" name="name" size="30" data-ng-model="uploadFormName" />
-    <input type="file" name="file" />
+<form accept-charset="UTF-8" id="formUpload" class="form-horizontal" role="form">
+    <div class="form-group">
+        <label for="formUploadName">Image Title</label>
+        <input class="form-control" type="text" name="name" id="formUploadName" size="30" data-ng-model="uploadFormName" />
+    </div>
+    <div class='form-group'>
+        <label for="formUploadFile">Image File</label>
+        <input class="form-control" type="file" name="file" id="formUploadFile" />
+    </div>
 
-    <button id="uploadFormButtonUpload" class="btn btn-primary" data-ng-click="upload()" data-ng-show="valid()">Upload</button>
-    <button id="uploadFormButtonUploadDisabled" class="btn btn-primary" disabled="disabled" data-ng-hide="valid()">Upload</button>
+    <button id="formUploadButtonSubmit" class="btn btn-primary" data-ng-click="upload()">Upload</button>
 </form>

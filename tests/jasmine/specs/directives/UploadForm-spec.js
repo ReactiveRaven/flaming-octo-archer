@@ -9,6 +9,7 @@ define(['world', 'angular'], function (world, angular) {
         beforeEach(function () {
 
             module('commissar.directives.UploadForm', 'templates');
+            module('commissar.directives.UploadForm', function () {});
 
             inject(function (_$httpBackend_, _$rootScope_, _$templateCache_) {
 
@@ -59,8 +60,8 @@ define(['world', 'angular'], function (world, angular) {
             describe('[valid()]', function () {
                 
                 beforeEach(function () {
-                    scope.uploadFormName='kittens';
-                    scope.uploadFormFile='/kittens.png';
+                    scope.uploadFormName = 'kittens';
+                    scope.uploadFormFile = '/kittens.png';
                     
                     getCtrl();
                 });
@@ -86,12 +87,12 @@ define(['world', 'angular'], function (world, angular) {
                 });
             });
             
-            describe('[upload()]', function () {
-                it('should be a function', function () {
-                    getCtrl()
-                    world.shouldBeAFunction(scope, 'upload');
-                });
-            });
+//            describe('[upload()]', function () {
+//                it('should be a function', function () {
+//                    getCtrl();
+//                    world.shouldBeAFunction(scope, 'upload');
+//                });
+//            });
         });
         
     });

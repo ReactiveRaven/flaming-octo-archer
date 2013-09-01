@@ -3,6 +3,9 @@
     min-height: 100%;
 }
 
+body { padding-top: 70px; }
+.loginForm { width: 300px; }
+
 
     input.offertitle
     {
@@ -215,17 +218,18 @@
     #menuLoginForm input
     {
         margin-bottom: 15px;
-        font-size: 25px;
-        height: 1.5em;
-        line-height: 1.5em;
     }
     
     #menuLoginForm button
     {
         clear: left;
-        width: 100%;
-        height: 32px;
-        font-size: 13px;
+        margin-bottom: 15px;
+    }
+    
+    #menuLoginForm #menuLoginFormButtonForgot,
+    #menuLoginForm #menuLoginFormButtonSignup
+    {
+        margin-bottom: 0;
     }
     
     ul.picturelist

@@ -20,23 +20,28 @@ define(['world'], function (world) {
             $httpBackend.verifyNoOutstandingRequest();
         });
         
-        var getCtrl = function () {
+        var getCtrl = function (routeParams) {
             var ctrl = null;
+            if (typeof routeParams === 'undefined') {
+                routeParams = {userslug: 'john'};
+            }
             inject(function ($controller, $rootScope) {
                 scope = $rootScope.$new();
-                ctrl = $controller('GalleryCtrl', {$scope: scope});
+                ctrl = $controller('GalleryCtrl', {$scope: scope, $routeParams: routeParams});
             });
             
             return ctrl;
         };
         
         describe('[setup]', function () {
-            it('should set the scope name', function () {
+            
+            it('should request public images immediately', function () {
+                
+                //$httpBackend.expectGet('/couchdb/commissar_public/')
+                
                 getCtrl();
-
-                expect(scope).toBeDefined();
-                expect(scope.name).toBeDefined();
-                expect(scope.name).toBe('GalleryCtrl');
+                
+                
             });
         });
         

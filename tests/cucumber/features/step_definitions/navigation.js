@@ -1,9 +1,11 @@
 module.exports = function () {
     "use strict";
     
+    var indexhtml = 'http://localhost:9001/index_cucumber.html';
+    
     this.When(/^I visit the site$/, function (callback) {
         // express the regexp above with the code you wish you had
-        this.browser.get('http://localhost:9001/index_cucumber.html').then(function () {
+        this.browser.get(indexhtml).then(function () {
             callback();
         });
     });
@@ -24,5 +26,13 @@ module.exports = function () {
             callback();
         });
     });
+    
+    this.When(/^I land on someone's gallery$/, function (callback) {
+        var self = this;
+        self.browser.get(indexhtml + "#!/someone/gallery").then(function () {
+            callback();
+        });
+    });
+    
     
 };

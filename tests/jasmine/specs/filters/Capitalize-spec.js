@@ -1,7 +1,9 @@
-/* global inject:false, afterEach:false */
+/* global inject:false */
 
-define(['world', 'angular'], function (world, angular) {
+define(['world', 'angular'], function (world) {
     "use strict";
+    
+    world.shut_up_jshint = true;
 
     describe('[commissar.filters.Capitalize]', function () {
         beforeEach(function () {
@@ -16,7 +18,7 @@ define(['world', 'angular'], function (world, angular) {
         
         it('should return null on empty input', inject(function (CapitalizeFilter) {
             expect(CapitalizeFilter()).toBe(null);
-        }))
+        }));
         
     });
 });

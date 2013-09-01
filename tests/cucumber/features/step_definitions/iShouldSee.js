@@ -24,7 +24,7 @@ module.exports = function () {
         
     };
     
-    var ensureIdMissing = function (self, selector, callback) {
+    var ensureSelectorMissing = function (self, selector, callback) {
         var bySelector = self.By.css(selector);
         self.browser.findElements(bySelector).then(
             function (results) {
@@ -76,7 +76,7 @@ module.exports = function () {
     });
     
     this.Then(/^I should not see the sign up and login form$/, function (callback) {
-        ensureIdMissing(this, '#menuLoginForm', callback);
+        ensureSelectorMissing(this, '#menuLoginForm', callback);
     });
     
     this.Then(/^I should see an option to upload an image$/, function (callback) {
@@ -84,7 +84,19 @@ module.exports = function () {
     });
     
     this.Then(/^I should see the image upload form$/, function (callback) {
-        lookForId(this, '#galleryFormUpload', callback);
+        lookForId(this, '#formUpload', callback);
+    });
+    
+    this.Then(/^I should see the submit upload button$/, function (callback) {
+        lookForId(this, '#formUploadButtonSubmit', callback);
+    });
+    
+    this.Then(/^I should see the public images$/, function (callback) {
+        lookForId(this, '.image.public', callback);
+    });
+    
+    this.Then(/^I should not see the private images$/, function (callback) {
+        ensureSelectorMissing(this, '.image.private', callback);
     });
 
 };

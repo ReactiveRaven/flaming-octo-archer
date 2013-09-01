@@ -38,7 +38,7 @@ define(['world'], function (world) {
             
             var ParanoidScope, $rootScope, scope;
 
-            beforeEach(inject(function(_ParanoidScope_, _$rootScope_) {
+            beforeEach(inject(function (_ParanoidScope_, _$rootScope_) {
                 ParanoidScope = _ParanoidScope_;
                 $rootScope = _$rootScope_;
                 scope = $rootScope.$new();

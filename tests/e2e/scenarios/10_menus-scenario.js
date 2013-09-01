@@ -15,7 +15,7 @@ define([], function () {
             menuArtistDropdown = element('#menuArtistDropdown:visible', 'Artist menu dropdown');
             menuOffersToggle = element('#menuOffersToggle:visible', 'Offers menu toggle');
             menuOffersDropdown = element('#menuOffersDropdown:visible', 'Offers menu dropdown');
-            menuLeftToggles = element('.navbar .nav:not(.pull-right):visible a.dropdown-toggle:visible', 'Left hand menu toggles');
+            menuLeftToggles = element('.navbar .nav:not(.navbar-right):visible a.dropdown-toggle:visible', 'Left hand menu toggles');
         });
         
         describe('[Left]', function () {
