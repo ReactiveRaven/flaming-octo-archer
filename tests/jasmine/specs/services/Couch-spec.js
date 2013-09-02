@@ -282,8 +282,6 @@ define(['world', 'jquery'], function (world, jquery) {
                     };
                 }));
                 
-                "zzyaayyybbyzzc";
-                
                 it('should be a function', inject(function (Couch) {
                     world.shouldBeAFunction(Couch, 'validateDoc');
                 }));
@@ -480,9 +478,140 @@ define(['world', 'jquery'], function (world, jquery) {
                     
                 }));
             });
+            
+            describe('[pushDesignDocs()]', function () {
+                
+                var $rootScope,
+                    Couch;
+                
+                beforeEach(inject(function (_$rootScope_, _Couch_) {
+                    
+                    Couch = _Couch_;
+                    
+                    $rootScope = _$rootScope_;
+                    $rootScope.cornercouch.userCtx = {
+                        name: 'admin',
+                        roles: ['_admin']
+                    };
+                    
+                    Couch._designDocs.global = {
+                        'mock': {
+                            _id: 'mock',
+                            language: 'javascript',
+                            validate_doc_update: function () {
+                                var x = 1,
+                                    y = 2,
+                                    z;
+                                    
+                                z = x + y;
+                            }
+                        }
+                    };
+                    Couch._designDocs.user = {
+                        'mock': {
+                            _id: 'mock',
+                            language: 'javascript'
+                        }
+                    };
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Couch, 'pushDesignDocs');
+                });
+                
+                it('should reject if the user does not have _admin role', function () {
+                    var success = null,
+                        failure = null;
+                    
+                    $rootScope.cornercouch.userCtx.roles = [];
+                    
+                    Couch.pushDesignDocs().then(function (_success_) {
+                        success = _success_;
+                    }, function (_failure_) {
+                        failure = _failure_;
+                    });
+                    
+                    world.digest();
+                    
+                    expect(success).toBe(null);
+                    expect(failure).toBe('Cannot push design documents as you are not an admin');
+                });
+                
+                describe('[active]', function () {
+                    
+                    var $httpBackend;
+                    
+                    beforeEach(inject(function (_$httpBackend_) {
+                        
+                        $httpBackend = _$httpBackend_;
+                        
+                    }));
+                
+                    it('should return a promise', function () {
+                        var response = Couch.pushDesignDocs();
+
+                        expect(response).toBeDefined();
+                        expect(response.then).toBeDefined();
+                        expect(typeof response.then).toBe('function');
+                    });
+
+                    it('should collapse documents to JSON strings', function () {
+                        
+                        var globalDoc = jquery.extend({}, Couch._designDocs.global.mock);
+                        globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
+                        
+                        $httpBackend.expectGET('/couchdb/commissar_validation_global/mock')
+                            .respond(404, {error: 'not_found', reason: 'missing'});
+                        $httpBackend.expectPUT('/couchdb/commissar_validation_global/mock', JSON.stringify(globalDoc))
+                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
+                        
+                        $httpBackend.expectGET('/couchdb/commissar_validation_users/mock')
+                            .respond(404, {error: 'not_found', reason: 'missing'});
+                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.user.mock))
+                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
+                        
+                        Couch.pushDesignDocs();
+                        
+                        world.digest();
+                        world.flush();
+                        world.digest();
+                        
+                    });
+                    
+                    it('should overwrite properties on existing documents to replace them', function () {
+                        var globalDoc = jquery.extend({}, Couch._designDocs.global.mock);
+                        globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
+                        
+                        var existingGlobal = {
+                            '_id': 'mock',
+                            '_rev': '12345',
+                            'squibble': 'blob'
+                        };
+                        
+                        var modifiedGlobal = jquery.extend({}, existingGlobal, globalDoc);
+                        
+                        $httpBackend.expectGET('/couchdb/commissar_validation_global/mock')
+                            .respond(200, existingGlobal);
+                        $httpBackend.expectPOST('/couchdb/commissar_validation_global/mock', JSON.stringify(modifiedGlobal))
+                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
+                        
+                        $httpBackend.expectGET('/couchdb/commissar_validation_users/mock')
+                            .respond(404, {error: 'not_found', reason: 'missing'});
+                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.user.mock))
+                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
+                        
+                        Couch.pushDesignDocs();
+                        
+                        world.digest();
+                        world.flush();
+                        world.digest();
+                    });
+                
+                });
+            });
         });
         
-        describe('[viewDocs]', function () {
+        describe('[_designDocs]', function () {
             
             var $rootScope,
                 validDocument = {

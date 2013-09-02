@@ -17,7 +17,6 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 global: {
                     '_design/validation_global': {
                         _id: '_design/validation_global',
-                        _rev: 12345,
                         language: 'javascript',
                         validate_doc_update: function (newDoc, oldDoc, userCtx) {
                             if (typeof newDoc['_deleted'] === 'undefined') {
@@ -45,7 +44,6 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 user: {
                     '_design/validation_user': {
                         _id: '_design/validation_user',
-                        _rev: 12345,
                         language: 'javascript',
                         validate_doc_update: function (newDoc, oldDoc, userCtx) {
                             if (typeof newDoc.author === 'undefined') {
@@ -66,8 +64,34 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                                 }
                             }
                         }
+                    },
+                    '_design/validation_user_media': {
+                        _id: '_design/validation_user_media',
+                        language: 'javascript',
+                        validate_doc_update: function (newDoc/** /, oldDoc, userCtx/**/) {
+                            if (newDoc.type === 'media') {
+                                if (typeof newDoc.title === 'undefined') {
+                                    throw ({forbidden: 'Media must have a title'});
+                                }
+                                if (typeof newDoc.created === 'undefined') {
+                                    throw ({forbidden: 'Media must have a created timestamp'});
+                                }
+                            }
+                        }
                     }
                 }
+            },
+            pushDesignDocs: function () {
+                var deferred = $q.defer();
+        
+                Couch.getSession().then(function (session) {
+                    if (session.roles.indexOf('_admin') === -1) {
+                        deferred.reject('Cannot push design documents as you are not an admin');
+                    }
+
+                });
+                
+                return deferred.promise;
             },
             validateDoc: function (newDoc, oldDoc, database) {
                 var deferred = $q.defer(),
