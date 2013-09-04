@@ -132,6 +132,23 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 
                 return deferred.promise;
             },
+            getDoc: function (database, id) {
+                var deferred = $q.defer();
+                
+                Couch.databaseExists(database).then(function (databaseFound) {
+                    if (databaseFound) {
+                        var db = $rootScope.cornercouch.getDB(database);
+                        var doc = db.newDoc();
+                        var loading = doc.load(id);
+                        
+                        loading.success(function (data) { deferred.resolve(data); }).failure(deferred.reject);
+                    } else {
+                        deferred.reject('Database not found: ' + database);
+                    } 
+                }, deferred.reject);
+                
+                return deferred.promise;
+            },
             validateDoc: function (newDoc, oldDoc, database) {
                 var deferred = $q.defer(),
                     viewDocs = Couch._designDocs;

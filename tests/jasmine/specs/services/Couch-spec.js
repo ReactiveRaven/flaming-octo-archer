@@ -609,6 +609,90 @@ define(['world', 'jquery'], function (world, jquery) {
                 
                 });
             });
+            
+            describe('[getDoc()]', function () {
+                
+                var Couch,
+                    $rootScope,
+                    fakeDB,
+                    fakeDoc;
+                
+                beforeEach(inject(function (_Couch_, _$rootScope_) {
+                    Couch = _Couch_;
+                    
+                    $rootScope = _$rootScope_;
+                    
+                    fakeDB = {
+                        newDoc: function () {},
+                        getDoc: function () {}
+                    };
+                    
+                    fakeDoc = {
+                        load: function () {},
+                        save: function () {}
+                    };
+                    
+                    var key;
+                    
+                    world.spyOnAllFunctions(fakeDB);
+                    world.spyOnAllFunctions(fakeDoc);
+                    
+                    fakeDB.newDoc.andReturn(fakeDoc);
+                    var resolved = world.resolved({_id: 'mock', type: 'test_document'});
+                    resolved.success = function (func) { resolved.then(func); return resolved; };
+                    resolved.failure = function () { return resolved; }; // do nothing!
+                    
+                    fakeDoc.load.andReturn(resolved);
+                    
+                    spyOn($rootScope.cornercouch, 'getDB').andReturn(fakeDB);
+                    
+                    spyOn(Couch, 'databaseExists').andReturn(world.resolved(true));
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Couch, 'getDoc');
+                });
+                
+                it('should return a promise', function () {
+                    var returned = Couch.getDoc('database', 'id');
+                    
+                    expect(returned).toBeDefined();
+                    expect(typeof returned.then).toBe('function');
+                });
+                
+                it('should not use getDoc because it can\'t be chained properly', function () {
+                    Couch.getDoc('mock');
+                    
+                    expect(fakeDB.getDoc).not.toHaveBeenCalled();
+                });
+                
+                it('should attempt to load the document by it\'s database and id', function () {
+                    var database = 'commissar_validation_global',
+                        id = 'mock';
+                    
+                    Couch.getDoc('commissar_validation_global', 'mock');
+                    world.digest();
+                    
+                    expect($rootScope.cornercouch.getDB).toHaveBeenCalledWith(database);
+                    expect(fakeDB.newDoc).toHaveBeenCalled();
+                    expect(fakeDoc.load).toHaveBeenCalledWith(id);
+                });
+                
+                it('should reject when the database doesn\'t exist', function () {
+                    var database = 'commissar_validation_global',
+                        id = 'mock',
+                        success = null,
+                        failure = null;
+                        
+                    Couch.databaseExists.andReturn(world.resolved(false));
+                    
+                    Couch.getDoc(database, id).then(function (_success_) { success = _success_; }, function (_failure_) { failure = _failure_; });
+                    world.digest();
+                    
+                    expect(success).toBe(null);
+                    expect(failure).toBe('Database not found: ' + database);
+                });
+            });
         });
         
         describe('[_designDocs]', function () {
