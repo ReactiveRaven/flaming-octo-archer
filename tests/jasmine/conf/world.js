@@ -46,6 +46,13 @@ define('world', ['angular', 'angularCookies', 'angularMocks'], function () {
             expect(object).toBeDefined();
             expect(object[functionName]).toBeDefined();
             expect(typeof object[functionName]).toBe('function');
+        },
+        'spyOnAllFunctions': function (object) {
+            for (var key in object) {
+                if (object.hasOwnProperty(key) && typeof object[key] === 'function') {
+                    spyOn(object, key);
+                }
+            }
         }
     };
 });

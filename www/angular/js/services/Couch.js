@@ -87,9 +87,37 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 Couch.getSession().then(function (session) {
                     if (session.roles.indexOf('_admin') === -1) {
                         deferred.reject('Cannot push design documents as you are not an admin');
+                        return;
                     }
-
+                    
+                    for (var databaseName in Couch._designDocs) {
+                        if (Couch._designDocs.hasOwnProperty(databaseName)) {
+                            for (var documentId in Couch._designDocs[databaseName]) {
+                                if (Couch._designDocs[databaseName].hasOwnProperty(documentId)) {
+                                    Couch.getDoc(databaseName, documentId).then();
+                                }
+                            }
+                        }
+                    }
+                    
                 });
+                
+                return deferred.promise;
+            },
+            getDoc: function (database, id) {
+                var deferred = $q.defer();
+                
+                Couch.databaseExists(database).then(function (databaseFound) {
+                    if (databaseFound) {
+                        var db = $rootScope.cornercouch.getDB(database);
+                        var doc = db.newDoc();
+                        var loading = doc.load(id);
+                        
+                        loading.success(function (data) { deferred.resolve(data); }).failure(deferred.reject);
+                    } else {
+                        deferred.reject('Database not found: ' + database);
+                    } 
+                }, deferred.reject);
                 
                 return deferred.promise;
             },
