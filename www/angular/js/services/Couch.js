@@ -14,7 +14,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
         
         var Couch = {
             _designDocs: {
-                global: {
+                commissar_validation_global: {
                     '_design/validation_global': {
                         _id: '_design/validation_global',
                         language: 'javascript',
@@ -41,7 +41,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                         }
                     }
                 },
-                user: {
+                commissar_validation_users: {
                     '_design/validation_user': {
                         _id: '_design/validation_user',
                         language: 'javascript',
@@ -84,12 +84,51 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
             pushDesignDocs: function () {
                 var deferred = $q.defer();
         
+                try
+                {
                 Couch.getSession().then(function (session) {
                     if (session.roles.indexOf('_admin') === -1) {
-                        deferred.reject('Cannot push design documents as you are not an admin');
+                        throw ('Cannot push design documents as you are not an admin');
                     }
-
+                    
+                    var remoteDocs = [];
+                    
+                    for (var databaseName in Couch._designDocs) {
+                        console.log(databaseName);
+                        if (Couch._designDocs.hasOwnProperty(databaseName)) {
+                            var database = Couch._designDocs[databaseName];
+                            var couchDatabase = $rootScope.cornercouch.getDB(databaseName);
+                            for (var id in database) {
+                                if (database.hasOwnProperty(id)) {
+                                    var deepCopy = true;
+                                    var document = jquery.extend(deepCopy, {}, database[id]);
+                                    console.log(id);
+                                    for (var property in document) {
+                                        if (document.hasOwnProperty(property) && typeof document[property] === 'function') {
+                                            document[property] = '' + document[property];
+                                        }
+                                    }
+                                    
+                                    var remoteDoc = couchDatabase.newDoc();
+                                    remoteDoc.load(id).then(function (data) {
+                                        console.log(data);
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    
+                    return $q.all(remoteDocs).promise;
+                    
+                }).then(function (result) {
+                    deferred.resolve(result);
+                }, function (reject) {
+                    deferred.reject(reject);
                 });
+                } catch (e) {
+                    console.log(e);
+                    deferred.reject(e);
+                }
                 
                 return deferred.promise;
             },
@@ -109,15 +148,15 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                     try
                     {
                         if (database.indexOf("commissar_user") === 0) {
-                            for (docId in viewDocs.user) {
-                                doc = viewDocs.user[docId];
+                            for (docId in viewDocs.commissar_validation_users) {
+                                doc = viewDocs.commissar_validation_users[docId];
                                 if (typeof doc.validate_doc_update === 'function') {
                                     doc.validate_doc_update(newDoc, oldDoc, userCtx);
                                 }
                             }
                         }
-                        for (docId in viewDocs.global) {
-                            doc = viewDocs.global[docId];
+                        for (docId in viewDocs.commissar_validation_global) {
+                            doc = viewDocs.commissar_validation_global[docId];
                             if (typeof doc.validate_doc_update === 'function') {
                                 doc.validate_doc_update(newDoc, oldDoc, userCtx);
                             }

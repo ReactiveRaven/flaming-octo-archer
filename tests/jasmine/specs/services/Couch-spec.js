@@ -293,7 +293,7 @@ define(['world', 'jquery'], function (world, jquery) {
                 }));
                 
                 it('should check global functions always', inject(function (Couch) {
-                    Couch._designDocs.global = {
+                    Couch._designDocs.commissar_validation_global = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
@@ -303,18 +303,18 @@ define(['world', 'jquery'], function (world, jquery) {
                             }
                         }
                     };
-                    spyOn(Couch._designDocs.global.mock, 'validate_doc_update').andReturn(true);
+                    spyOn(Couch._designDocs.commissar_validation_global.mock, 'validate_doc_update').andReturn(true);
                     
                     Couch.validateDoc(exampleDoc, null, 'commissar_public');
                     
                     world.digest();
                     
-                    expect(Couch._designDocs.global.mock.validate_doc_update).toHaveBeenCalled();
+                    expect(Couch._designDocs.commissar_validation_global.mock.validate_doc_update).toHaveBeenCalled();
                     
                 }));
                 
                 it('should check user functions only on user databases', inject(function (Couch) {
-                    Couch._designDocs.user = {
+                    Couch._designDocs.commissar_validation_users = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
@@ -324,13 +324,13 @@ define(['world', 'jquery'], function (world, jquery) {
                             }
                         }
                     };
-                    spyOn(Couch._designDocs.user.mock, 'validate_doc_update').andReturn(true);
+                    spyOn(Couch._designDocs.commissar_validation_users.mock, 'validate_doc_update').andReturn(true);
                     
                     Couch.validateDoc(exampleDoc, null, 'commissar_public');
                     
                     world.digest();
                     
-                    expect(Couch._designDocs.user.mock.validate_doc_update).not.toHaveBeenCalled();
+                    expect(Couch._designDocs.commissar_validation_users.mock.validate_doc_update).not.toHaveBeenCalled();
                     
                     Couch.validateDoc({
                         _id: 12345,
@@ -339,7 +339,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     
                     world.digest();
                     
-                    expect(Couch._designDocs.user.mock.validate_doc_update).toHaveBeenCalled();
+                    expect(Couch._designDocs.commissar_validation_users.mock.validate_doc_update).toHaveBeenCalled();
                 }));
                 
                 it('should reject if it cannot find a session', function () {
@@ -371,7 +371,7 @@ define(['world', 'jquery'], function (world, jquery) {
                         success,
                         failure;
                     
-                    Couch._designDocs.global = {
+                    Couch._designDocs.commissar_validation_global = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
@@ -395,7 +395,7 @@ define(['world', 'jquery'], function (world, jquery) {
                 }));
                 
                 it('should resolve if no errors found', inject(function (Couch) {
-                    Couch._designDocs.global = {
+                    Couch._designDocs.commissar_validation_global = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
@@ -420,14 +420,14 @@ define(['world', 'jquery'], function (world, jquery) {
                 }));
                 
                 it('should not fail if a document doesn\'t have a validate_doc_update function', inject(function (Couch) {
-                    Couch._designDocs.global = {
+                    Couch._designDocs.commissar_validation_global = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
                             language: 'javascript'
                         }
                     };
-                    Couch._designDocs.user = {
+                    Couch._designDocs.commissar_validation_users = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
@@ -453,7 +453,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     
                     var unexpectedException = {unexpected_exception: true};
                     
-                    Couch._designDocs.global = {
+                    Couch._designDocs.commissar_validation_global = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
@@ -463,7 +463,7 @@ define(['world', 'jquery'], function (world, jquery) {
                             }
                         }
                     };
-                    Couch._designDocs.user = {
+                    Couch._designDocs.commissar_validation_users = {
                         'mock': {
                             _id: 'mock',
                             _rev: '12345',
@@ -494,7 +494,7 @@ define(['world', 'jquery'], function (world, jquery) {
                         roles: ['_admin']
                     };
                     
-                    Couch._designDocs.global = {
+                    Couch._designDocs.commissar_validation_global = {
                         'mock': {
                             _id: 'mock',
                             language: 'javascript',
@@ -507,7 +507,7 @@ define(['world', 'jquery'], function (world, jquery) {
                             }
                         }
                     };
-                    Couch._designDocs.user = {
+                    Couch._designDocs.commissar_validation_users = {
                         'mock': {
                             _id: 'mock',
                             language: 'javascript'
@@ -557,7 +557,7 @@ define(['world', 'jquery'], function (world, jquery) {
 
                     it('should collapse documents to JSON strings', function () {
                         
-                        var globalDoc = jquery.extend({}, Couch._designDocs.global.mock);
+                        var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
                         globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
                         
                         $httpBackend.expectGET('/couchdb/commissar_validation_global/mock')
@@ -567,7 +567,7 @@ define(['world', 'jquery'], function (world, jquery) {
                         
                         $httpBackend.expectGET('/couchdb/commissar_validation_users/mock')
                             .respond(404, {error: 'not_found', reason: 'missing'});
-                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.user.mock))
+                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.commissar_validation_users.mock))
                             .respond(200, {ok: true, id: 'mock', rev: '12345'});
                         
                         Couch.pushDesignDocs();
@@ -579,7 +579,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     });
                     
                     it('should overwrite properties on existing documents to replace them', function () {
-                        var globalDoc = jquery.extend({}, Couch._designDocs.global.mock);
+                        var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
                         globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
                         
                         var existingGlobal = {
@@ -597,7 +597,7 @@ define(['world', 'jquery'], function (world, jquery) {
                         
                         $httpBackend.expectGET('/couchdb/commissar_validation_users/mock')
                             .respond(404, {error: 'not_found', reason: 'missing'});
-                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.user.mock))
+                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.commissar_validation_users.mock))
                             .respond(200, {ok: true, id: 'mock', rev: '12345'});
                         
                         Couch.pushDesignDocs();
@@ -667,7 +667,7 @@ define(['world', 'jquery'], function (world, jquery) {
             
             describe('[global]', function () {
                 it('should have keys for global view documents', inject(function (Couch) {
-                    expect(Couch._designDocs.global).toBeDefined();
+                    expect(Couch._designDocs.commissar_validation_global).toBeDefined();
                 }));
                 
                 it('should reject documents without a type', function () {
@@ -715,7 +715,7 @@ define(['world', 'jquery'], function (world, jquery) {
             
             describe('[user]', function () {
                 it('should have keys for user view documents', inject(function (Couch) {
-                    expect(Couch._designDocs.user).toBeDefined();
+                    expect(Couch._designDocs.commissar_validation_users).toBeDefined();
                 }));
                 
                 it('should require an author field in your db', function () {
