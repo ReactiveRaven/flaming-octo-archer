@@ -68,7 +68,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                     '_design/validation_user_media': {
                         _id: '_design/validation_user_media',
                         language: 'javascript',
-                        validate_doc_update: function (newDoc/** /, oldDoc, userCtx/**/) {
+                        validate_doc_update: function (newDoc) {
                             if (newDoc.type === 'media') {
                                 if (typeof newDoc.title === 'undefined') {
                                     throw ({forbidden: 'Media must have a title'});
@@ -84,51 +84,80 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
             pushDesignDocs: function () {
                 var deferred = $q.defer();
         
-                try
-                {
                 Couch.getSession().then(function (session) {
+                    // Admins only plz.
                     if (session.roles.indexOf('_admin') === -1) {
-                        throw ('Cannot push design documents as you are not an admin');
+                        deferred.reject('Cannot push design documents as you are not an admin');
+                        return false;
                     }
-                    
+
                     var remoteDocs = [];
-                    
+
+                    // Loop through all databases
                     for (var databaseName in Couch._designDocs) {
-                        console.log(databaseName);
                         if (Couch._designDocs.hasOwnProperty(databaseName)) {
-                            var database = Couch._designDocs[databaseName];
-                            var couchDatabase = $rootScope.cornercouch.getDB(databaseName);
-                            for (var id in database) {
-                                if (database.hasOwnProperty(id)) {
+                            
+                            // Get a copy of the local database object
+                            var localDatabase = Couch._designDocs[databaseName];
+                            
+                            // Loop through all documents in the local database
+                            for (var id in localDatabase) {
+                                if (localDatabase.hasOwnProperty(id)) {
+                                    
+                                    // Copy the document, so we don't modify the original
                                     var deepCopy = true;
-                                    var document = jquery.extend(deepCopy, {}, database[id]);
-                                    console.log(id);
+                                    var document = jquery.extend(deepCopy, {}, localDatabase[id]);
+                                    
+                                    // Convert all properties to strings (eg: functions)
                                     for (var property in document) {
                                         if (document.hasOwnProperty(property) && typeof document[property] === 'function') {
                                             document[property] = '' + document[property];
                                         }
                                     }
                                     
-                                    var remoteDoc = couchDatabase.newDoc();
-                                    remoteDoc.load(id).then(function (data) {
-                                        console.log(data);
-                                    });
+                                    // This weird bit is necessary for scoping. 
+                                    // We're inside a loop here! Variables will have changed on the next iteration.
+                                    (function (databaseName, document) {
+                                        
+                                        var updateRemote = function (document, remoteDocument) {
+                                            // Copy the local properties onto the remote document
+                                            for (var property in document) {
+                                                if (document.hasOwnProperty(property)) {
+                                                    remoteDocument[property] = document[property];
+                                                }
+                                            }
+                                        };
+                                    
+                                        // Get the remote document
+                                        Couch.getDoc(databaseName, document._id).then(function (remoteDocument) {
+                                            
+                                            // Update remote and save it out
+                                            updateRemote(document, remoteDocument);
+                                            remoteDocument.save();
+                                            
+                                        }, function () {
+                                            
+                                            // Create document, update, and save out
+                                            var remoteDocument = Couch.newDoc(databaseName);
+                                            updateRemote(document, remoteDocument);
+                                            remoteDocument.save();
+                                            
+                                        });
+                                        
+                                    })(databaseName, document);
+                                    
                                 }
                             }
                         }
                     }
-                    
+
                     return $q.all(remoteDocs).promise;
-                    
+
                 }).then(function (result) {
                     deferred.resolve(result);
                 }, function (reject) {
                     deferred.reject(reject);
                 });
-                } catch (e) {
-                    console.log(e);
-                    deferred.reject(e);
-                }
                 
                 return deferred.promise;
             },
@@ -145,6 +174,22 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                     } else {
                         deferred.reject('Database not found: ' + database);
                     } 
+                }, deferred.reject);
+                
+                return deferred.promise;
+            },
+            newDoc: function (database) {
+                var deferred = $q.defer();
+                
+                Couch.databaseExists(database).then(function (databaseFound) {
+                    if (databaseFound) {
+                        var db = $rootScope.cornercouch.getDB(database);
+                        var doc = db.newDoc();
+                        
+                        deferred.resolve(doc);
+                    } else {
+                        deferred.reject("Database not found: " + database);
+                    }
                 }, deferred.reject);
                 
                 return deferred.promise;

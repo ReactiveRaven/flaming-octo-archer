@@ -497,7 +497,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     Couch._designDocs.commissar_validation_global = {
                         'mock': {
                             _id: 'mock',
-                            language: 'javascript',
+                            language: 'javascript-global',
                             validate_doc_update: function () {
                                 var x = 1,
                                     y = 2,
@@ -510,7 +510,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     Couch._designDocs.commissar_validation_users = {
                         'mock': {
                             _id: 'mock',
-                            language: 'javascript'
+                            language: 'javascript-users'
                         }
                     };
                 }));
@@ -540,10 +540,14 @@ define(['world', 'jquery'], function (world, jquery) {
                 describe('[active]', function () {
                     
                     var $httpBackend;
+                    var save;
                     
                     beforeEach(inject(function (_$httpBackend_) {
                         
                         $httpBackend = _$httpBackend_;
+                        
+                        // Create a spy 'save' function that does nothing
+                        save = jasmine.createSpy("saveDocument");
                         
                     }));
                 
@@ -557,24 +561,32 @@ define(['world', 'jquery'], function (world, jquery) {
 
                     it('should collapse documents to JSON strings', function () {
                         
+                        // Copy out the mocked document and stringify the validate_doc_update function
                         var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
                         globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
                         
-                        $httpBackend.expectGET('/couchdb/commissar_validation_global/mock')
-                            .respond(404, {error: 'not_found', reason: 'missing'});
-                        $httpBackend.expectPUT('/couchdb/commissar_validation_global/mock', JSON.stringify(globalDoc))
-                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
+                        // Set up a spy to return the documents when it tries to load them
+                        spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
+                            return world.resolved(jquery.extend({}, Couch._designDocs[dbname][docid], {'save': save}));
+                        });
                         
-                        $httpBackend.expectGET('/couchdb/commissar_validation_users/mock')
-                            .respond(404, {error: 'not_found', reason: 'missing'});
-                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.commissar_validation_users.mock))
-                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
-                        
+                        // Push em up!
                         Couch.pushDesignDocs();
                         
+                        // Give it time to digest
                         world.digest();
-                        world.flush();
-                        world.digest();
+
+                        // Should have tried to load both documents
+                        expect(Couch.getDoc).toHaveBeenCalled();
+                        expect(Couch.getDoc.calls.length).toEqual(2, "number of getDoc calls");
+                        expect(Couch.getDoc).toHaveBeenCalledWith('commissar_validation_global', 'mock');
+                        expect(Couch.getDoc).toHaveBeenCalledWith('commissar_validation_users', 'mock');
+                        
+                        // Should have tried to save the documents out again stringified
+                        expect(save).toHaveBeenCalled();
+                        expect(save.calls.length).toEqual(2, "number of save calls");
+                        expect(world.sortJSON(save.calls[0].object)).toEqual(world.sortJSON(globalDoc));
+                        expect(world.sortJSON(save.calls[1].object)).toEqual(world.sortJSON(Couch._designDocs.commissar_validation_users.mock));
                         
                     });
                     
@@ -585,28 +597,165 @@ define(['world', 'jquery'], function (world, jquery) {
                         var existingGlobal = {
                             '_id': 'mock',
                             '_rev': '12345',
-                            'squibble': 'blob'
+                            'squibble': 'blob',
+                            'validate_doc_function': "nope"
                         };
                         
-                        var modifiedGlobal = jquery.extend({}, existingGlobal, globalDoc);
+                        existingGlobal.save = save;
                         
-                        $httpBackend.expectGET('/couchdb/commissar_validation_global/mock')
-                            .respond(200, existingGlobal);
-                        $httpBackend.expectPOST('/couchdb/commissar_validation_global/mock', JSON.stringify(modifiedGlobal))
-                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
+                        var modifiedGlobal = jquery.extend({}, globalDoc, existingGlobal);
                         
-                        $httpBackend.expectGET('/couchdb/commissar_validation_users/mock')
-                            .respond(404, {error: 'not_found', reason: 'missing'});
-                        $httpBackend.expectPUT('/couchdb/commissar_validation_users/mock', JSON.stringify(Couch._designDocs.commissar_validation_users.mock))
-                            .respond(200, {ok: true, id: 'mock', rev: '12345'});
+                        // Set up a spy to return the documents when it tries to load them
+                        var save = jasmine.createSpy("saveDocument");
+                        spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
+                            if (dbname === "commissar_validation_global") {
+                                return world.resolved(jquery.extend({}, existingGlobal, {'save': save}));
+                            }
+                            return world.resolved(jquery.extend({}, Couch._designDocs[dbname][docid], {'save': save}));
+                        });
                         
                         Couch.pushDesignDocs();
                         
+                        // Give it time to digest
                         world.digest();
-                        world.flush();
+
+                        // Should have tried to load both documents
+                        expect(Couch.getDoc).toHaveBeenCalled();
+                        expect(Couch.getDoc.calls.length).toEqual(2, "number of getDoc calls");
+                        expect(Couch.getDoc).toHaveBeenCalledWith('commissar_validation_global', 'mock');
+                        expect(Couch.getDoc).toHaveBeenCalledWith('commissar_validation_users', 'mock');
+                        
+                        // Should have tried to save the documents out again stringified
+                        expect(save).toHaveBeenCalled();
+                        expect(save.calls.length).toEqual(2, "number of save calls");
+                        expect(world.sortJSON(save.calls[0].object)).toEqual(world.sortJSON(modifiedGlobal));
+                        expect(world.sortJSON(save.calls[1].object)).toEqual(world.sortJSON(Couch._designDocs.commissar_validation_users.mock));
+                    });
+                    
+                    it('should create documents when they are missing on server side', function () {
+                        var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
+                        globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
+                        
+                        // Set up a spy to return the documents when it tries to load them
+                        var save = jasmine.createSpy("saveDocument");
+                        spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
+                            if (dbname === "commissar_validation_global") {
+                                return world.rejected(false);
+                            }
+                            return world.resolved(jquery.extend({}, Couch._designDocs[dbname][docid], {'save': save}));
+                        });
+                        // Set up a spy to return a spied new document when created
+                        spyOn(Couch, "newDoc").andCallFake(function () {
+                            return {save: save};
+                        });
+                        
+                        Couch.pushDesignDocs();
+                        
+                        // Give it time to digest
                         world.digest();
+
+                        // Should have tried to load both documents
+                        expect(Couch.getDoc).toHaveBeenCalled();
+                        expect(Couch.getDoc.calls.length).toEqual(2, "number of getDoc calls");
+                        expect(Couch.getDoc).toHaveBeenCalledWith('commissar_validation_global', 'mock');
+                        expect(Couch.getDoc).toHaveBeenCalledWith('commissar_validation_users', 'mock');
+                        
+                        // Should have created a new document when one not available
+                        expect(Couch.newDoc).toHaveBeenCalled();
+                        expect(Couch.newDoc.calls.length).toEqual(1, "number of newDoc calls");
+                        expect(Couch.newDoc).toHaveBeenCalledWith("commissar_validation_global");
+                        
+                        // Should have tried to save the documents out again stringified
+                        expect(save).toHaveBeenCalled();
+                        expect(save.calls.length).toEqual(2, "number of save calls");
+                        expect(world.sortJSON(save.calls[0].object)).toEqual(world.sortJSON(world.stringifyMethods(Couch._designDocs.commissar_validation_global.mock)), "global");
+                        expect(world.sortJSON(save.calls[1].object)).toEqual(world.sortJSON(Couch._designDocs.commissar_validation_users.mock), "users");
                     });
                 
+                });
+            });
+            
+            describe('[newDoc()]', function () {
+                
+                var Couch,
+                    $rootScope,
+                    fakeDB,
+                    fakeDoc;
+                
+                beforeEach(inject(function (_Couch_, _$rootScope_) {
+                    Couch = _Couch_;
+                    
+                    $rootScope = _$rootScope_;
+                    
+                    fakeDB = {
+                        newDoc: function () {},
+                        getDoc: function () {}
+                    };
+                    
+                    fakeDoc = {
+                        load: function () {},
+                        save: function () {}
+                    };
+                    
+                    var key;
+                    
+                    world.spyOnAllFunctions(fakeDB);
+                    world.spyOnAllFunctions(fakeDoc);
+                    
+                    fakeDB.newDoc.andReturn(fakeDoc);
+                    var resolved = world.resolved({_id: 'mock', type: 'test_document'});
+                    resolved.success = function (func) { resolved.then(func); return resolved; };
+                    resolved.failure = function () { return resolved; }; // do nothing!
+                    
+                    fakeDoc.load.andReturn(resolved);
+                    
+                    spyOn($rootScope.cornercouch, 'getDB').andReturn(fakeDB);
+                    
+                    spyOn(Couch, 'databaseExists').andReturn(world.resolved(true));
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Couch, 'newDoc');
+                });
+                
+                it('should return a promise', function () {
+                    var returned = Couch.newDoc('database');
+                    
+                    expect(returned).toBeDefined();
+                    expect(typeof returned.then).toBe('function');
+                });
+                
+                it('should reject when the database doesn\'t exist', function () {
+                    var database = 'commissar_validation_global',
+                        id = 'mock',
+                        success = null,
+                        failure = null;
+                        
+                    Couch.databaseExists.andReturn(world.resolved(false));
+                    
+                    Couch.newDoc(database).then(function (_success_) { success = _success_; }, function (_failure_) { failure = _failure_; });
+                    world.digest();
+                    
+                    expect(success).toBe(null);
+                    expect(failure).toBe('Database not found: ' + database);
+                });
+                
+                it('should return a CouchDoc object via promise', function () {
+                    var database = 'commissar_validation_global',
+                        id = 'mock',
+                        success = null,
+                        failure = null;
+                        
+                    Couch.databaseExists.andReturn(world.resolved(true));
+                    
+                    Couch.newDoc(database).then(function (_success_) { success = _success_; }, function (_failure_) { failure = _failure_; });
+                    world.digest();
+                    
+                    expect(success).not.toBe(null);
+                    expect(failure).toBe(null);
+                    expect(typeof success).toBe("object");
+                    expect(typeof success.save).toBe("function");
+                    expect(typeof success.load).toBe("function");
                 });
             });
             
