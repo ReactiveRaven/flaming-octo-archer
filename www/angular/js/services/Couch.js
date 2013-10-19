@@ -85,6 +85,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 var deferred = $q.defer();
         
                 Couch.getSession().then(function (session) {
+                    
                     // Admins only plz.
                     if (session.roles.indexOf('_admin') === -1) {
                         deferred.reject('Cannot push design documents as you are not an admin');
@@ -104,62 +105,73 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                             for (var id in localDatabase) {
                                 if (localDatabase.hasOwnProperty(id)) {
                                     
-                                    // Copy the document, so we don't modify the original
-                                    var deepCopy = true;
-                                    var document = jquery.extend(deepCopy, {}, localDatabase[id]);
-                                    
-                                    // Convert all properties to strings (eg: functions)
-                                    for (var property in document) {
-                                        if (document.hasOwnProperty(property) && typeof document[property] === 'function') {
-                                            document[property] = '' + document[property];
-                                        }
-                                    }
-                                    
-                                    // This weird bit is necessary for scoping. 
-                                    // We're inside a loop here! Variables will have changed on the next iteration.
-                                    (function (databaseName, document) {
-                                        
-                                        var updateRemote = function (document, remoteDocument) {
-                                            // Copy the local properties onto the remote document
-                                            for (var property in document) {
-                                                if (document.hasOwnProperty(property)) {
-                                                    remoteDocument[property] = document[property];
-                                                }
-                                            }
-                                        };
-                                    
-                                        // Get the remote document
-                                        Couch.getDoc(databaseName, document._id).then(function (remoteDocument) {
-                                            
-                                            // Update remote and save it out
-                                            updateRemote(document, remoteDocument);
-                                            remoteDocument.save();
-                                            
-                                        }, function () {
-                                            
-                                            // Create document, update, and save out
-                                            var remoteDocument = Couch.newDoc(databaseName);
-                                            updateRemote(document, remoteDocument);
-                                            remoteDocument.save();
-                                            
-                                        });
-                                        
-                                    })(databaseName, document);
+                                    // Apply changes to the document
+                                    Couch.applyStaticChanges(databaseName, localDatabase[id]);
                                     
                                 }
                             }
                         }
                     }
 
-                    return $q.all(remoteDocs).promise;
+                    $q.all(remoteDocs).then(function (result) {
+                        deferred.resolve(result);
+                    }, function (reject) {
+                        deferred.reject(reject);
+                    });
 
-                }).then(function (result) {
-                    deferred.resolve(result);
-                }, function (reject) {
-                    deferred.reject(reject);
                 });
                 
                 return deferred.promise;
+            },
+            /**
+             * Copies attributes from the given document to the real document 
+             * after retrieving it from the database. Will create the document 
+             * if necessary.
+             * 
+             * Useful when you only have to make a tiny or very predictable 
+             * update, and don't wnat the hassle of loading the document 
+             * yourself.
+             * 
+             * @param {string} databaseName to save the document details to
+             * @param {Object} documentObject object to copy details from
+             * @returns {undefined}
+             */
+            applyStaticChanges: function (databaseName, documentObject) {
+                var updateRemote = function (document, remoteDocument) {
+                    // Copy the local properties onto the remote document
+                    for (var property in document) {
+                        if (document.hasOwnProperty(property)) {
+                            remoteDocument[property] = document[property];
+                        }
+                    }
+                };
+                
+                // Copy the document, so we don't modify the original
+                var deepCopy = true;
+                var document = jquery.extend(deepCopy, {}, documentObject);
+                                    
+                // Convert all properties to strings (eg: functions)
+                for (var property in document) {
+                    if (document.hasOwnProperty(property) && typeof document[property] === 'function') {
+                        document[property] = '' + document[property];
+                    }
+                }
+
+                // Get the remote document
+                Couch.getDoc(databaseName, document._id).then(function (remoteDocument) {
+
+                    // Update remote and save it out
+                    updateRemote(document, remoteDocument);
+                    remoteDocument.save();
+
+                }, function () {
+
+                    // Create document, update, and save out
+                    var remoteDocument = Couch.newDoc(databaseName);
+                    updateRemote(document, remoteDocument);
+                    remoteDocument.save();
+
+                });
             },
             getDoc: function (database, id) {
                 var deferred = $q.defer();
@@ -173,7 +185,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                         loading.success(function (data) { deferred.resolve(data); }).failure(deferred.reject);
                     } else {
                         deferred.reject('Database not found: ' + database);
-                    } 
+                    }
                 }, deferred.reject);
                 
                 return deferred.promise;

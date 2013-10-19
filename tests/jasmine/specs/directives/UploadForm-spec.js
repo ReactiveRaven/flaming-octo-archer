@@ -87,12 +87,6 @@ define(['world', 'angular'], function (world, angular) {
                 });
             });
             
-//            describe('[upload()]', function () {
-//                it('should be a function', function () {
-//                    getCtrl();
-//                    world.shouldBeAFunction(scope, 'upload');
-//                });
-//            });
         });
         
     });
