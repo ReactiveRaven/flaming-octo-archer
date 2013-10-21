@@ -3,7 +3,7 @@
 define([], function () {
     'use strict';
     
-    describe('[Gallery]', function () {
+    xdescribe('[Gallery]', function () {
         var menuArtistToggle,
             menuArtistDropdown,
             menuOffersToggle,
@@ -94,7 +94,7 @@ define([], function () {
             });
         }); // describe [mine]
         
-        ddescribe('[view]', function () {
+        describe('[view]', function () {
             reset();
             
             var galleryView,

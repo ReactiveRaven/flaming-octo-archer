@@ -59,7 +59,7 @@ if ($createUserDatabase["response"]["status"]["status"] > 299) {
     jsondie(array("error" => "Could not create user store"), $createUserDatabase);
 }
 
-$replicationArray = array(
+$globalReplicationArray = array(
     "_id" => "user:" . $registerUsername . "_validation_global",
     "source" => $couchdbsettings["databases"]["validation_global"],
     "target" => $userDatabaseName,
@@ -70,13 +70,13 @@ $replicationArray = array(
     ),
 );
 
-$globalValidationReplication = $CouchUser->doPost("_replicator", $replicationArray);
+$globalValidationReplication = $CouchUser->doPost("_replicator", $globalReplicationArray);
 
 if ($globalValidationReplication["response"]["status"]["status"] > 299) {
     jsondie(array("error" => "Global validation not applied"), $globalValidationReplication);
 }
 
-$replicationArray = array(
+$userReplicationArray = array(
     "_id" => "user:" . $registerUsername . "_validation_user",
     "source" => $couchdbsettings["databases"]["validation_user"],
     "target" => $userDatabaseName,
@@ -87,7 +87,7 @@ $replicationArray = array(
     ),
 );
 
-$userValidationReplication = $CouchUser->doPost("_replicator", $replicationArray);
+$userValidationReplication = $CouchUser->doPost("_replicator", $userReplicationArray);
 
 if ($userValidationReplication["response"]["status"]["status"] > 299) {
     jsondie(array("error" => "User validation not applied"), $userValidationReplication);

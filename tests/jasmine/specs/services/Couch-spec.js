@@ -491,7 +491,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     $rootScope = _$rootScope_;
                     $rootScope.cornercouch.userCtx = {
                         name: 'admin',
-                        roles: ['_admin']
+                        roles: ['+admin']
                     };
                     
                     Couch._designDocs.commissar_validation_global = {
@@ -519,7 +519,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     world.shouldBeAFunction(Couch, 'pushDesignDocs');
                 });
                 
-                it('should reject if the user does not have _admin role', function () {
+                it('should reject if the user does not have +admin role', function () {
                     var success = null,
                         failure = null;
                     
@@ -574,7 +574,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     $rootScope = _$rootScope_;
                     $rootScope.cornercouch.userCtx = {
                         name: 'admin',
-                        roles: ['_admin']
+                        roles: ['+admin']
                     };
                     
                     Couch._designDocs.commissar_validation_global = {
@@ -948,7 +948,7 @@ define(['world', 'jquery'], function (world, jquery) {
                 
                 it('should not allow writes outside your own db unless admin', inject(function ($rootScope) {
                     testValidate(validDocument, null, globalDb, undefined, 'Cannot alter documents outside your own database');
-                    $rootScope.cornercouch.userCtx.roles = ['_admin'];
+                    $rootScope.cornercouch.userCtx.roles = ['+admin'];
                     testValidate(validDocument, null, globalDb, true, undefined);
                 }));
                                

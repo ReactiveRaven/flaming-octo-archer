@@ -23,7 +23,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                                 if (typeof newDoc.type === 'undefined') {
                                     throw ({forbidden: 'All documents must have a type'});
                                 }
-                                if (userCtx.db !== 'commissar_user_' + userCtx.name && userCtx.roles.indexOf('_admin') === -1) {
+                                if (userCtx.db !== 'commissar_user_' + userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
                                     throw ({forbidden: 'Cannot alter documents outside your own database'});
                                 }
                                 if (typeof newDoc.created !== 'undefined') {
@@ -49,7 +49,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                             if (typeof newDoc.author === 'undefined') {
                                 throw ({forbidden: 'Cannot create a document without an author field'});
                             }
-                            if (newDoc.author !== userCtx.name && userCtx.roles.indexOf('_admin') === -1) {
+                            if (newDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
                                 throw ({forbidden: 'Cannot forge authorship as another user'});
                             }
                             if (newDoc._id.indexOf(userCtx.name) !== 0) {
@@ -87,7 +87,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 Couch.getSession().then(function (session) {
                     
                     // Admins only plz.
-                    if (session.roles.indexOf('_admin') === -1) {
+                    if (session.roles.indexOf('+admin') === -1) {
                         deferred.reject('Cannot push design documents as you are not an admin');
                         return false;
                     }

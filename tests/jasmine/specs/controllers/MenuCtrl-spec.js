@@ -95,6 +95,33 @@ define(['world', 'angular'], function (world, angular) {
                     expect(Authentication.getSession).toHaveBeenCalled();
                     expect(scope.userCtx).toBe(ctx);
                 }));
+                
+                it('should update loggedIn when logged in', inject(function ($rootScope, Authentication) {
+                    getCtrl();
+                    
+                    $rootScope.$broadcast('AuthChange');
+                    
+                    world.digest();
+                    
+                    expect(scope.loggedIn).toBe(true);
+                }));
+                
+                it('should update isAdmin when logged in as an admin', inject(function ($rootScope, Authentication) {
+                    
+                    // Return a ctx with admin role
+                    var newCtx = $.extend({}, ctx, {roles: ['+admin']});
+                    Authentication.getSession.andReturn(world.resolved(newCtx));
+                    
+                    // Set up controller and trigger AuthChange
+                    getCtrl();
+                    $rootScope.$broadcast('AuthChange');
+                    
+                    // Wait for it to digest..
+                    world.digest();
+                    
+                    // Should be recognised as an admin.
+                    expect(scope.isAdmin).toBe(true);
+                }));
             });
 
         });

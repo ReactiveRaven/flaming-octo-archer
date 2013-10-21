@@ -72,6 +72,14 @@
                         <li><a data-ng-href='#!/logout'>Sign out</a></li>
                     </ul>
                 </li>
+                <li class="dropdown" data-ng-show="isAdmin">
+                    <a href="#" id="menuAdminToggle">
+                        Admin <i class="icon-lock"></i>
+                    </a>
+                    <div class="dropdown-menu" id="menuAdminDropdown">
+                        <a data-ng-href="#!/admin">Control Panel</a>
+                    </div>
+                </li>
                 <li class='dropdown' data-ng-show='!loggedIn'>
                     <a href='#' id="menuLoginToggle" class='dropdown-toggle' data-toggle='dropdown'>
                         Sign up &amp; Log in <i class='icon icon-key'></i>

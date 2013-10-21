@@ -16,3 +16,4 @@ www/js/compressed.js
 bower_components/
 tests/jasmine/reports/coverage/*.json
 tests/jasmine/reports/coverage/*/
+.vagrant/
