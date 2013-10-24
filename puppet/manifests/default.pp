@@ -293,3 +293,6 @@ define mysql_db (
   }
 }
 
+service { "couchdb":
+  ensure => "running"
+}
