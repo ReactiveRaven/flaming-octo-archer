@@ -118,6 +118,16 @@ define(['world', 'angular'], function (world, angular) {
                     expect(response).toBe(true);
                 });
                 
+                it('should set loggedIn to null by default, until checked', function () {
+                    getCtrl();
+                    
+                    expect(scope.loggedIn).toBe(null, 'by default');
+                    
+                    world.digest();
+                    
+                    expect(scope.loggedIn).toBe(true, 'after checking if logged in');
+                });
+                
                 it('should set loggedIn to match response', function () {
                     var username = 'username',
                         password = 'password',
@@ -134,6 +144,42 @@ define(['world', 'angular'], function (world, angular) {
                     
                     expect(response).toBe(true);
                     expect(scope.loggedIn).toBe(response);
+                });
+                
+                it('should set accessDenied to false by default', function () {
+                    getCtrl();
+                    
+                    expect(scope.accessDenied).toBe(false, 'by default');
+                });
+                
+                it('should set accessDenied to oppose response', function () {
+                    var username = 'username',
+                        password = 'password';
+                        
+                    getCtrl();
+                    
+                    scope.accessDenied = null;
+                    
+                    scope.login(username, password);
+                    world.digest();
+                    
+                    expect(scope.accessDenied).toBe(false, "Login succeeded, should have ");
+                });
+                
+                it('should set accessDenied to true on login failure', function () {
+                    var username = 'username',
+                        password = 'password';
+                        
+                    Authentication.login.andReturn(world.resolved(false));
+                        
+                    getCtrl();
+                    
+                    scope.accessDenied = null;
+                    
+                    scope.login(username, password);
+                    world.digest();
+                    
+                    expect(scope.accessDenied).toBe(true, "login failed, should have complained");
                 });
             });
             

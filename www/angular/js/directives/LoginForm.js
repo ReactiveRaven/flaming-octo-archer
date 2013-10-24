@@ -7,6 +7,7 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
         $scope.name = 'commissar.directives.LoginForm.controller';
         
         $scope.loggedIn = null;
+        $scope.accessDenied = false;
         Authentication.loggedIn().then(function (response) {
             $scope.loggedIn = response;
         });
@@ -21,7 +22,8 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
             }
             
             return Authentication.login(username, password).then(function (reply) {
-                $scope.loggedIn = reply;
+                $scope.loggedIn = !!reply;
+                $scope.accessDenied = !reply;
                 return reply;
             });
         };
