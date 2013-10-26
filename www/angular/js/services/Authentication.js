@@ -12,7 +12,7 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
                     deferred.resolve(false);
                     return deferred.promise;
                 }
-                return Couch.databaseExists('commissar_user_' + username.toLowerCase());
+                return Couch.databaseExists(Authentication.getDatabaseName(username));
             },
             'loggedIn': function () {
                 var deferred = $q.defer();
@@ -65,6 +65,9 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
                 });
                 
                 return deferred.promise;
+            },
+            'getDatabaseName': function (username) {
+                return 'commissar_user_' + username.toLowerCase();
             }
         };
 

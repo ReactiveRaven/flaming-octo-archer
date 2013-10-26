@@ -34,8 +34,7 @@ define(['world'], function (world) {
             describe('[userExists()]', function () {
 
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.userExists).toBeDefined();
-                    expect(typeof Authentication.userExists).toEqual('function');
+                    world.shouldBeAFunction(Authentication, 'userExists');
                 }));
                 
                 it('should return a promise', inject(function (Couch, Authentication) {
@@ -91,8 +90,7 @@ define(['world'], function (world) {
                 // decide how to handle cookies etc
                 
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.loggedIn).toBeDefined();
-                    expect(typeof Authentication.loggedIn).toEqual('function');
+                    world.shouldBeAFunction(Authentication, 'loggedIn');
                 }));
                 
                 it('should return a promise', inject(function (Authentication) {
@@ -140,7 +138,7 @@ define(['world'], function (world) {
                     });
                 });
                 
-                describe('[return values]', function () {
+                describe('', function () {
                     var $cookies;
                         
                     beforeEach(function () {
@@ -151,30 +149,41 @@ define(['world'], function (world) {
                     });
                     
                     it('should return false when logged out', inject(function (Couch, Authentication) {
+                        
+                        var response = null;
+                        
                         spyOn(Couch, 'getSession').andReturn(world.resolved({
                             name: null,
                             roles: []
                         }));
                         
-                        Authentication.loggedIn().then(function (response) {
-                            expect(response).toEqual(false);
+                        Authentication.loggedIn().then(function (resp) {
+                            response = resp;
                         });
                         
+                        world.digest();
+                        
                         expect(Couch.getSession).toHaveBeenCalled();
+                        expect(response).toEqual(false);
                     }));
                     
                     it('should return true when logged in', inject(function (Couch, Authentication) {
-                            
+                        
+                        var response = null;
+                        
                         spyOn(Couch, 'getSession').andReturn(world.resolved({
                             name: 'john',
                             roles: ['user']
                         }));
                             
-                        Authentication.loggedIn().then(function (response) {
-                            expect(response).toEqual(true);
+                        Authentication.loggedIn().then(function (resp) {
+                            response = resp;
                         });
                         
+                        world.digest();
+                        
                         expect(Couch.getSession).toHaveBeenCalled();
+                        expect(response).toEqual(true);
                     }));
                 });
                 
@@ -182,8 +191,7 @@ define(['world'], function (world) {
             
             describe('[login()]', function () {
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.login).toBeDefined();
-                    expect(typeof Authentication.login).toEqual('function');
+                    world.shouldBeAFunction(Authentication, 'login');
                 }));
                 
                 it('should return a promise', inject(function (Couch, Authentication) {
@@ -246,13 +254,31 @@ define(['world'], function (world) {
                     expect($rootScope.$broadcast).toHaveBeenCalledWith('AuthChange');
                     
                 }));
+                
+                it('should return false on errors', inject(function (Couch, Authentication) {
+                    spyOn(Couch, 'login').andReturn(world.rejected(false));
+                    
+                    var succeeded = null,
+                        failed = null;
+                    
+                    Authentication.login('john', 'password').then(function (response) {
+                        succeeded = response;
+                    }, function (response) {
+                        failed = response;
+                    });
+                    
+                    world.digest();
+                    
+                    expect(succeeded).toEqual(false);
+                    expect(failed).toEqual(null);
+                    
+                }));
             });
             
             describe('[register()]', function () {
                 
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.register).toBeDefined();
-                    expect(typeof Authentication.register).toBe('function');
+                    world.shouldBeAFunction(Authentication, 'register');
                 }));
                 
                 it('should return a promise', inject(function (Authentication) {
@@ -308,8 +334,7 @@ define(['world'], function (world) {
             
             describe('[getSession()]', function () {
                 it('should be a function', inject(function (Authentication) {
-                    expect(Authentication.getSession).toBeDefined();
-                    expect(typeof Authentication.getSession).toBe('function');
+                    world.shouldBeAFunction(Authentication, 'getSession');
                 }));
                 
                 it('should return a promise', inject(function (Authentication, Couch) {
@@ -328,6 +353,24 @@ define(['world'], function (world) {
                     world.digest();
                     
                     expect(response).toBe(ctx);
+                }));
+            });
+            
+            describe('[getDatabaseName()]', function () {
+                it('should be a function', inject(function (Authentication) {
+                    world.shouldBeAFunction(Authentication, 'getDatabaseName');
+                }));
+                
+                it('should decorate a string', inject(function (Authentication) {
+                    var username = "john";
+                    
+                    expect(Authentication.getDatabaseName(username)).toBe("commissar_user_" + username);
+                }));
+                
+                it('should convert to lower case', inject(function (Authentication) {
+                    var username = 'JohnSmith';
+                    
+                    expect(Authentication.getDatabaseName(username)).toBe("commissar_user_" + username.toLowerCase());
                 }));
             });
         });

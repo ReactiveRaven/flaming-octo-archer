@@ -9,7 +9,9 @@
     </head>
     <body>
         <div data-ng-include="'/angular/templates/menu/menu.html'"></div>
-        <div data-ng-view id="main_view_container"></div>
+        <div class="container">
+            <div data-ng-view></div>
+        </div>
 
         <script data-main="/angular/js/main.js" src="bower_components/requirejs/require.js"></script>
     </body>

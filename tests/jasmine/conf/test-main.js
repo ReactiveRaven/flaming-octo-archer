@@ -19,7 +19,8 @@
             CornerCouch: '/base/www/bower_components/CornerCouch/angular-cornercouch',
             world: '/base/tests/jasmine/conf/world',
             jquery: '/base/www/bower_components/jquery/jquery',
-            bootstrap: '/base/www/bower_components/bootstrap/bootstrap'
+            bootstrap: '/base/www/bower_components/bootstrap/bootstrap',
+            ngUpload: '/base/www/bower_components/ngUpload/ng-upload'
         },
         baseUrl: '/base/www/angular/js',
         shim: {
@@ -29,7 +30,8 @@
             angularCookies: {deps: ['angular'], exports: 'angular.cookies'},
             CornerCouch: {deps: ['angular']},
             jquery: {exports: 'jQuery'},
-            bootstrap: {deps: ['jquery']}
+            bootstrap: {deps: ['jquery']},
+            ngUpload: {deps: ['angular', 'jquery']}
         },
         priority: [
             "angular"

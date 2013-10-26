@@ -10,14 +10,16 @@ define(['angular', 'marked'], function (angular, marked) {
                 {
                     var htmlText = marked(model.$modelValue);
                     element.html(htmlText);
-                    if (element.data("firstparagraph")) {
-                        element.html(element.find("p").first());
+                    if (typeof attrs.firstparagraph !== 'undefined') {
+                        var wrap = document.createElement('div');
+                        wrap.appendChild(element.find('p')[0].cloneNode(true));
+                        element.html(wrap.innerHTML);
                     }
-                    if (element.data("textonly")) {
+                    if (typeof attrs.textonly !== 'undefined') {
                         element.html(element.text());
                     }
-                    if (element.data("wordlimit")) {
-                        var wordlimit = element.data("wordlimit");
+                    if (typeof attrs.wordlimit !== 'undefined') {
+                        var wordlimit = parseInt(attrs.wordlimit, 10);
                         var words = element.text().split(" ");
                         if (words.length > wordlimit) {
                             var newWords = [];
@@ -38,7 +40,7 @@ define(['angular', 'marked'], function (angular, marked) {
             render();
         };
         return {
-            restrict: 'E',
+            restrict: 'A',
             require: 'ngModel',
             link: link
         };
