@@ -3,11 +3,12 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
 
     var LoginFormModule = angular.module('commissar.directives.LoginForm', ['commissar.services.Authentication', 'commissar.services.ParanoidScope']);
     
-    LoginFormModule.controller('commissar.directives.LoginForm.controller', function ($scope, Authentication, $location, ParanoidScope) {
+    LoginFormModule.controller('commissar.directives.LoginForm.controller', function ($scope, Authentication, $location, ParanoidScope, $timeout) {
         $scope.name = 'commissar.directives.LoginForm.controller';
         
         $scope.loggedIn = null;
         $scope.accessDenied = false;
+        $scope.loginAttemptedRecently = false;
         Authentication.loggedIn().then(function (response) {
             $scope.loggedIn = response;
         });
@@ -24,6 +25,10 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
             return Authentication.login(username, password).then(function (reply) {
                 $scope.loggedIn = !!reply;
                 $scope.accessDenied = !reply;
+                $scope.loginAttemptedRecently = true;
+                $timeout(function() {
+                    $scope.loginAttemptedRecently = false;
+                }, 1000);
                 return reply;
             });
         };

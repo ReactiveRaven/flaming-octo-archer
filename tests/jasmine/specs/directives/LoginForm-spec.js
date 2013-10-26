@@ -57,9 +57,10 @@ define(['world', 'angular'], function (world, angular) {
         
         describe('[user state]', function () {
             var Authentication,
-                $location;
+                $location,
+                $timeout;
             
-            beforeEach(inject(['Authentication', '$location', function (_Authentication_, _$location_) {
+            beforeEach(inject(function (_Authentication_, _$location_, _$timeout_) {
                 Authentication = _Authentication_;
                 $location = _$location_;
                 spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
@@ -67,7 +68,8 @@ define(['world', 'angular'], function (world, angular) {
                 spyOn(Authentication, 'userExists').andReturn(world.resolved(true));
                 spyOn(Authentication, 'register').andReturn(world.resolved(true));
                 spyOn($location, 'path');
-            }]));
+                $timeout = _$timeout_;
+            }));
             
             it('should check if logged in', function () {
                 getCtrl();
@@ -180,6 +182,30 @@ define(['world', 'angular'], function (world, angular) {
                     world.digest();
                     
                     expect(scope.accessDenied).toBe(true, "login failed, should have complained");
+                });
+                
+                it('should set loginAttemptedRecently to false by default', function () {
+                    getCtrl();
+                    
+                    expect(scope.loginAttemptedRecently).toBe(false);
+                });
+                
+                it('should set loginAttemptedRecently to true after login finishes', function () {
+                    var username = 'username',
+                        password = 'password';
+                        
+                    getCtrl();
+                    scope.login(username, password);
+                    
+                    expect(scope.loginAttemptedRecently).toBe(false, 'have not digested yet');
+
+                    world.digest();
+                    
+                    expect(scope.loginAttemptedRecently).toBe(true, 'finished digesting');
+                    
+                    $timeout.flush();
+                    
+                    expect(scope.loginAttemptedRecently).toBe(false, 'no longer recent');
                 });
             });
             
