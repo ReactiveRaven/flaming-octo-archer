@@ -519,7 +519,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     world.shouldBeAFunction(Couch, 'pushDesignDocs');
                 });
                 
-                it('should reject if the user does not have +admin role', function () {
+                it('should refuse if the user does not have +admin role', function () {
                     var success = null,
                         failure = null;
                     
@@ -557,6 +557,26 @@ define(['world', 'jquery'], function (world, jquery) {
                     expect(Couch.applyStaticChanges.calls.length).toEqual(2, 'number of applyStaticChanges calls');
                     expect(Couch.applyStaticChanges).toHaveBeenCalledWith('commissar_validation_global', Couch._designDocs.commissar_validation_global.mock);
                     expect(Couch.applyStaticChanges).toHaveBeenCalledWith('commissar_validation_users', Couch._designDocs.commissar_validation_users.mock);
+                });
+                
+                it('should reject if any document fails to save', function () {
+                    var success = null,
+                        failure = null,
+                        rejectMessage = "Something went wrong, at least one document failed";
+                        
+                    spyOn(Couch, "applyStaticChanges").andReturn(world.rejected(rejectMessage));
+                    
+                    Couch.pushDesignDocs().then(function (_success_) {
+                        success = _success_;
+                    }, function (_failure_) {
+                        failure = _failure_;
+                    });
+                    
+                    // Give it time to digest...
+                    world.digest();
+                    
+                    expect(success).toBe(null);
+                    expect(failure).toBe(rejectMessage);
                 });
                 
             });

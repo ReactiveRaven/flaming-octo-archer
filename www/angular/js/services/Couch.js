@@ -95,23 +95,19 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                     var remoteDocs = [];
 
                     // Loop through all databases
-                    for (var databaseName in Couch._designDocs) {
-                        if (Couch._designDocs.hasOwnProperty(databaseName)) {
+                    Object.getOwnPropertyNames(Couch._designDocs).forEach(function (databaseName) {
+                        
+                        // Get a copy of the local database object
+                        var localDatabase = Couch._designDocs[databaseName];
+
+                        // Loop through all documents in the local database
+                        Object.getOwnPropertyNames(localDatabase).forEach(function (id) {
                             
-                            // Get a copy of the local database object
-                            var localDatabase = Couch._designDocs[databaseName];
+                            // Apply changes to the document
+                            remoteDocs.push(Couch.applyStaticChanges(databaseName, localDatabase[id]));
                             
-                            // Loop through all documents in the local database
-                            for (var id in localDatabase) {
-                                if (localDatabase.hasOwnProperty(id)) {
-                                    
-                                    // Apply changes to the document
-                                    Couch.applyStaticChanges(databaseName, localDatabase[id]);
-                                    
-                                }
-                            }
-                        }
-                    }
+                        });
+                    });
 
                     $q.all(remoteDocs).then(function (result) {
                         deferred.resolve(result);
@@ -139,11 +135,9 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
             applyStaticChanges: function (databaseName, documentObject) {
                 var updateRemote = function (document, remoteDocument) {
                     // Copy the local properties onto the remote document
-                    for (var property in document) {
-                        if (document.hasOwnProperty(property)) {
-                            remoteDocument[property] = document[property];
-                        }
-                    }
+                    Object.getOwnPropertyNames(document).forEach(function (property) {
+                        remoteDocument[property] = document[property];
+                    });
                 };
                 
                 // Copy the document, so we don't modify the original
