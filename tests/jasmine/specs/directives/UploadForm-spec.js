@@ -1,4 +1,4 @@
-/* global inject:false, afterEach:false */
+/* global inject:false, afterEach:false, jQuery:false */
 
 define(['world', 'angular'], function (world, angular) {
     "use strict";
@@ -20,14 +20,15 @@ define(['world', 'angular'], function (world, angular) {
                 scope = $rootScope.$new();
 
             });
+            
+            element = angular.element(
+                '<div data-upload-form=""></div>'
+            );
 
         });
 
         var compileDirective = function () {
             inject(function ($compile) {
-                element = angular.element(
-                        '<div data-upload-form=""></div>'
-                    );
 
                 $compile(element)(scope);
                 
@@ -57,6 +58,42 @@ define(['world', 'angular'], function (world, angular) {
         });
         
         describe('[controller]', function () {
+            
+            describe('[events]', function () {
+                it('should trigger fileChanged function when selected file changes', function () {
+                    
+                    compileDirective();
+                    
+                    var directiveScope = element.scope();
+                    spyOn(directiveScope, "fileChanged");
+                    
+                    var $input = jQuery(element).find('input[type=file]');
+                    $input.trigger("change");
+                    
+                    expect(directiveScope.fileChanged).toHaveBeenCalled();
+                });
+            });
+            
+            describe('[fileChanged()]', function () {
+                
+                beforeEach(function () {
+                    getCtrl();
+                });
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(scope, 'fileChanged');
+                });
+                
+                it('should log out that it isn\'t finished for now', function () {
+                    spyOn(console, "log");
+                    
+                    scope.fileChanged();
+                    
+                    expect(console.log).toHaveBeenCalledWith("NOT YET IMPLEMENTED");
+                });
+                
+            });
+            
             describe('[valid()]', function () {
                 
                 beforeEach(function () {

@@ -10,8 +10,12 @@ define(['angular', 'constants', 'jquery', 'services/Authentication', 'services/P
             return ((!!$scope.uploadFormName) && (!!$scope.uploadFormFile));
         };
         
-        $scope.$on("filechanged", function (event, elem) {
-            console.log(elem.val());
+        $scope.fileChanged = function () {
+            console.log("NOT YET IMPLEMENTED");
+        };
+        
+        $scope.$on("filechanged", function () {
+            $scope.fileChanged();
         });
     });
 
