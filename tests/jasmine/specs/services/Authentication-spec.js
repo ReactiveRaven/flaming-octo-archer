@@ -87,7 +87,13 @@ define(['world'], function (world) {
             
             describe('[loggedIn()]', function () {
                 
-                // decide how to handle cookies etc
+                var Couch;
+                
+                beforeEach(inject(function (_Couch_) {
+                    Couch = _Couch_;
+                    
+                    spyOn(Couch, "loggedIn").andReturn(world.resolved(true));
+                }));
                 
                 it('should be a function', inject(function (Authentication) {
                     world.shouldBeAFunction(Authentication, 'loggedIn');
@@ -99,93 +105,53 @@ define(['world'], function (world) {
                     expect(typeof response.then).toEqual('function');
                 }));
                 
-                it('should check for an existing cookie', function () {
-                    var $cookies,
-                        Authentication,
-                        Couch;
-                        
-                    inject(function (_$cookies_, _Authentication_, _Couch_) {
-                        $cookies = _$cookies_;
-                        Authentication = _Authentication_;
-                        Couch = _Couch_;
-                    });
+                it('should call through to Couch.loggedIn', inject(function (Authentication, Couch) {
+                    var success = null,
+                        error = null;
                     
-                    $cookies.wasLoggedIn = true;
+                    Authentication.loggedIn().then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
                     
-                    spyOn(Couch, 'getSession').andReturn(world.resolved({
-                        name: 'john',
-                        roles: ['user']
-                    }));
+                    world.digest();
                     
-                    Authentication.loggedIn();
-                    
-                    expect(Couch.getSession).toHaveBeenCalled();
-                });
+                    expect(Couch.loggedIn).toHaveBeenCalled();
+                    expect(success).toBe(true);
+                    expect(error).toBe(null);
+                }));
                 
-                it('should assume logged out if no existing cookie', function () {
-                    var $cookies,
-                        Authentication;
-                    
-                    inject(function (_$cookies_, _Authentication_) {
-                        $cookies = _$cookies_;
-                        Authentication = _Authentication_;
-                    });
-                    
-                    delete $cookies.wasLoggedIn;
-                    
-                    Authentication.loggedIn().then(function (response) {
-                        expect(response).toEqual(false);
-                    });
-                });
+            });
+            
+            describe('[hasRole()]', function () {
                 
-                describe('', function () {
-                    var $cookies;
-                        
-                    beforeEach(function () {
-                        inject(function (_$cookies_) {
-                            $cookies = _$cookies_;
-                            $cookies.wasLoggedIn = true;
-                        });
-                    });
+                var Couch;
+                
+                beforeEach(inject(function (_Couch_) {
+                    Couch = _Couch_;
                     
-                    it('should return false when logged out', inject(function (Couch, Authentication) {
-                        
-                        var response = null;
-                        
-                        spyOn(Couch, 'getSession').andReturn(world.resolved({
-                            name: null,
-                            roles: []
-                        }));
-                        
-                        Authentication.loggedIn().then(function (resp) {
-                            response = resp;
-                        });
-                        
-                        world.digest();
-                        
-                        expect(Couch.getSession).toHaveBeenCalled();
-                        expect(response).toEqual(false);
-                    }));
+                    spyOn(Couch, "hasRole").andReturn(world.resolved(true));
+                }));
+                
+                it('should be a function', inject(function (Authentication) {
+                    world.shouldBeAFunction(Authentication, 'hasRole');
+                }));
+                
+                it('should return a promise', inject(function (Authentication) {
+                    var response = Authentication.hasRole();
+                    expect(typeof response).not.toEqual('undefined');
+                    expect(typeof response.then).toEqual('function');
+                }));
+                
+                it('should call through to Couch.hasRole', inject(function (Authentication, Couch) {
+                    var success = null,
+                        error = null;
                     
-                    it('should return true when logged in', inject(function (Couch, Authentication) {
-                        
-                        var response = null;
-                        
-                        spyOn(Couch, 'getSession').andReturn(world.resolved({
-                            name: 'john',
-                            roles: ['user']
-                        }));
-                            
-                        Authentication.loggedIn().then(function (resp) {
-                            response = resp;
-                        });
-                        
-                        world.digest();
-                        
-                        expect(Couch.getSession).toHaveBeenCalled();
-                        expect(response).toEqual(true);
-                    }));
-                });
+                    Authentication.hasRole().then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
+                    
+                    world.digest();
+                    
+                    expect(Couch.hasRole).toHaveBeenCalled();
+                    expect(success).toBe(true);
+                    expect(error).toBe(null);
+                }));
                 
             });
             

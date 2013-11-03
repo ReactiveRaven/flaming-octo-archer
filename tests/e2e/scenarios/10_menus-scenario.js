@@ -1,4 +1,4 @@
-/* globals browser:false, element:false */
+/* globals browser:false, element:false, input:false */
 
 define([], function () {
     'use strict';
@@ -63,6 +63,12 @@ define([], function () {
                 it('should show an admin menu', function () {
                     expect(menuAdminToggle.count()).toBe(1);
                     expect(menuAdminDropdown.count()).toBe(0);
+                });
+                
+                it('should open when clicked', function () {
+                    expect(menuAdminDropdown.count()).toBe(0);
+                    menuAdminToggle.click();
+                    expect(menuAdminDropdown.count()).toBe(1);
                 });
             });
             

@@ -1,4 +1,4 @@
-/* globals browser:false, element:false, input:false */
+/* globals browser:false, element:false, input:false, xdescribe:false */
 
 define([], function () {
     'use strict';

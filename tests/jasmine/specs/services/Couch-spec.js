@@ -142,21 +142,26 @@ define(['world', 'jquery'], function (world, jquery) {
             
             describe('[getSession()]', function () {
                 
-                var ctx = {name: 'john', roles: ['user']};
+                var ctx,
+                    template,
+                    $rootScope;
                 
-                beforeEach(inject(function ($rootScope, Couch) {
+                beforeEach(inject(function (_$rootScope_, Couch) {
                     Couch.shut_up_jshint = true;
                     
-                    spyOn(
-                        $rootScope.cornercouch,
-                        'session'
-                    ).andReturn(
-                        world.resolved({
-                            ok: true,
-                            userCtx: ctx,
-                            info: {authentication_db: '_users', authentication_handlers: ['oauth', 'cookie', 'default']}
-                        })
-                    );
+                    $rootScope = _$rootScope_;
+                    
+                    ctx = {name: 'john', roles: ['user']};
+                    
+                    template = {
+                        ok: true,
+                        userCtx: ctx,
+                        info: {authentication_db: '_users', authentication_handlers: ['oauth', 'cookie', 'default']}
+                    };
+                    
+                    template.userCtx = ctx;
+                    
+                    spyOn($rootScope.cornercouch, 'session').andReturn(world.resolved(template));
                 }));
                 
                 it('should be a function', inject(function (Couch) {
@@ -191,6 +196,8 @@ define(['world', 'jquery'], function (world, jquery) {
                     var response = null;
                     
                     Couch.getSession().then(function (_response_) { response = _response_; });
+                    
+                    $rootScope.cornercouch.userCtx = ctx;
                     
                     world.digest();
                     
@@ -262,6 +269,183 @@ define(['world', 'jquery'], function (world, jquery) {
                     
                     expect(response).toEqual(false);
                 }));
+            });
+            
+            describe('[loggedIn()]', function () {
+                
+                var Couch,
+                    ctx;
+                
+                beforeEach(inject(function (_Couch_) {
+                    Couch = _Couch_;
+                    
+                    ctx = {'name': 'john', 'roles': ['+admin']};
+                    spyOn(Couch, "getSession");
+                    Couch.getSession.andReturn(world.resolved(ctx));
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Couch, 'loggedIn');
+                });
+                
+                it('should return a promise', function () {
+                    var response = Couch.loggedIn();
+                    expect(typeof response).not.toEqual('undefined');
+                    expect(typeof response.then).toEqual('function');
+                });
+                
+                it('should check for an existing cookie', function () {
+                    var $cookies;
+                        
+                    inject(function (_$cookies_) {
+                        $cookies = _$cookies_;
+                    });
+                    
+                    $cookies.wasLoggedIn = true;
+                    
+                    Couch.loggedIn();
+                    
+                    expect(Couch.getSession).toHaveBeenCalled();
+                });
+                
+                it('should assume logged out if no existing cookie', function () {
+                    var $cookies;
+                    
+                    inject(function (_$cookies_) {
+                        $cookies = _$cookies_;
+                    });
+                    
+                    delete $cookies.wasLoggedIn;
+                    
+                    Couch.loggedIn().then(function (response) {
+                        expect(response).toEqual(false);
+                    });
+                });
+                    
+                it('should return false when logged out', function () {
+
+                    var response = null;
+
+                    ctx.name = null;
+
+                    Couch.loggedIn().then(function (resp) {
+                        response = resp;
+                    });
+
+                    world.digest();
+
+                    expect(Couch.getSession).toHaveBeenCalled();
+                    expect(response).toEqual(false);
+                });
+
+                it('should return true when logged in', function () {
+
+                    var response = null;
+
+                    Couch.loggedIn().then(function (resp) {
+                        response = resp;
+                    });
+
+                    world.digest();
+
+                    expect(Couch.getSession).toHaveBeenCalled();
+                    expect(response).toEqual(true);
+                });
+                
+                it('should handle null input', function () {
+                    Couch.getSession.andReturn(world.resolved(null));
+                    
+                    var success = null,
+                        error = null;
+                    
+                    Couch.loggedIn().then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
+                    
+                    world.digest();
+                    
+                    expect(success).toBe(false);
+                    expect(error).toBe(null);
+                });
+                
+            });
+            
+            describe('[hasRole()]', function () {
+                
+                var Couch,
+                    ctx;
+                
+                beforeEach(inject(function (_Couch_) {
+                    Couch = _Couch_;
+                    
+                    spyOn(Couch, 'loggedIn');
+                    Couch.loggedIn.andReturn(world.resolved(true));
+                    
+                    ctx = {'name': 'john', 'roles': ['+admin']};
+                    spyOn(Couch, 'getSession');
+                    Couch.getSession.andReturn(world.resolved(ctx));
+                }));
+                
+                it('should be a function', inject(function (Couch) {
+                    world.shouldBeAFunction(Couch, 'hasRole');
+                }));
+                
+                it('should return a promise', inject(function (Couch) {
+                    var response = Couch.hasRole();
+                    expect(typeof response).not.toEqual('undefined');
+                    expect(typeof response.then).toEqual('function');
+                }));
+                
+                it('should check if logged in', function () {
+                    Couch.hasRole("+admin");
+                    
+                    expect(Couch.loggedIn).toHaveBeenCalled();
+                });
+                
+                it('should assume not when logged out', function () {
+                    Couch.loggedIn.andReturn(world.resolved(false));
+                    
+                    var success = null,
+                        error = null;
+                    
+                    Couch.hasRole("+admin").then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
+                    
+                    world.digest();
+                    
+                    expect(success).toBe(false);
+                    expect(error).toBe(null);
+                });
+                
+                it('should check the session if logged in', function () {
+                    Couch.hasRole("+admin");
+                    
+                    world.digest();
+                    
+                    expect(Couch.getSession).toHaveBeenCalled();
+                });
+                
+                it('should return true if the current user has the role', function () {
+                    var success = null,
+                        error = null;
+                    
+                    Couch.hasRole("+admin").then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
+                    
+                    world.digest();
+                    
+                    expect(success).toBe(true);
+                    expect(error).toBe(null);
+                });
+                
+                it('should return false if the current user does not have the role', function () {
+                    var success = null,
+                        error = null;
+                    
+                    Couch.hasRole("+president").then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
+                    
+                    world.digest();
+                    
+                    expect(success).toBe(false);
+                    expect(error).toBe(null);
+                });
+                
             });
             
             describe('[validateDoc()]', function () {
@@ -581,7 +765,7 @@ define(['world', 'jquery'], function (world, jquery) {
                 
             });
             
-            describe('[applyChanges()]', function () {
+            describe('[applyStaticChanges()]', function () {
                                     
                 var $rootScope,
                     Couch,
@@ -618,7 +802,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     };
 
                     // Create a spy 'save' function that does nothing
-                    save = jasmine.createSpy("saveDocument");
+                    save = jasmine.createSpy("saveDocument").andReturn(world.resolved(true));
                 }));
                 
                 it('should be a function', function () {
@@ -651,6 +835,24 @@ define(['world', 'jquery'], function (world, jquery) {
                     expect(save).toHaveBeenCalled();
                     expect(save.calls.length).toEqual(1, "number of save calls");
                     expect(world.sortJSON(save.calls[0].object)).toEqual(world.sortJSON(globalDoc));
+
+                });
+                
+                it('should return a promise', function () {
+                        
+                    // Copy out the mocked document and stringify the validate_doc_update function
+                    var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
+                    globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
+
+                    // Set up a spy to return the documents when it tries to load them
+                    spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
+                        return world.resolved(jquery.extend({}, Couch._designDocs[dbname][docid], {'save': save}));
+                    });
+
+                    // Push it up!
+                    var reply = Couch.applyStaticChanges("commissar_validation_global", Couch._designDocs.commissar_validation_global.mock);
+
+                    expect(typeof reply.then).toBe('function');
 
                 });
 
@@ -694,7 +896,6 @@ define(['world', 'jquery'], function (world, jquery) {
                     globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
 
                     // Set up a spy to return the documents when it tries to load them
-                    var save = jasmine.createSpy("saveDocument");
                     spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
                         if (dbname === "commissar_validation_global") {
                             return world.rejected(false);
@@ -703,7 +904,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     });
                     // Set up a spy to return a spied new document when created
                     spyOn(Couch, "newDoc").andCallFake(function () {
-                        return {save: save};
+                        return world.resolved({save: save});
                     });
 
                     Couch.applyStaticChanges("commissar_validation_global", Couch._designDocs.commissar_validation_global.mock);
@@ -725,6 +926,108 @@ define(['world', 'jquery'], function (world, jquery) {
                     expect(save).toHaveBeenCalled();
                     expect(save.calls.length).toEqual(1, "number of save calls");
                     expect(world.sortJSON(save.calls[0].object)).toEqual(world.sortJSON(world.stringifyMethods(Couch._designDocs.commissar_validation_global.mock)), "global");
+                });
+                
+                it('should resolve when all are completed successfully', function () {
+                    var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
+                    globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
+
+                    // Set up a spy to return the documents when it tries to load them
+                    spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
+                        if (dbname === "commissar_validation_global") {
+                            return world.rejected(false);
+                        }
+                        return world.resolved(jquery.extend({}, Couch._designDocs[dbname][docid], {'save': save}));
+                    });
+                    // Set up a spy to return a spied new document when created
+                    spyOn(Couch, "newDoc").andCallFake(function () {
+                        return world.resolved({save: save});
+                    });
+                    
+                    var success = null,
+                        error = null;
+
+                    Couch.applyStaticChanges("commissar_validation_global", Couch._designDocs.commissar_validation_global.mock).then(
+                        function (_success_) { success = _success_; },
+                        function (_error_) { error = _error_; }
+                    );
+
+                    // Give it time to digest
+                    world.digest();
+
+                    // Expect the reply to have been resolved by now
+                    expect(success).toBe(true);
+                    expect(error).toBe(null);
+                });
+                
+                it('should reject when database is missing', function () {
+                    var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
+                    globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
+
+                    // Set up a spy to return the documents when it tries to load them
+                    spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
+                        if (dbname === "commissar_validation_global") {
+                            return world.rejected(false);
+                        }
+                        return world.resolved(jquery.extend({}, Couch._designDocs[dbname][docid], {'save': save}));
+                    });
+                    // Set up a spy to return a spied new document when created
+                    var errormessage = "FAKE: Database does not exist";
+                    spyOn(Couch, "newDoc").andCallFake(function (database) {
+                        if (database === 'commissar_validation_global') {
+                            return world.rejected(errormessage);
+                        }
+                        return world.resolved({save: save});
+                    });
+                    
+                    var success = null,
+                        error = null;
+
+                    Couch.applyStaticChanges("commissar_validation_global", Couch._designDocs.commissar_validation_global.mock).then(
+                        function (_success_) { success = _success_; },
+                        function (_error_) { error = _error_; }
+                    );
+
+                    // Give it time to digest
+                    world.digest();
+
+                    // Expect the reply to have been resolved by now
+                    expect(success).toBe(null);
+                    expect(error).toBe(errormessage);
+                });
+                
+                it('should reject when save fails', function () {
+                    var globalDoc = jquery.extend({}, Couch._designDocs.commissar_validation_global.mock);
+                    globalDoc.validate_doc_update = globalDoc.validate_doc_update.toString();
+
+                    // Set up a spy to return the documents when it tries to load them
+                    var errormessage = "FAKE: cannot save document";
+                    save.andReturn(world.rejected(errormessage));
+                    spyOn(Couch, "getDoc").andCallFake(function (dbname, docid) {
+                        if (dbname === "commissar_validation_global") {
+                            return world.rejected(false);
+                        }
+                        return world.resolved(jquery.extend({}, Couch._designDocs[dbname][docid], {'save': save}));
+                    });
+                    // Set up a spy to return a spied new document when created
+                    spyOn(Couch, "newDoc").andCallFake(function () {
+                        return world.resolved({save: save});
+                    });
+                    
+                    var success = null,
+                        error = null;
+
+                    Couch.applyStaticChanges("commissar_validation_global", Couch._designDocs.commissar_validation_global.mock).then(
+                        function (_success_) { success = _success_; },
+                        function (_error_) { error = _error_; }
+                    );
+
+                    // Give it time to digest
+                    world.digest();
+
+                    // Expect the reply to have been resolved by now
+                    expect(success).toBe(null);
+                    expect(error).toBe(errormessage);
                 });
             });
             
@@ -836,7 +1139,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     fakeDB.newDoc.andReturn(fakeDoc);
                     var resolved = world.resolved({_id: 'mock', type: 'test_document'});
                     resolved.success = function (func) { resolved.then(func); return resolved; };
-                    resolved.failure = function () { return resolved; }; // do nothing!
+                    resolved.error = function (func) { resolved.then(function () {}, func); return resolved; };
                     
                     fakeDoc.load.andReturn(resolved);
                     
@@ -878,15 +1181,27 @@ define(['world', 'jquery'], function (world, jquery) {
                     var database = 'commissar_validation_global',
                         id = 'mock',
                         success = null,
-                        failure = null;
+                        error = null;
                         
                     Couch.databaseExists.andReturn(world.resolved(false));
                     
-                    Couch.getDoc(database, id).then(function (_success_) { success = _success_; }, function (_failure_) { failure = _failure_; });
+                    Couch.getDoc(database, id).then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
                     world.digest();
                     
                     expect(success).toBe(null);
-                    expect(failure).toBe('Database not found: ' + database);
+                    expect(error).toBe('Database not found: ' + database);
+                });
+                
+                it('should return the document', function () {
+                    
+                    var success = null,
+                        error = null;
+                    
+                    Couch.getDoc('commissar_validation_global', 'mock').then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
+                    world.digest();
+                    
+                    expect(success).toBe(fakeDoc);
+                    expect(error).toBe(null);
                 });
             });
         });

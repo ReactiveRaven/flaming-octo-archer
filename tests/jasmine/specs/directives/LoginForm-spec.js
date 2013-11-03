@@ -3,14 +3,21 @@
 define(['world', 'angular'], function (world, angular) {
     "use strict";
 
-    var element, scope, $httpBackend, $templateCache, $rootScope;
+    var element,
+        scope,
+        $httpBackend,
+        $templateCache,
+        $rootScope,
+        Authentication,
+        $location,
+        $timeout;
 
     describe('[commissar.directives.LoginForm]', function () {
         beforeEach(function () {
 
             module('commissar.directives.LoginForm', 'templates');
 
-            inject(function (_$httpBackend_, _$rootScope_, _$templateCache_) {
+            inject(function (_$httpBackend_, _$rootScope_, _$templateCache_, _Authentication_, _$location_, _$timeout_) {
 
                 $httpBackend = _$httpBackend_;
                 $templateCache = _$templateCache_;
@@ -18,8 +25,20 @@ define(['world', 'angular'], function (world, angular) {
 
                 scope = $rootScope.$new();
 
+                Authentication = _Authentication_;
+                $location = _$location_;
+                spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
+                spyOn(Authentication, 'login').andReturn(world.resolved(true));
+                spyOn(Authentication, 'userExists').andReturn(world.resolved(true));
+                spyOn(Authentication, 'register').andReturn(world.resolved(true));
+                spyOn($location, 'path');
+                $timeout = _$timeout_;
             });
-
+        });
+        
+        afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation();
+            $httpBackend.verifyNoOutstandingRequest();
         });
 
         var compileDirective = function () {
@@ -43,11 +62,6 @@ define(['world', 'angular'], function (world, angular) {
             return ctrl;
         };
 
-        afterEach(function () {
-            $httpBackend.verifyNoOutstandingExpectation();
-            $httpBackend.verifyNoOutstandingRequest();
-        });
-
         it('should replace with a form element', function () {
             
             compileDirective();
@@ -56,20 +70,6 @@ define(['world', 'angular'], function (world, angular) {
         });
         
         describe('[user state]', function () {
-            var Authentication,
-                $location,
-                $timeout;
-            
-            beforeEach(inject(function (_Authentication_, _$location_, _$timeout_) {
-                Authentication = _Authentication_;
-                $location = _$location_;
-                spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
-                spyOn(Authentication, 'login').andReturn(world.resolved(true));
-                spyOn(Authentication, 'userExists').andReturn(world.resolved(true));
-                spyOn(Authentication, 'register').andReturn(world.resolved(true));
-                spyOn($location, 'path');
-                $timeout = _$timeout_;
-            }));
             
             it('should check if logged in', function () {
                 getCtrl();

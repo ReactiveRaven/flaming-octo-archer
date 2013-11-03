@@ -15,7 +15,8 @@ module.exports = function (grunt) {
         'grunt-clear',
         'grunt-parallel',
         'grunt-wait',
-        'grunt-bg-shell'
+        'grunt-bg-shell',
+        'grunt-contrib-cssmin'
     ];
 
     var tasks = {
@@ -419,6 +420,17 @@ module.exports = function (grunt) {
                         jquery: {exports: 'jQuery'},
                         bootstrap: {deps: ['jquery']}
                     }
+                }
+            }
+        },
+        cssmin: {
+            combine: {
+                files: {
+                    'www/css/compiled.css': ['www/bower_components/bootstrap/bootstrap.css', 'www/css/testing.css', 'www/css/loader.css', 'www/bower_components/font-awesome/css/font-awesome.css'],
+                },
+                options: {
+                    keepSpecialComments: 1,
+                    root: 'www/'
                 }
             }
         }

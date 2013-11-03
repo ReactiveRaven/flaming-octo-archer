@@ -5,7 +5,7 @@
         "adminpass": "adminuser",
         "databases": {
             "validation_global": "commissar_validation_global",
-            "validation_user": "commissar_validation_user"
+            "validation_users": "commissar_validation_users"
         }
     },
     "pookstation.coolpink.net": {
@@ -14,7 +14,7 @@
       "adminpass": "adminuser",
       "databases": {
         "validation_global": "commissar_validation_global",
-        "validation_user": "commissar_validation_user"
+        "validation_users": "commissar_validation_users"
       }
     },
     "default": {
@@ -23,7 +23,7 @@
         "adminpass": "adminuser",
         "databases": {
             "validation_global": "commissar_validation_global",
-            "validation_user": "commissar_validation_user"
+            "validation_users": "commissar_validation_users"
         }
     }
 }
