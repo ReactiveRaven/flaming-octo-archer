@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/css/compiled.css" />
+        <meta name="fragment" content="!" />
+    </head>
+    <body>
+        <div data-ng-include="'/angular/templates/menu/menu.html'"></div>
+        <div class="container">
+            <div data-ng-view></div>
+        </div>
+
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/js/compiled.js"></script>
+        <script>
+            require(['startup'], function (startup) { startup(); });
+        </script>
+    </body>
+</html>

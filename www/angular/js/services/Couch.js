@@ -1,7 +1,7 @@
 define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
     "use strict";
     
-    var CouchModule = angular.module('commissar.services.Couch', ['CornerCouch']);
+    var CouchModule = angular.module('commissar.services.Couch', ['CornerCouch', 'ngCookies']);
     
     CouchModule.factory('Couch', function ($rootScope, cornercouch, $q) {
         if (!$rootScope.cornercouch) {
@@ -133,6 +133,8 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
              * @returns {undefined}
              */
             applyStaticChanges: function (databaseName, documentObject) {
+                var deferred = $q.defer();
+                
                 var updateRemote = function (document, remoteDocument) {
                     // Copy the local properties onto the remote document
                     Object.getOwnPropertyNames(document).forEach(function (property) {
@@ -156,16 +158,23 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
 
                     // Update remote and save it out
                     updateRemote(document, remoteDocument);
-                    remoteDocument.save();
+                    remoteDocument.save().then(function () {
+                        deferred.resolve(true);
+                    }, deferred.reject);
 
                 }, function () {
 
                     // Create document, update, and save out
-                    var remoteDocument = Couch.newDoc(databaseName);
-                    updateRemote(document, remoteDocument);
-                    remoteDocument.save();
+                    Couch.newDoc(databaseName).then(function (remoteDocument) {
+                        updateRemote(document, remoteDocument);
+                        remoteDocument.save().then(function () {
+                            deferred.resolve(true);
+                        }, deferred.reject);
+                    }, deferred.reject);
 
                 });
+                
+                return deferred.promise;
             },
             getDoc: function (database, id) {
                 var deferred = $q.defer();
@@ -176,7 +185,7 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                         var doc = db.newDoc();
                         var loading = doc.load(id);
                         
-                        loading.success(function (data) { deferred.resolve(data); }).failure(deferred.reject);
+                        loading.success(function () { deferred.resolve(doc); }).error(deferred.reject);
                     } else {
                         deferred.reject('Database not found: ' + database);
                     }
@@ -265,11 +274,9 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 if (typeof $rootScope.cornercouch.userCtx !== 'undefined') {
                     deferred.resolve($rootScope.cornercouch.userCtx);
                 } else {
-                    $rootScope.cornercouch.session().then(function (response) {
-                        deferred.resolve(response.userCtx);
-                    }, function (reason) {
-                        deferred.reject(reason);
-                    });
+                    $rootScope.cornercouch.session().then(function () {
+                        deferred.resolve($rootScope.cornercouch.userCtx);
+                    }, deferred.reject);
                 }
                 
                 return deferred.promise;
@@ -282,6 +289,30 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 }, function () {
                     deferred.resolve(false);
                 });
+                
+                return deferred.promise;
+            },
+            loggedIn: function () {
+                var deferred = $q.defer();
+
+                Couch.getSession().then(function (userCtx) {
+                    deferred.resolve(!!(userCtx && userCtx.name));
+                }, deferred.reject);
+
+                return deferred.promise;
+            },
+            hasRole: function (role) {
+                var deferred = $q.defer();
+                
+                Couch.loggedIn().then(function (loggedIn) {
+                    if (loggedIn) {
+                        Couch.getSession().then(function (session) {
+                            deferred.resolve(session.roles.indexOf(role) > -1);
+                        });
+                    } else {
+                        deferred.resolve(false);
+                    }
+                }, deferred.reject);
                 
                 return deferred.promise;
             }

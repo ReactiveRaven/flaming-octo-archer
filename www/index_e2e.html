@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-ng-app="commissar_mocked">
+<html>
     <head>
         <link rel="stylesheet" href="/bower_components/bootstrap/bootstrap.css" />
         <link rel="stylesheet" href="/css/testing.css" />
@@ -9,8 +9,10 @@
     </head>
     <body>
         <div data-ng-include="'/angular/templates/menu/menu.html'"></div>
-        <div data-ng-view id="main_view_container"></div>
-
+        <div class="container">
+            <div data-ng-view></div>
+        </div>
+        
         <script>
             window.e2emocks = true;
             window.pause_for_angular_scenario = true;

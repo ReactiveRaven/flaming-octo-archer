@@ -26,7 +26,7 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
                 $scope.loggedIn = !!reply;
                 $scope.accessDenied = !reply;
                 $scope.loginAttemptedRecently = true;
-                $timeout(function() {
+                $timeout(function () {
                     $scope.loginAttemptedRecently = false;
                 }, 1000);
                 return reply;

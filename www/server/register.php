@@ -77,8 +77,8 @@ if ($globalValidationReplication["response"]["status"]["status"] > 299) {
 }
 
 $userReplicationArray = array(
-    "_id" => "user:" . $registerUsername . "_validation_user",
-    "source" => $couchdbsettings["databases"]["validation_user"],
+    "_id" => "user:" . $registerUsername . "_validation_users",
+    "source" => $couchdbsettings["databases"]["validation_users"],
     "target" => $userDatabaseName,
     "continuous" => true,
     "user_ctx" => array(

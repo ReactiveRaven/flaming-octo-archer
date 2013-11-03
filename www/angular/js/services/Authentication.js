@@ -1,9 +1,9 @@
 define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (angular) {
     "use strict";
     
-    var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch', 'commissar.services.PostSerializer', 'ngCookies']);
+    var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch', 'commissar.services.PostSerializer']);
     
-    AuthenticationModule.factory('Authentication', function (Couch, $q, $cookies, $http, PostSerializer, $rootScope) {
+    AuthenticationModule.factory('Authentication', function (Couch, $q, $http, PostSerializer, $rootScope) {
             
         var Authentication = {
             'userExists': function (username) {
@@ -15,25 +15,15 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
                 return Couch.databaseExists(Authentication.getDatabaseName(username));
             },
             'loggedIn': function () {
-                var deferred = $q.defer();
-
-                if (typeof $cookies.wasLoggedIn !== 'undefined') {
-                    Couch.getSession().then(function (userCtx) {
-                        deferred.resolve(userCtx.name !== null);
-                    });
-                } else {
-                    deferred.resolve(false);
-                }
-
-                return deferred.promise;
+                return Couch.loggedIn();
+            },
+            'hasRole': function (role) {
+                return Couch.hasRole(role);
             },
             'login': function (username, password) {
                 var deferred = $q.defer();
 
                 Couch.login(username, password).then(function (response) {
-                    if (response) {
-                        $cookies.wasLoggedIn = true;
-                    }
                     deferred.resolve(response);
                     $rootScope.$broadcast('AuthChange');
                 }, function () {
@@ -58,13 +48,7 @@ define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (a
                 return deferred.promise;
             },
             'getSession': function () {
-                var deferred = $q.defer();
-                
-                Couch.getSession().then(function (userCtx) {
-                    deferred.resolve(userCtx);
-                });
-                
-                return deferred.promise;
+                return Couch.getSession();
             },
             'getDatabaseName': function (username) {
                 return 'commissar_user_' + username.toLowerCase();

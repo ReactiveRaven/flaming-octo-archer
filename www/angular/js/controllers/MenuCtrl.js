@@ -17,20 +17,22 @@ define(['angular', 'services/Authentication', 'filters/Capitalize', 'directives/
             $q.all(
                 [
                     Authentication.loggedIn(),
-                    Authentication.getSession()
+                    Authentication.getSession(),
+                    Authentication.hasRole("+admin")
                 ]
             ).then(
                 function (returnValues) {
                     $scope.loggedIn = returnValues[0];
                     $scope.userCtx = returnValues[1];
-                    var isAdmin = returnValues[1].roles.indexOf('+admin') !== -1;
-                    $scope.isAdmin = isAdmin;
+                    $scope.isAdmin = !!returnValues[2];
                     ParanoidScope.apply($scope);
                     ParanoidScope.digest($scope);
                 }
             );
             
         };
+        
+        $scope.onAuthChange();
         
         $scope.$on('AuthChange', $scope.onAuthChange);
         

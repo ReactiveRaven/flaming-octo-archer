@@ -73,12 +73,12 @@
                     </ul>
                 </li>
                 <li class="dropdown" data-ng-show="isAdmin">
-                    <a href="#" id="menuAdminToggle">
+                    <a href="#" id="menuAdminToggle" class="dropdown-toggle" data-toggle="dropdown">
                         Admin <i class="icon-lock"></i>
                     </a>
-                    <div class="dropdown-menu" id="menuAdminDropdown">
-                        <a data-ng-href="#!/admin">Control Panel</a>
-                    </div>
+                    <ul class="dropdown-menu" id="menuAdminDropdown">
+                        <li><a id="menuAdminDropdownLinkAdminPanel" data-ng-href="#!/admin">Control Panel</a></li>
+                    </ul>
                 </li>
                 <li class='dropdown' data-ng-show='!loggedIn'>
                     <a href='#' id="menuLoginToggle" class='dropdown-toggle' data-toggle='dropdown'>
