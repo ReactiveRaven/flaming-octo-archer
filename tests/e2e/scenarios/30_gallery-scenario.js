@@ -1,9 +1,9 @@
-/* globals browser:false, element:false, input:false, xdescribe:false */
+/* globals browser:false, element:false, input:false */
 
 define([], function () {
     'use strict';
     
-    xdescribe('[Gallery]', function () {
+    describe('[Gallery]', function () {
         var menuArtistToggle,
             menuArtistDropdown,
             menuOffersToggle,
