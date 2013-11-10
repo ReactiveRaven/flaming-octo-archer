@@ -1,3 +1,5 @@
+require_relative "VagrantSecrets.rb"
+
 Vagrant.configure("2") do |config|
   config.vm.box = "precise46"
   config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-12042-x64-vbox4210.box"
@@ -13,6 +15,13 @@ Vagrant.configure("2") do |config|
     virtualbox.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     virtualbox.customize ["modifyvm", :id, "--memory", "512"]
     virtualbox.customize ["setextradata", :id, "--VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
+  end
+
+  config.vm.provider :digital_ocean do |provider, override|
+    override.ssh.private_key_path = '~/.ssh/id_rsa'
+
+    provider.client_id = $digitalOceanClientId
+    provider.api_key = $digitalOceanApiKey
   end
 
   config.vm.provision :shell, :path => "shell/initial-setup.sh"

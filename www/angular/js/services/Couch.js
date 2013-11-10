@@ -292,6 +292,9 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                 
                 return deferred.promise;
             },
+            logout: function () {
+                return $rootScope.cornercouch.logout();
+            },
             loggedIn: function () {
                 var deferred = $q.defer();
 

@@ -17,3 +17,5 @@ bower_components/
 tests/jasmine/reports/coverage/*.json
 tests/jasmine/reports/coverage/*/
 .vagrant/
+.vagrant_remote
+VagrantSecrets.rb

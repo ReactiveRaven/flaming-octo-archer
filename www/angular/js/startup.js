@@ -9,7 +9,7 @@ define('startup', ['angular', 'app', 'angularMocks'], function (angular, app) {
             mockedApp.run(function ($httpBackend) {
                 $httpBackend.whenGET('/couchdb/_all_dbs').respond(200, ['_replicator', '_users', 'commissar', 'commissar_user_john', 'commissar_validation_global', 'commissar_validation_users']);
                 $httpBackend.whenPOST('/server/register.php').respond(200, {"ok": true});
-                $httpBackend.whenGET('/couchdb/_session').respond(200, {ok: true, userCtx: {name: 'a_new_username', roles: ['+admin']}, info: {authentication_db: "_users", authentication_handlers: ["oauth", "cookie", "default"]}});
+                $httpBackend.whenGET('/couchdb/_session').respond(200, {ok: false, userCtx: {name: null, roles: []}, info: {authentication_db: "_users", authentication_handlers: ["oauth", "cookie", "default"]}});
                 $httpBackend.whenPOST('/couchdb/_session').respond(200, {ok: true, name: 'a_new_username', roles: ['+admin']});
                 $httpBackend.whenGET(/templates/).passThrough();
                 

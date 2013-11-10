@@ -3,9 +3,14 @@
 define(['world', 'angular'], function (world, angular) {
     "use strict";
 
-    var element, scope, $httpBackend, $templateCache, $rootScope;
+    var element,
+        scope,
+        $httpBackend,
+        $templateCache,
+        $rootScope;
 
     describe('[commissar.directives.UploadForm]', function () {
+        
         beforeEach(function () {
 
             module('commissar.directives.UploadForm', 'templates');
@@ -122,6 +127,66 @@ define(['world', 'angular'], function (world, angular) {
                 it('should return true when both inputs are okay', function () {
                     expect(scope.valid()).toBe(true);
                 });
+            });
+            
+            describe('[upload()]', function () {
+                
+                var Couch,
+                    Authentication;
+                
+                beforeEach(inject(function (_Couch_, _Authentication_) {
+                    Couch = _Couch_;
+                    Authentication = _Authentication_;
+                    
+                    scope.uploadFormName = 'kittens';
+                    scope.uploadFormFile = '/kittens.png';
+                    
+                    getCtrl();
+                    
+                    spyOn(scope, "valid").andReturn(true);
+                    
+                    spyOn(Authentication, "loggedIn").andReturn(world.resolved(true));
+                    
+                    var save = jasmine.createSpy("save");
+                    save.andReturn(world.resolved(true));
+                    
+                    var attach = jasmine.createSpy("attach");
+                    attach.andReturn(world.resolved(true));
+                    spyOn(Couch, "newDoc").andReturn(world.resolved({save: save, attach: attach}));
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(scope, 'upload');
+                });
+                
+                it('should return a promise', function () {
+                    var reply = scope.upload();
+                    
+                    expect(reply).toBeDefined();
+                    expect(reply.then).toBeDefined();
+                    expect(typeof reply.then).toBe('function');
+                });
+                
+                it('should check if valid', function () {
+                    scope.valid.andReturn(false);
+                    
+                    var success = null,
+                        error = null;
+                    
+                    scope.upload().then(function (_s_) { success = _s_; }, function (_e_) { error = _e_; });
+                    
+                    world.digest();
+                    
+                    expect(scope.valid).toHaveBeenCalled();
+                    expect(success).toBe(null);
+                    expect(error).toBe("Not valid");
+                });
+                
+//                it('should create a document and attach the file', function () {
+//                    scope.upload();
+//                    
+//                    expect(Couch.newDoc).toHaveBeenCalled();
+//                });
             });
             
         });

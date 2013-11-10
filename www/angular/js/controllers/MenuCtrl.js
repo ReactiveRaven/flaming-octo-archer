@@ -18,13 +18,13 @@ define(['angular', 'services/Authentication', 'filters/Capitalize', 'directives/
                 [
                     Authentication.loggedIn(),
                     Authentication.getSession(),
-                    Authentication.hasRole("+admin")
+                    Authentication.isAdmin()
                 ]
             ).then(
                 function (returnValues) {
                     $scope.loggedIn = returnValues[0];
                     $scope.userCtx = returnValues[1];
-                    $scope.isAdmin = !!returnValues[2];
+                    $scope.isAdmin = returnValues[2];
                     ParanoidScope.apply($scope);
                     ParanoidScope.digest($scope);
                 }
@@ -35,6 +35,10 @@ define(['angular', 'services/Authentication', 'filters/Capitalize', 'directives/
         $scope.onAuthChange();
         
         $scope.$on('AuthChange', $scope.onAuthChange);
+        
+        $scope.logout = function () {
+            Authentication.logout();
+        };
         
     });
     

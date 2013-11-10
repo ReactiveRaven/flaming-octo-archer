@@ -30,6 +30,39 @@ define(['world'], function (world) {
         describe('[functions]', function () {
             beforeEach(function () {
             });
+            
+            describe('[logout()]', function () {
+                
+                var Authentication,
+                    Couch;
+                
+                beforeEach(inject(function (_Authentication_, _Couch_) {
+                    Authentication = _Authentication_;
+                    Couch = _Couch_;
+                    
+                    spyOn(Couch, "logout").andReturn(world.resolved(true));
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Authentication, 'logout');
+                });
+                
+                it('should call through to Couch', function () {
+                    Authentication.logout();
+                    
+                    expect(Couch.logout).toHaveBeenCalled();
+                });
+                
+                it('should broadcast AuthChange', inject(function ($rootScope) {
+                    spyOn($rootScope, '$broadcast');
+                    
+                    Authentication.logout();
+                    
+                    world.digest();
+                    
+                    expect($rootScope.$broadcast).toHaveBeenCalledWith("AuthChange");
+                }));
+            });
 
             describe('[userExists()]', function () {
 
@@ -155,6 +188,96 @@ define(['world'], function (world) {
                 
             });
             
+            describe('[isAdmin()]', function () {
+                
+                var Authentication;
+                
+                beforeEach(inject(function (_Authentication_) {
+                    Authentication = _Authentication_;
+                    
+                    spyOn(Authentication, "hasRole").andReturn(world.resolved(true));
+                }));
+                
+                it('should be a function', inject(function (Authentication) {
+                    world.shouldBeAFunction(Authentication, 'hasRole');
+                }));
+                
+                it('should return a promise', inject(function (Authentication) {
+                    var response = Authentication.isAdmin();
+                    expect(typeof response).not.toEqual('undefined');
+                    expect(typeof response.then).toEqual('function');
+                }));
+                
+                it('should call through to Authentication.hasRole', function () {
+                    var success = null,
+                        error = null;
+                    
+                    Authentication.isAdmin().then(function (_success_) { success = _success_; }, function (_error_) { error = _error_; });
+                    
+                    world.digest();
+                    
+                    expect(Authentication.hasRole).toHaveBeenCalledWith("+admin");
+                    expect(success).toBe(true);
+                    expect(error).toBe(null);
+                });
+                
+            });
+            
+            describe('[getUsername()]', function () {
+                
+                var Authentication,
+                    ctx;
+                
+                beforeEach(inject(function (_Authentication_) {
+                    Authentication = _Authentication_;
+                    
+                    ctx = {name: 'john', roles: []};
+                    
+                    spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
+                    spyOn(Authentication, 'getSession').andReturn(world.resolved(ctx));
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Authentication, 'getUsername');
+                });
+                
+                it('should return a promise', function () {
+                    var reply = Authentication.getUsername();
+                    
+                    expect(reply).toBeDefined();
+                    expect(reply.then).toBeDefined();
+                    expect(typeof reply.then).toBe('function');
+                });
+                
+                it('should check if logged in', function () {
+                    var success = null,
+                        error = null;
+                        
+                    Authentication.loggedIn.andReturn(world.resolved(false));
+                    
+                    Authentication.getUsername().then(function (_s_) { success = _s_; }, function (_e_) { error = _e_; });
+                    
+                    world.digest();
+                    
+                    expect(Authentication.loggedIn).toHaveBeenCalled();
+                    expect(success).toBe(null);
+                    expect(error).toBe("Not logged in");
+                });
+                
+                it('should pull username from session', function () {
+                    var success = null,
+                        error = null;
+                    
+                    Authentication.getUsername().then(function (_s_) { success = _s_; }, function (_e_) { error = _e_; });
+                    
+                    world.digest();
+                    
+                    expect(Authentication.getSession).toHaveBeenCalled();
+                    expect(success).toBe(ctx.name);
+                    expect(error).toBe(null);
+                });
+            });
+
             describe('[login()]', function () {
                 it('should be a function', inject(function (Authentication) {
                     world.shouldBeAFunction(Authentication, 'login');

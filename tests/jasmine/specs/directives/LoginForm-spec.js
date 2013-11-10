@@ -207,6 +207,25 @@ define(['world', 'angular'], function (world, angular) {
                     
                     expect(scope.loginAttemptedRecently).toBe(false, 'no longer recent');
                 });
+                
+                it('should clear username and password after successful login', function () {
+                    var username = 'username',
+                        password = 'password',
+                        response = null;
+                    
+                    getCtrl();
+                    
+                    scope.loginFormUsername = username;
+                    scope.loginFormPassword = password;
+                    
+                    scope.login().then(function (_response_) {
+                        response = _response_;
+                    });
+                    world.digest();
+                    
+                    expect(scope.loginFormUsername).toBe('');
+                    expect(scope.loginFormPassword).toBe('');
+                });
             });
             
             describe('[userExists()]', function () {

@@ -16,14 +16,13 @@ define(['world', 'angular'], function (world, angular) {
                 $httpBackend = _$httpBackend_;
                 scope = $rootScope.$new();
             }]);
+        
+            inject(function (Authentication) {
+                spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
+                spyOn(Authentication, 'getSession').andReturn(world.resolved(ctx));
+                spyOn(Authentication, 'isAdmin').andReturn(world.resolved(true));
+            });
         });
-        
-        
-        beforeEach(inject(function (Authentication) {
-            spyOn(Authentication, 'loggedIn').andReturn(world.resolved(true));
-            spyOn(Authentication, 'getSession').andReturn(world.resolved(ctx));
-            spyOn(Authentication, 'hasRole').andReturn(world.resolved(true));
-        }));
         
         afterEach(function () {
             $httpBackend.verifyNoOutstandingExpectation();
@@ -55,6 +54,22 @@ define(['world', 'angular'], function (world, angular) {
                 expect(scope.name).toBeDefined();
                 expect(scope.name).toBe('MenuCtrl');
             });
+        });
+        
+        describe('[logout()]', function () {
+            it('should be a function', function () {
+                getCtrl();
+                world.shouldBeAFunction(scope, 'logout');
+            });
+            
+            it('should call through to Authentication', inject(function (Authentication) {
+                spyOn(Authentication, "logout");
+                
+                getCtrl();
+                scope.logout();
+                
+                expect(Authentication.logout).toHaveBeenCalled();
+            }));
         });
         
         describe('[onAuthChange()]', function () {
@@ -98,11 +113,7 @@ define(['world', 'angular'], function (world, angular) {
                 expect(scope.loggedIn).toBe(true);
             }));
 
-            it('should update isAdmin when logged in as an admin', inject(function ($rootScope, Authentication) {
-
-                // Return a ctx with admin role
-                var newCtx = angular.extend({}, ctx, {roles: ['+admin']});
-                Authentication.getSession.andReturn(world.resolved(newCtx));
+            it('should update isAdmin when logged in as an admin', inject(function ($rootScope) {
 
                 // Set up controller and trigger AuthChange
                 getCtrl();

@@ -3,6 +3,7 @@ define(
     [
         'angular',
         'bootstrap',
+        'controllers/LogoutCtrl',
         'controllers/AdminCtrl',
         'controllers/IndexCtrl',
         'controllers/WelcomeCtrl',
@@ -15,6 +16,7 @@ define(
         var App = angular.module(
             'commissar',
             [
+                'commissar.controllers.LogoutCtrl',
                 'commissar.controllers.AdminCtrl',
                 'commissar.controllers.IndexCtrl',
                 'commissar.controllers.MenuCtrl',

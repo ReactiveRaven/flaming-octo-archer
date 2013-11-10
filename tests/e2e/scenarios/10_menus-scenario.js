@@ -33,7 +33,7 @@ define([], function () {
         describe('[Left]', function () {
             
             describe('[logged out]', function () {
-                
+                     
                 it('should start off on the test page', function () {
                     browser().navigateTo('/index_e2e.html');
                 });

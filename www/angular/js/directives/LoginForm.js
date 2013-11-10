@@ -29,6 +29,12 @@ define(['angular', 'constants', 'services/Authentication', 'services/ParanoidSco
                 $timeout(function () {
                     $scope.loginAttemptedRecently = false;
                 }, 1000);
+                
+                if (reply) {
+                    $scope.loginFormUsername = '';
+                    $scope.loginFormPassword = '';
+                }
+                
                 return reply;
             });
         };

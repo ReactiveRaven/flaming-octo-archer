@@ -3,7 +3,7 @@ define(['angular', 'constants', 'jquery', 'services/Authentication', 'services/P
 
     var UploadFormModule = angular.module('commissar.directives.UploadForm', ['commissar.services.Authentication', 'commissar.services.ParanoidScope']);
     
-    UploadFormModule.controller('commissar.directives.UploadForm.controller', function ($scope) {
+    UploadFormModule.controller('commissar.directives.UploadForm.controller', function ($scope, $q) {
         $scope.name = 'commissar.directives.UploadForm.controller';
         
         $scope.valid = function () {
@@ -17,6 +17,18 @@ define(['angular', 'constants', 'jquery', 'services/Authentication', 'services/P
         $scope.$on("filechanged", function () {
             $scope.fileChanged();
         });
+        
+        $scope.upload = function () {
+            var deferred = $q.defer();
+            
+            if ($scope.valid()) {
+                
+            } else {
+                deferred.reject("Not valid");
+            }
+            
+            return deferred.promise;
+        };
     });
 
     UploadFormModule.directive("uploadForm", function () {

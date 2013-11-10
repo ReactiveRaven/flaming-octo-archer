@@ -271,6 +271,38 @@ define(['world', 'jquery'], function (world, jquery) {
                 }));
             });
             
+            describe('[logout()]', function () {
+                var Couch,
+                    $rootScope;
+                    
+                beforeEach(inject(function (_Couch_, _$rootScope_) {
+                    Couch = _Couch_;
+                    $rootScope = _$rootScope_;
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Couch, 'logout');
+                });
+                
+                it('should call out to cornercouch', function () {
+                    spyOn($rootScope.cornercouch, 'logout');
+                    
+                    Couch.logout();
+                    
+                    expect($rootScope.cornercouch.logout).toHaveBeenCalled();
+                });
+                
+                it('should return a promise', function () {
+                    spyOn($rootScope.cornercouch, 'logout').andReturn(world.resolved(true));
+                    
+                    var reply = Couch.logout();
+                    
+                    expect(reply).toBeDefined();
+                    expect(reply.then).toBeDefined();
+                    expect(typeof reply.then).toBe("function");
+                });
+            });
+            
             describe('[loggedIn()]', function () {
                 
                 var Couch,
