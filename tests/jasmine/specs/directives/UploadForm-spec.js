@@ -81,20 +81,28 @@ define(['world', 'angular'], function (world, angular) {
             
             describe('[fileChanged()]', function () {
                 
-                beforeEach(function () {
+                var ParanoidScope;
+                
+                beforeEach(inject(function (_ParanoidScope_) {
+                    ParanoidScope = _ParanoidScope_;
                     getCtrl();
-                });
+                }));
                 
                 it('should be a function', function () {
                     world.shouldBeAFunction(scope, 'fileChanged');
                 });
                 
-                it('should log out that it isn\'t finished for now', function () {
-                    spyOn(console, "log");
+                it('should attach save the \'files\' object to the scope', function () {
                     
-                    scope.fileChanged();
+                    spyOn(scope, "$apply").andCallFake(function (func) { func(); });
                     
-                    expect(console.log).toHaveBeenCalledWith("NOT YET IMPLEMENTED");
+                    var files = {'here are some files': true};
+                    scope.fileChanged({}, [{files: files}]);
+                    
+                    expect(scope.uploadFormFile).toBe(files);
+                    
+                    expect(scope.$apply).toHaveBeenCalled();
+                    
                 });
                 
             });
@@ -103,7 +111,7 @@ define(['world', 'angular'], function (world, angular) {
                 
                 beforeEach(function () {
                     scope.uploadFormName = 'kittens';
-                    scope.uploadFormFile = '/kittens.png';
+                    scope.uploadFormFile = ['/kittens.png'];
                     
                     getCtrl();
                 });
@@ -132,27 +140,33 @@ define(['world', 'angular'], function (world, angular) {
             describe('[upload()]', function () {
                 
                 var Couch,
-                    Authentication;
+                    Authentication,
+                    document,
+                    Random;
                 
-                beforeEach(inject(function (_Couch_, _Authentication_) {
+                beforeEach(inject(function (_Couch_, _Authentication_, _Random_) {
                     Couch = _Couch_;
                     Authentication = _Authentication_;
+                    Random = _Random_;
                     
                     scope.uploadFormName = 'kittens';
-                    scope.uploadFormFile = '/kittens.png';
+                    scope.uploadFormFile = ['/kittens.png'];
                     
                     getCtrl();
                     
                     spyOn(scope, "valid").andReturn(true);
                     
                     spyOn(Authentication, "loggedIn").andReturn(world.resolved(true));
+                    spyOn(Authentication, "getUsername").andReturn(world.resolved("john"));
                     
-                    var save = jasmine.createSpy("save");
-                    save.andReturn(world.resolved(true));
+                    document = {
+                        save: jasmine.createSpy("save").andReturn(world.resolved(true)),
+                        attach: jasmine.createSpy("attach").andReturn(world.resolved(true))
+                    };
+                    spyOn(Couch, "newDoc").andReturn(world.resolved(document));
+                    spyOn(Couch, "saveDoc").andReturn(world.resolved(true));
                     
-                    var attach = jasmine.createSpy("attach");
-                    attach.andReturn(world.resolved(true));
-                    spyOn(Couch, "newDoc").andReturn(world.resolved({save: save, attach: attach}));
+                    spyOn(Random, "getHash").andReturn("D34DB33F");
                 }));
                 
                 it('should be a function', function () {
@@ -182,11 +196,26 @@ define(['world', 'angular'], function (world, angular) {
                     expect(error).toBe("Not valid");
                 });
                 
-//                it('should create a document and attach the file', function () {
-//                    scope.upload();
-//                    
-//                    expect(Couch.newDoc).toHaveBeenCalled();
-//                });
+                it('should call Random to generate the id', function () {
+                    scope.upload();
+                    world.digest();
+                    
+                    expect(Random.getHash).toHaveBeenCalled();
+                })
+                
+                it('should create and save a document and attach the file', function () {
+                    scope.upload();
+                    
+                    world.digest();
+                    
+                    expect(Couch.newDoc).toHaveBeenCalledWith('commissar_user_john');
+                    expect(document._id).toBe('john_media_D34DB33F');
+                    expect(document.type).toBe('media');
+                    expect(document.mediaType).toBe('image');
+                    expect(document.title).toBe(scope.uploadFormName);
+                    expect(Couch.saveDoc).toHaveBeenCalledWith(document, 'commissar_user_john');
+                    expect(document.attach).toHaveBeenCalled();
+                });
             });
             
         });

@@ -1236,6 +1236,95 @@ define(['world', 'jquery'], function (world, jquery) {
                     expect(error).toBe(null);
                 });
             });
+            
+            describe('[saveDoc()]', function () {
+                
+                var Couch,
+                    document,
+                    database;
+                
+                beforeEach(inject(function (_Couch_) {
+                    Couch = _Couch_;
+                    
+                    document = {'document': true, save: jasmine.createSpy('save').andReturn(world.resolved(true))};
+                    database = 'test';
+                    
+                    spyOn(Couch, 'databaseExists').andReturn(world.resolved(true));
+                    spyOn(Couch, 'validateDoc').andReturn(world.resolved(true));
+                }));
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Couch, 'saveDoc');
+                });
+                
+                it('should return a promise', function () {
+                    var result = Couch.saveDoc(document, null, database);
+                    
+                    expect(result).toBeDefined();
+                    expect(result.then).toBeDefined();
+                    expect(typeof result.then).toBe('function');
+                });
+                
+                it('should call through to validateDoc', function () {
+                    Couch.saveDoc(document, database);
+                    world.digest();
+                    
+                    expect(Couch.validateDoc).toHaveBeenCalledWith(document, null, database);
+                });
+                
+                it('should verify the database exists', function () {
+                    
+                    Couch.saveDoc(document, database);
+                    world.digest();
+                    
+                    expect(Couch.databaseExists).toHaveBeenCalledWith(database);
+                });
+                
+                it('should trigger a save if successful', function () {
+                    
+                    Couch.saveDoc(document, database);
+                    world.digest();
+                    
+                    expect(document.save).toHaveBeenCalledWith();
+                });
+                
+                it('should not trigger a save if unsuccessful', function () {
+                    
+                    Couch.databaseExists.andReturn(world.resolved(false));
+                    
+                    Couch.saveDoc(document, database);
+                    world.digest();
+                    
+                    expect(document.save).not.toHaveBeenCalledWith();
+                });
+                
+                it('should pass through the reject message from validateDoc', function () {
+                    var validateDocMessage = "MESSAGE_FROM_VALIDATEDOC";
+                    Couch.validateDoc.andReturn(world.rejected(validateDocMessage));
+                    
+                    var response = Couch.saveDoc(document, database);
+                    var success = null,
+                        error = null;
+                    response.then(function (_s_) { success = _s_; }, function (_e_) { error = _e_; });
+                        
+                    world.digest();
+                    
+                    expect(error).toBe(validateDocMessage);
+                    expect(success).toBe(null);
+                });
+                
+                it('should console error the reject message from validateDoc', function () {
+                    var validateDocMessage = "MESSAGE_FROM_VALIDATEDOC";
+                    Couch.validateDoc.andReturn(world.rejected(validateDocMessage));
+                    spyOn(console, 'error').andCallFake(function () {});
+                    
+                    Couch.saveDoc(document, database);
+                        
+                    world.digest();
+                    
+                    expect(console.error).toHaveBeenCalledWith(validateDocMessage);
+                });
+            });
         });
         
         describe('[_designDocs]', function () {
@@ -1356,6 +1445,12 @@ define(['world', 'jquery'], function (world, jquery) {
                     var yours = jquery.extend({}, validDocument);
                     yours.author = 'susan';
                     testValidate(yours, null, userDb, undefined, 'Cannot forge authorship as another user');
+                });
+                
+                it('should require ids to be pre-determined', function () {
+                    var badId = jquery.extend({}, validDocument);
+                    delete badId._id;
+                    testValidate(badId, null, userDb, undefined, 'ID is missing');
                 });
                 
                 it('should require ids start with username', function () {

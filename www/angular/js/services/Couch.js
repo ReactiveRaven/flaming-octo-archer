@@ -1,7 +1,7 @@
-define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
+define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jquery) {
     "use strict";
     
-    var CouchModule = angular.module('commissar.services.Couch', ['CornerCouch', 'ngCookies']);
+    var CouchModule = angular.module('commissar.services.Couch', ['CornerCouch', 'ngCookies', 'commissar.services.Random']);
     
     CouchModule.factory('Couch', function ($rootScope, cornercouch, $q) {
         if (!$rootScope.cornercouch) {
@@ -51,6 +51,9 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                             }
                             if (newDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
                                 throw ({forbidden: 'Cannot forge authorship as another user'});
+                            }
+                            if (typeof newDoc._id === 'undefined') {
+                                throw ({forbidden: 'ID is missing'});
                             }
                             if (newDoc._id.indexOf(userCtx.name) !== 0) {
                                 throw ({forbidden: 'IDs must start with your username'});
@@ -190,6 +193,24 @@ define(['angular', 'jquery', 'CornerCouch'], function (angular, jquery) {
                         deferred.reject('Database not found: ' + database);
                     }
                 }, deferred.reject);
+                
+                return deferred.promise;
+            },
+            saveDoc: function (document, database) {
+                var deferred = $q.defer();
+                
+                Couch.validateDoc(document, null, database).then(function () {
+                    Couch.databaseExists(database).then(function (exists) {
+                        if (exists) {
+                            document.save().then(deferred.resolve, deferred.reject);
+                        } else {
+                            deferred.reject('Database not found: ' + database);
+                        }
+                    });
+                }, function (message) {
+                    console.error(message);
+                    deferred.reject(message);
+                });
                 
                 return deferred.promise;
             },
