@@ -201,7 +201,7 @@ define(['world', 'angular'], function (world, angular) {
                     world.digest();
                     
                     expect(Random.getHash).toHaveBeenCalled();
-                })
+                });
                 
                 it('should create and save a document and attach the file', function () {
                     scope.upload();
