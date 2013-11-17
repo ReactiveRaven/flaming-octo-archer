@@ -1,3 +1,5 @@
+/* global emit:false */
+
 define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jquery) {
     "use strict";
     
@@ -80,6 +82,22 @@ define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jque
                                     throw ({forbidden: 'Media must have a created timestamp'});
                                 }
                             }
+                        },
+                        views: {
+                            all: {
+                                map: function (document) {
+                                    if (typeof document.type === 'string' && document.type === 'media') {
+                                        emit(null, document);
+                                    }
+                                }
+                            },
+                            byAuthor: {
+                                map: function (document) {
+                                    if (typeof document.type === 'string' && document.type === 'media') {
+                                        emit(document.author, document);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -122,6 +140,19 @@ define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jque
                 
                 return deferred.promise;
             },
+            stringifyFunctions: function (obj) {
+                for (var property in obj) {
+                    if (obj.hasOwnProperty(property)) {
+                        if (typeof obj[property] === 'function') {
+                            obj[property] = '' + obj[property];
+                        } else if (typeof obj[property] === 'object') {
+                            obj[property] = this.stringifyFunctions(obj[property]);
+                        }
+                    }
+                }
+                
+                return obj;
+            },
             /**
              * Copies attributes from the given document to the real document 
              * after retrieving it from the database. Will create the document 
@@ -149,12 +180,8 @@ define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jque
                 var deepCopy = true;
                 var document = jquery.extend(deepCopy, {}, documentObject);
                                     
-                // Convert all properties to strings (eg: functions)
-                for (var property in document) {
-                    if (document.hasOwnProperty(property) && typeof document[property] === 'function') {
-                        document[property] = '' + document[property];
-                    }
-                }
+                // Convert all functions to strings
+                Couch.stringifyFunctions(document);
 
                 // Get the remote document
                 Couch.getDoc(databaseName, document._id).then(function (remoteDocument) {

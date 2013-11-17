@@ -1063,6 +1063,77 @@ define(['world', 'jquery'], function (world, jquery) {
                 });
             });
             
+            describe('[stringifyFunctions()]', function () {
+                
+                var Couch;
+                
+                beforeEach(inject(function (_Couch_) {
+                    Couch = _Couch_;
+                }));
+                
+                it('should exist', function () {
+                    expect(Couch.stringifyFunctions).toBeDefined();
+                });
+                
+                it('should be a function', function () {
+                    world.shouldBeAFunction(Couch, 'stringifyFunctions');
+                });
+                
+                it('should stringify functions as properties of an object', function () {
+                    var object = {
+                        a: function () {
+                            "hello";
+                        }
+                    };
+                    
+                    object = jquery.extend({}, object);
+                    
+                    var response = Couch.stringifyFunctions(object);
+                    
+                    expect(response).toBe(object);
+                    expect(typeof response.a).toBe("string");
+                });
+                
+                it("should stringify functions deeply", function () {
+                    var object = {
+                        a: {
+                            b: function () {
+                                "hello";
+                            }
+                        },
+                        x: "string"
+                    };
+                   
+                    var response = Couch.stringifyFunctions(object);
+                   
+                    expect(response).toBe(object);
+                    expect(typeof response.a.b).toBe("string");
+                });
+                
+                it("should ignore inherited properties", function () {
+                    var prototype = {
+                        c: function () {
+                            "hello";
+                        }
+                    };
+                    function obj(proto) {
+                        function F() {}
+                        F.prototype = proto;
+                        return new F();
+                    }
+                    var object = obj(prototype);
+                    object.a = function () {
+                        "hello";
+                    };
+                    
+                    var response = Couch.stringifyFunctions(object);
+                    
+                    expect(response).toBe(object);
+                    expect(typeof response.a).toBe("string");
+                    expect(typeof response.c).toBe("function");
+                });
+            });
+            
             describe('[newDoc()]', function () {
                 
                 var Couch,
@@ -1500,6 +1571,105 @@ define(['world', 'jquery'], function (world, jquery) {
                         var noCreated = jquery.extend({}, validDocument);
                         delete noCreated.created;
                         testValidate(noCreated, null, userDb, undefined, 'Media must have a created timestamp');
+                    });
+                    
+                    describe('[views]', function () {
+                        
+                        var Couch;
+                        
+                        beforeEach(inject(function (_Couch_) {
+                            Couch = _Couch_;
+                        }));
+                        
+                        it("should contain a views key", function () {
+                            expect(Couch._designDocs.commissar_validation_users['_design/validation_user_media'].views).toBeDefined();
+                        });
+                        
+                        describe("[all]", function () {
+                            
+                            var view,
+                                emit;
+                            
+                            beforeEach(function () {
+                                view = Couch._designDocs.commissar_validation_users['_design/validation_user_media'].views.all;
+                                window.emit = emit = jasmine.createSpy("emit");
+                            });
+                            
+                            it("should exist", function () {
+                                expect(Couch._designDocs.commissar_validation_users['_design/validation_user_media'].views.all).toBeDefined();
+                            });
+                            
+                            it("should emit if the document is a media-type", function () {
+                                var document = {
+                                    type: 'media',
+                                    someKey: true
+                                };
+                                
+                                view.map(document);
+                                
+                                expect(emit).toHaveBeenCalledWith(null, document);
+                            });
+                            
+                            it("should not emit if the document is any other type", function () {
+                                var document = {
+                                    type: 'other',
+                                    someKey: true
+                                };
+                                
+                                view.map(document);
+                                
+                                expect(emit).not.toHaveBeenCalled();
+                            });
+                        });
+                        
+                        describe("[byAuthor]", function () {
+                            
+                            var view,
+                                emit;
+                            
+                            beforeEach(function () {
+                                view = Couch._designDocs.commissar_validation_users['_design/validation_user_media'].views.byAuthor;
+                                window.emit = emit = jasmine.createSpy("emit");
+                            });
+                            
+                            it("should exist", function () {
+                                expect(Couch._designDocs.commissar_validation_users['_design/validation_user_media'].views.byAuthor).toBeDefined();
+                            });
+                            
+                            it("should emit by author if the document is a media-type", function () {
+                                var document = {
+                                    type: 'media',
+                                    someKey: true,
+                                    author: 'john smith'
+                                };
+                                
+                                view.map(document);
+                                
+                                expect(emit).toHaveBeenCalledWith(document.author, document);
+                                
+                                var doc2 = {
+                                    type: 'media',
+                                    someKey: true,
+                                    author: 'jane doe'
+                                };
+                                
+                                view.map(doc2);
+                                
+                                expect(emit).toHaveBeenCalledWith(doc2.author, doc2);
+                            });
+                            
+                            it("should not emit if the document is any other type", function () {
+                                var document = {
+                                    type: 'other',
+                                    someKey: true,
+                                    author: 'john smith'
+                                };
+                                
+                                view.map(document);
+                                
+                                expect(emit).not.toHaveBeenCalled();
+                            });
+                        });
                     });
                 });
             });
