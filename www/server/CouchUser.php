@@ -20,6 +20,12 @@ class CouchUser
         $this->currentPassword = $this->adminpassword;
     }
     
+    public function becomeNobody()
+    {
+        $this->currentUsername = null;
+        $this->currentPassword = null;
+    }
+    
     public function becomeAdmin()
     {
         $this->currentUsername = $this->adminusername;
@@ -129,7 +135,11 @@ class CouchUser
     }
     
     private function buildUrl($url) {
-        return "http://" . $this->currentUsername . ":" . $this->currentPassword . "@" . $this->currentHost . "/" . ltrim($url, "/");
+        if ($this->currentUsername !== null) {
+            return "http://" . $this->currentUsername . ":" . $this->currentPassword . "@" . $this->currentHost . "/" . ltrim($url, "/");
+        } else {
+            return "http://" . $this->currentHost . "/" . ltrim($url, "/");
+        }
     }
     
     private function parseResponse($response) {
