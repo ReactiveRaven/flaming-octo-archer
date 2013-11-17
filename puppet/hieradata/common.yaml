@@ -63,6 +63,7 @@ apache:
             servername: flaming-octo-archer.dev
             serveraliases:
                 - www.flaming-octo-archer.dev
+                - live.flaming-octo-archer.dev
             docroot: /var/www/www/
             port: '80'
             setenv:

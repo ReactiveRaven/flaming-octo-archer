@@ -19,3 +19,4 @@ tests/jasmine/reports/coverage/*/
 .vagrant/
 .vagrant_remote
 VagrantSecrets.rb
+.vagrant_local/
