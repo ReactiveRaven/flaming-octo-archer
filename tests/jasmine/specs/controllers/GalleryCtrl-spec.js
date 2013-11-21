@@ -5,14 +5,23 @@ define(['world'], function (world) {
     
     describe('[commissar.controllers.GalleryCtrl]', function () {
         
-        var scope, $httpBackend;
+        var scope,
+            $httpBackend,
+            Authentication,
+            routeParams;
         
         beforeEach(function () {
             module('commissar.controllers.GalleryCtrl');
             
-            inject(['$httpBackend', function (_$httpBackend_) {
+            inject(function (_$httpBackend_, _Authentication_) {
                 $httpBackend = _$httpBackend_;
-            }]);
+                Authentication = _Authentication_;
+            });
+            
+            spyOn(Authentication, "loggedIn").andReturn(world.resolved(true));
+            spyOn(Authentication, "getUsername").andReturn(world.resolved("john"));
+            
+            routeParams = {userslug: 'john'};
         });
         
         afterEach(function () {
@@ -20,10 +29,10 @@ define(['world'], function (world) {
             $httpBackend.verifyNoOutstandingRequest();
         });
         
-        var getCtrl = function (routeParams) {
+        var getCtrl = function (overrideRouteParams) {
             var ctrl = null;
-            if (typeof routeParams === 'undefined') {
-                routeParams = {userslug: 'john'};
+            if (typeof routeParams !== 'undefined') {
+                routeParams = overrideRouteParams;
             }
             inject(function ($controller, $rootScope) {
                 scope = $rootScope.$new();
@@ -35,13 +44,14 @@ define(['world'], function (world) {
         
         describe('[setup]', function () {
             
-            it('should request public images immediately', function () {
-                
-                //$httpBackend.expectGet('/couchdb/commissar_public/')
-                
-                getCtrl();
-                
-                
+            describe('[my gallery]', function () {
+                it('should request my private images immediately', function () {
+                    // @TODO do public ones too!
+                    
+                    // Something to do with ImageManager goes here
+
+                    getCtrl();
+                });
             });
         });
         

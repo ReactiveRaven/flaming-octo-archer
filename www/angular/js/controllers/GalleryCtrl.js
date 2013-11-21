@@ -1,13 +1,11 @@
-define(['angular', 'constants', 'services/Authentication', 'directives/Markdown', 'directives/UploadForm', 'filters/Capitalize'], function (angular, constants) {
+define(['angular', 'constants', 'directives/UploadForm', 'services/ImageManager'], function (angular, constants) {
     "use strict";
     
     var GalleryCtrlModule = angular.module(
         'commissar.controllers.GalleryCtrl',
         [
-            'commissar.services.Authentication',
-            'commissar.directives.Markdown',
             'commissar.directives.UploadForm',
-            'commissar.filters.Capitalize'
+            'commissar.service.ImageManager'
         ]
     );
     
