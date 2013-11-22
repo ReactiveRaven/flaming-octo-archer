@@ -27,6 +27,7 @@ define(['world'], function (world) {
         });
         
         describe('[getMyImages()]', function () {
+            
             it("should be a function", function () {
                 world.shouldBeAFunction(ImageManager, 'getMyImages');
             });
@@ -37,6 +38,21 @@ define(['world'], function (world) {
                 expect(response).toBeDefined();
                 expect(response.then).toBeDefined();
                 expect(typeof response.then).toBe("function");
+            });
+            
+            it("should get our username", function () {
+                ImageManager.getMyImages();
+                
+                expect(Authentication.getUsername).toHaveBeenCalled();
+            });
+            
+            it("should get from couch", function () {
+                $httpBackend.expectGET("/couchdb/commissar_user_john/_design/validation_user_media/_view/all").respond({});
+                
+                ImageManager.getMyImages();
+                
+                world.digest();
+                world.flush();
             });
         });
  

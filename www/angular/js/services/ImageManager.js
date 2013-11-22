@@ -15,7 +15,7 @@ define(['angular', './Authentication', './Couch'], function (angular) {
         ImageManager.getMyImages = function () {
             var deferred = $q.defer();
             
-            Authentication.getUsername(function (username) {
+            Authentication.getUsername().then(function (username) {
                 $http.get('/couchdb/' + Authentication.getDatabaseName(username) + '/_design/validation_user_media/_view/all');
             }, deferred.reject);
             
