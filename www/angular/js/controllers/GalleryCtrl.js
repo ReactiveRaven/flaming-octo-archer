@@ -1,16 +1,23 @@
-define(['angular', 'constants', 'directives/UploadForm', 'services/ImageManager'], function (angular, constants) {
+define(['angular', 'constants', 'directives/UploadForm', 'services/ImageManager', 'services/ParanoidScope'], function (angular, constants) {
     "use strict";
     
     var GalleryCtrlModule = angular.module(
         'commissar.controllers.GalleryCtrl',
         [
             'commissar.directives.UploadForm',
-            'commissar.service.ImageManager'
+            'commissar.services.ImageManager',
+            'commissar.services.ParanoidScope'
         ]
     );
     
-    GalleryCtrlModule.controller('GalleryCtrl', function ($scope) {
+    GalleryCtrlModule.controller('GalleryCtrl', function ($scope, ImageManager, ParanoidScope) {
         $scope.name = 'GalleryCtrl';
+        
+        ImageManager.getMyImages().then(function (data) {
+            ParanoidScope.apply($scope, function () {
+                $scope.images = data;
+            });
+        });
     });
 
     GalleryCtrlModule.config(function ($routeProvider) {

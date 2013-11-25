@@ -3,14 +3,14 @@
 define(['world'], function (world) {
     "use strict";
     
-    describe('[commissar.service.ImageManager]', function () {
+    describe('[commissar.services.ImageManager]', function () {
 
         var $httpBackend,
             Authentication,
             ImageManager;
 
         beforeEach(function () {
-            module('commissar.service.ImageManager');
+            module('commissar.services.ImageManager');
 
             inject(function (_$httpBackend_, _Authentication_, _ImageManager_) {
                 $httpBackend = _$httpBackend_;
@@ -53,8 +53,8 @@ define(['world'], function (world) {
                             "I am a document": true
                         }
                     ],
-                    error,
-                    success;
+                    error = null,
+                    success = null;
                 
                 $httpBackend.expectGET("/couchdb/commissar_user_john/_design/validation_user_media/_view/all").respond({
                     total_rows: 1,
