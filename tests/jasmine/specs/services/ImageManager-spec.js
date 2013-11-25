@@ -46,13 +46,29 @@ define(['world'], function (world) {
                 expect(Authentication.getUsername).toHaveBeenCalled();
             });
             
-            it("should get from couch", function () {
-                $httpBackend.expectGET("/couchdb/commissar_user_john/_design/validation_user_media/_view/all").respond({});
+            it("should get from couch and return the documents via promise", function () {
                 
-                ImageManager.getMyImages();
+                var rows = [
+                        {
+                            "I am a document": true
+                        }
+                    ],
+                    error,
+                    success;
+                
+                $httpBackend.expectGET("/couchdb/commissar_user_john/_design/validation_user_media/_view/all").respond({
+                    total_rows: 1,
+                    offset: 0,
+                    rows: rows
+                });
+                
+                ImageManager.getMyImages().then(function (_s_) { success = _s_; }, function (_e_) { error = _e_; });
                 
                 world.digest();
                 world.flush();
+                
+                expect(error).toBe(null);
+                expect(success).toBe(rows);
             });
         });
  
