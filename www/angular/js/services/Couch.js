@@ -81,6 +81,9 @@ define(['CornerCouch', './Random'], function () {
                                 if (typeof newDoc.created === 'undefined') {
                                     throw ({forbidden: 'Media must have a created timestamp'});
                                 }
+                                if (typeof newDoc.mediaType !== 'undefined' && newDoc.mediaType !== 'image') {
+                                    throw ({forbidden: 'Invalid media type' });
+                                }
                             }
                         },
                         views: {

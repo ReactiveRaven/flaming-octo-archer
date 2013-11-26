@@ -23,45 +23,30 @@ define(['world'], function (world) {
             
             rows = [
                 {
-                    "id":"fish_media_1385409053266.1514",
-                    "key":null,
+                    "id": "fish_media_1385409053266.1514",
+                    "key": null,
                     "value": {
-                        "_id":"fish_media_1385409053266.1514",
-                        "_rev":"2-72322e1990486b1f38dd443fb481c182",
-                        "author":"fish",
-                        "type":"media",
-                        "mediaType":"image",
-                        "title":"avatar",
-                        "created":1385409053,
-                        "_attachments": {
-                            "Burfdl-PNG.png":{
-                                "content_type":"image/png",
-                                "revpos":2,
-                                "digest":"md5-0X4acobj7jOH03vmOaDpPQ==",
-                                "length":239932,
-                                "stub":true
-                            }
-                        }
-                    }
-                },
-                {
-                    "id":"fish_media_1385409054520.245",
-                    "key":null,
-                    "value": {
-                        "_id":"fish_media_1385409054520.245",
-                        "_rev":"2-36887fe41cb267a94b5e3ab95dc35163",
-                        "author":"fish",
-                        "type":"media",
-                        "mediaType":"image",
-                        "title":"avatar",
-                        "created":1385409054,
+                        "_id": "fish_media_1385409053266.1514",
+                        "_rev": "2-72322e1990486b1f38dd443fb481c182",
+                        "author": "fish",
+                        "type": "media",
+                        "mediaType": "image",
+                        "title": "avatar",
+                        "created": 1385409053,
                         "_attachments": {
                             "Burfdl-PNG.png": {
-                                "content_type":"image/png",
-                                "revpos":2,
-                                "digest":"md5-0X4acobj7jOH03vmOaDpPQ==",
-                                "length":239932,
-                                "stub":true
+                                "content_type": "image/png",
+                                "revpos": 2,
+                                "digest": "md5-0X4acobj7jOH03vmOaDpPQ==",
+                                "length": 239932,
+                                "stub": true
+                            },
+                            "fishing.png": {
+                                "content_type": "image/png",
+                                "revpos": 2,
+                                "digest": "md5-0X4acobj7jOH03vmOaDpPQ==",
+                                "length": 239932,
+                                "stub": true
                             }
                         }
                     }

@@ -1,6 +1,6 @@
 /* global afterEach:false, inject:false */
 
-define(['world', 'jquery'], function (world, jquery) {
+define(['world', 'jquery', 'constants'], function (world, jquery, constants) {
     "use strict";
     
     world.shut_up_jshint = true;
@@ -1571,6 +1571,19 @@ define(['world', 'jquery'], function (world, jquery) {
                         var noCreated = jquery.extend({}, validDocument);
                         delete noCreated.created;
                         testValidate(noCreated, null, userDb, undefined, 'Media must have a created timestamp');
+                    });
+                    
+                    it('should restrict mediaType', function () {
+                        
+                        var validMediaType = jquery.extend({}, validDocument);
+                        for (var i = 0; i < constants.allowedMediaTypes.length; i++) {
+                            validMediaType.mediaType = constants.allowedMediaTypes[i];
+                            testValidate(validMediaType, null, userDb, true, undefined);
+                        }
+                        
+                        var invalidMediaType = jquery.extend({}, validDocument);
+                        invalidMediaType.mediaType = "wonkydonkey";
+                        testValidate(invalidMediaType, null, userDb, undefined, 'Invalid media type');
                     });
                     
                     describe('[views]', function () {
