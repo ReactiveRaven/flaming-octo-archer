@@ -50,6 +50,9 @@ server:
         - vim
         - curl
         - git-core
+        - nodejs
+        - npm
+        - htop
     dot_files:
         -
             bash_aliases: null
