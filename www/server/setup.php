@@ -146,5 +146,12 @@ if ($delayed["response"]["body"] !== "false") {
   debugLog("SKIPPED disabling delayed_commits as already set");
 }
 
+$filesize = $CouchUser->doGet("_config/couchdb/max_document_size");
+if ($filesize["response"]["body"] !== "31457280") {
+  debugLog("Limited document size to 30MB", $CouchUser->doPut("_config/couchdb/max_document_size", "31457280"));
+} else {
+  debugLog("SKIPPED limiting document size to 30MB as already set");
+}
+
 // OK, done :3
 jsondie(array("ok" => true));

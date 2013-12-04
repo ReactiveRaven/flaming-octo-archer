@@ -19,6 +19,16 @@
         "public": "commisar_public"
       }
     },
+    "iMacs-iMac.local": {
+        "url": "192.168.56.101:5984",
+        "adminuser": "adminuser",
+        "adminpass": "adminuser",
+        "databases": {
+            "validation_global": "commissar_validation_global",
+            "validation_users": "commissar_validation_users",
+            "public": "commissar_public"
+        }
+    },
     "default": {
         "url": "127.0.0.1:5984",
         "adminuser": "adminuser",
