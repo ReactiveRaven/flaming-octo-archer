@@ -1,32 +1,69 @@
 {
-    "PookbookPro.local": {
+    "ubuntu-server-12042-x64-vbox4210": {
         "url": "127.0.0.1:5984",
         "adminuser": "adminuser",
         "adminpass": "adminuser",
         "databases": {
             "validation_global": "commissar_validation_global",
             "validation_users": "commissar_validation_users",
-            "public": "commisar_public"
-        }
-    },
-    "pookstation.coolpink.net": {
-      "url": "127.0.0.1:5984",
-      "adminuser": "adminuser",
-      "adminpass": "adminuser",
-      "databases": {
-        "validation_global": "commissar_validation_global",
-        "validation_users": "commissar_validation_users",
-        "public": "commisar_public"
-      }
-    },
-    "iMacs-iMac.local": {
-        "url": "192.168.56.101:5984",
-        "adminuser": "adminuser",
-        "adminpass": "adminuser",
-        "databases": {
-            "validation_global": "commissar_validation_global",
-            "validation_users": "commissar_validation_users",
-            "public": "commissar_public"
+            "public": "commisar_public",
+            "instance": "commissar_instance_vagrant"
+        },
+        "couchdb": {
+            "config": {
+                "couchdb/delayed_commits": "false",
+                "couchdb/max_document_size": "31457280",
+                "couchdb/max_dbs_open": "1000",
+                "couch_httpd_auth/timeout": "2592000"
+            },
+            "databases": {
+                "commissar_instance_vagrant": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }
+                },
+                "commissar_validation_global": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }
+                },
+                "commissar_validation_users": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }                    
+                },
+                "commissar_public": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": []
+                    }
+                }
+            },
+            "replications": [
+               {
+                   "source": "commissar_validation_global",
+                   "target": "commissar_public"
+               }
+            ]
         }
     },
     "default": {
@@ -36,7 +73,58 @@
         "databases": {
             "validation_global": "commissar_validation_global",
             "validation_users": "commissar_validation_users",
-            "public": "commissar_public"
+            "public": "commissar_public",
+            "instance": "commisssar_instance_default"
+        },
+        "couchdb": {
+            "config": {
+                "couchdb/delayed_commits": "false",
+                "couchdb/max_document_size": "31457280",
+                "couchdb/max_dbs_open": "1000",
+                "couch_httpd_auth/timeout": "2592000"
+            },
+            "databases": {
+                "commissar_instance_vagrant": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }
+                },
+                "commissar_validation_global": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }
+                },
+                "commissar_validation_users": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }                    
+                },
+                "commissar_public": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": []
+                    }
+                }
+            }
         }
     }
 }
