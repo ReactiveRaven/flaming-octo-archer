@@ -7,9 +7,6 @@ define(['angular', 'jquery'], function (angular, $) {
 
         var PostSerializer = {
             'serialize': function (input) {
-                input = input; // shut up jshint
-                $ = $; // shut up jshint
-                
                 return $.param(input);
             }
         };
