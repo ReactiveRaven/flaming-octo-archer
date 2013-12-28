@@ -1,6 +1,6 @@
 #!/bin/sh
 # Based on http://jswiki.lab-01.com/wiki/doku.php?id=install-couch
-
+ 
 if ! hash couchdb;
 then
 
@@ -26,9 +26,9 @@ then
 
     # Get CouchDB source code
     echo "CouchDB ..."
-    wget http://mirror.reverse.net/pub/apache/couchdb/source/1.4.0/apache-couchdb-1.4.0.tar.gz
-    tar xfz apache-couchdb-1.4.0.tar.gz
-    cd apache-couchdb-1.4.0
+    wget http://mirror.reverse.net/pub/apache/couchdb/source/1.5.0/apache-couchdb-1.5.0.tar.gz
+    tar xfz apache-couchdb-1.5.0.tar.gz
+    cd apache-couchdb-1.5.0
     ./configure
     make
     sudo make install
@@ -47,9 +47,6 @@ then
     sudo chmod -R 0770 /usr/local/var/lib/couchdb
     sudo chmod -R 0770 /usr/local/var/log/couchdb
     sudo chmod -R 0770 /usr/local/var/run/couchdb
-
-    echo "I will try to write a /etc/init/couchdb.conf file."
-    sudo printf 'start on runlevel [2345]\nstop on runlevel [016]\nscript\n  exec sudo -i -u couchdb couchdb\nend script\n\nrespawn' > /etc/init/couchdb.conf
 
     echo "Done."
     echo "Now you can modify /usr/local/etc/couchdb/local.ini"
