@@ -57,7 +57,6 @@ apache:
     modules:
         - php
         - rewrite
-        - proxy_http
     vhosts:
         i5brt3DNCJ2V:
             servername: flaming-octo-archer.dev
