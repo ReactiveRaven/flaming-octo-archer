@@ -1,4 +1,5 @@
-define(['angular', 'services/Authentication', 'filters/Capitalize', 'directives/LoginForm', 'services/ParanoidScope'], function (angular) {
+/* globals angular:false */
+define(['services/Authentication', 'filters/Capitalize', 'directives/LoginForm', 'services/ParanoidScope'], function () {
     "use strict";
     
     var MenuCtrlModule = angular.module(

@@ -1,4 +1,5 @@
-define(['angular', 'constants', 'services/Authentication', 'services/ParanoidScope'], function (angular, constants) {
+/* globals angular:false */
+define(['constants', 'services/Authentication', 'services/ParanoidScope'], function (constants) {
     "use strict";
 
     var LoginFormModule = angular.module('commissar.directives.LoginForm', ['commissar.services.Authentication', 'commissar.services.ParanoidScope']);

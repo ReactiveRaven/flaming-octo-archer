@@ -1,6 +1,5 @@
-/* globals $:false */
-
-define(['angular'], function (angular) {
+/* globals $:false, angular:false */
+define([], function () {
     "use strict";
     
     var LoadingIndicatorModule = angular.module('commissar.directives.LoadingIndicator', []);

@@ -1,4 +1,5 @@
-define(['angular'], function (angular) {
+/* globals angular:false */
+define([], function () {
     "use strict";
     
     var ParanoidScopeModule = angular.module('commissar.services.ParanoidScope', []);

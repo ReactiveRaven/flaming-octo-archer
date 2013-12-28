@@ -1,4 +1,5 @@
-define(['angular', 'constants'], function (angular, constants) {
+/* globals angular:false */
+define(['constants'], function (constants) {
     "use strict";
     
     var AdminCtrlModule = angular.module(

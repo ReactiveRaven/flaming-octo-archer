@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="/css/compiled.css" />
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/css/compiled.css" rel="stylesheet" />
         <meta name="fragment" content="!" />
     </head>
     <body>
-        <div data-ng-include="'/angular/templates/menu/menu.html'"></div>
+        <div data-ng-include="'angular/templates/menu/menu.html'"></div>
         <div class="container">
             <div data-ng-view></div>
         </div>
-
-        <script src="/bower_components/requirejs/require.js"></script>
-        <script src="/js/compiled.js"></script>
-        <script>
+        
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.9/require.min.js"></script>
+        <script src="/js/compiled.min.js"></script>
+        <script defer="defer">
+            window.useTemplateModule = true;
             require(['startup'], function (startup) { startup(); });
         </script>
     </body>

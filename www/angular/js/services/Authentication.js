@@ -1,4 +1,5 @@
-define(['angular', 'angularCookies', './Couch', './PostSerializer'], function (angular) {
+/* globals angular:false */
+define(['angularCookies', './Couch', './PostSerializer'], function () {
     "use strict";
     
     var AuthenticationModule = angular.module('commissar.services.Authentication', ['commissar.services.Couch', 'commissar.services.PostSerializer']);

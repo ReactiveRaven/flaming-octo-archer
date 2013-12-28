@@ -1,4 +1,5 @@
-define(['angular', 'constants', '../services/Authentication', '../directives/Markdown', '../filters/Capitalize'], function (angular, constants) {
+/* globals angular:false */
+define(['constants', '../services/Authentication', '../directives/Markdown', '../filters/Capitalize'], function (constants) {
     "use strict";
     
     var IndexCtrlModule = angular.module(

@@ -14,16 +14,10 @@ require.config({
     },
     baseUrl: '/angular/js',
     shim: {
-        angular: {exports: 'angular'},
-        angularCookies: {deps: ['angular']},
-        angularMocks: {deps: ['angular']},
-        CornerCouch: {deps: ['angular']},
         jquery: {exports: '$'},
-        bootstrap: {deps: ['jquery']},
-        ngUpload: {deps: ['angular']}
+        bootstrap: {deps: ['jquery']}
     },
     priority: [
-        "angular"
     ]
 });
 

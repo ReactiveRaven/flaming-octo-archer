@@ -16,3 +16,21 @@
 AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
 </ifmodule>
 # END GZIP
+
+<ifModule mod_headers.c>
+# YEAR
+<FilesMatch "\.(ico|gif|jpg|jpeg|png|flv|pdf)$">
+  ExpiresDefault A29030400
+  Header append Cache-Control "public"
+</FilesMatch>
+# WEEK
+<FilesMatch "\.(js|css|swf)$">
+  ExpiresDefault A604800
+  Header append Cache-Control "public"
+</FilesMatch>
+# 45 MIN
+<FilesMatch "\.(html|htm|txt)$">
+  ExpiresDefault A2700
+  Header append Cache-Control "public"
+</FilesMatch>
+</ifModule>

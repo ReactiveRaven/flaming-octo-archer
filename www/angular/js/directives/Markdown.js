@@ -1,4 +1,5 @@
-define(['angular', 'marked'], function (angular, marked) {
+/* globals angular:false */
+define(['marked'], function (marked) {
     "use strict";
     
     var MarkdownModule = angular.module('commissar.directives.Markdown', []);

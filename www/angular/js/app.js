@@ -1,8 +1,7 @@
+/* globals angular:false */
 define(
     'app',
     [
-        'angular',
-        'bootstrap',
         'controllers/LogoutCtrl',
         'controllers/AdminCtrl',
         'controllers/IndexCtrl',
@@ -10,7 +9,7 @@ define(
         'controllers/MenuCtrl',
         'controllers/GalleryCtrl'
     ],
-    function (angular) {
+    function () {
         "use strict";
 
         var App = angular.module(

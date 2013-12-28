@@ -1,4 +1,5 @@
-define(['angular', 'constants', 'directives/UploadForm', 'services/ImageManager', 'services/ParanoidScope'], function (angular, constants) {
+/* globals angular:false */
+define(['constants', 'directives/UploadForm', 'directives/Media', 'services/ImageManager', 'services/ParanoidScope'], function (constants) {
     "use strict";
     
     var GalleryCtrlModule = angular.module(

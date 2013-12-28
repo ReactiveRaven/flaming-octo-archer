@@ -1,4 +1,5 @@
-define(['angular', 'jquery'], function (angular, $) {
+/* globals angular:false, $:false */
+define([], function () {
     "use strict";
 
     var PostSerializerModule = angular.module('commissar.services.PostSerializer', []);

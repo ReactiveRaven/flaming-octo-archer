@@ -16,7 +16,10 @@ module.exports = function (grunt) {
         'grunt-parallel',
         'grunt-wait',
         'grunt-bg-shell',
-        'grunt-contrib-cssmin'
+        'grunt-contrib-cssmin',
+        'grunt-ngmin',
+        'grunt-contrib-uglify',
+        'grunt-angular-templates'
     ];
 
     var tasks = {
@@ -35,7 +38,8 @@ module.exports = function (grunt) {
         'cucumber:run_after': ['shell:selenium_stop'],
         'cucumber:run_basic': ['requirejs:compile', 'cucumberjs'],
         'reinstall': ['shell:reinstall'],
-        'default': ['units']
+        'default': ['units'],
+        'compile': ['ngtemplates', 'requirejs:compile', 'ngmin', 'uglify', 'cssmin']
     };
 
     var config = {
@@ -307,9 +311,14 @@ module.exports = function (grunt) {
             }
         },
         uglify: {
-            my_target: {
+            compiled: {
                 files: {
-                    'dest/output.min.js': ['src/input.js']
+                    './www/js/compiled.min.js': ['./www/js/compiled.ngmin.js']
+                }
+            },
+            templates: {
+                files: {
+                    './www/js/templates.min.js': ['./www/js/templates.js']
                 }
             }
         },
@@ -374,22 +383,22 @@ module.exports = function (grunt) {
                         'angular'
                     ],
                     paths: {
-                        angular: '../../bower_components/angular/angular',
+//                        angular: '../../bower_components/angular/angular',
                         requirejs: '../../bower_components/requirejs/require',
                         angularMocks: '../../bower_components/angular-mocks/angular-mocks',
                         angularCookies: '../../bower_components/angular-cookies/angular-cookies',
                         angularResource: '../../bower_components/angular-resource/angular-resource',
                         marked: '../../bower_components/marked/js/marked',
-                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch',
-                        jquery: '../../bower_components/jquery/jquery',
-                        bootstrap: '../../bower_components/bootstrap/bootstrap'
+                        CornerCouch: '../../bower_components/CornerCouch/angular-cornercouch'
+//                        jquery: '../../bower_components/jquery/jquery',
+//                        bootstrap: '../../bower_components/bootstrap/bootstrap'
                     },
                     shim: {
-                        angular: {exports: 'angular'},
-                        angularCookies: {deps: ['angular']},
-                        CornerCouch: {deps: ['angular']},
-                        jquery: {exports: 'jQuery'},
-                        bootstrap: {deps: ['jquery']}
+                        angular: {exports: 'angular'}
+//                        angularCookies: {deps: ['angular']},
+//                        CornerCouch: {deps: ['angular']},
+//                        jquery: {exports: 'jQuery'},
+//                        bootstrap: {deps: ['jquery']}
                     }
                 }
             },
@@ -426,11 +435,29 @@ module.exports = function (grunt) {
         cssmin: {
             combine: {
                 files: {
-                    'www/css/compiled.css': ['www/bower_components/bootstrap/bootstrap.css', 'www/css/testing.css', 'www/css/loader.css', 'www/bower_components/font-awesome/css/font-awesome.css'],
+                    'www/css/compiled.css': ['www/css/testing.css', 'www/css/loader.css'],
                 },
                 options: {
                     keepSpecialComments: 1,
                     root: 'www/'
+                }
+            }
+        },
+        ngmin: {
+            compress: {
+                src: ['www/js/compiled.js'],
+                dest: 'www/js/compiled.ngmin.js'
+            }
+        },
+        ngtemplates:  {
+            app: {
+                cwd:      './www',
+                src:      'angular/templates/**.html',
+                dest:     './www/js/templates.js',
+                options: {
+                    bootstrap:  function (module, script) {
+                        return 'define([], function () {return function (app) {app.run([\'$templateCache\',function($templateCache) { ' + script + ' }]);};});';
+                    }
                 }
             }
         }

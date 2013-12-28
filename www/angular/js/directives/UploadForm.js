@@ -1,4 +1,5 @@
-define(['angular', 'constants', 'jquery', 'services/Authentication', 'services/ParanoidScope', 'services/Couch', 'services/Random'], function (angular, constants, jquery) {
+/* globals angular:false, jQuery:false */
+define(['constants', 'services/Authentication', 'services/ParanoidScope', 'services/Couch', 'services/Random'], function (constants) {
     "use strict";
 
     var UploadFormModule = angular.module(
@@ -65,7 +66,7 @@ define(['angular', 'constants', 'jquery', 'services/Authentication', 'services/P
             scope: {},
             controller: 'commissar.directives.UploadForm.controller',
             link: function ($scope, $element) {
-                var $fileinput = jquery($element).find('input[type=file]');
+                var $fileinput = jQuery($element).find('input[type=file]');
                 $fileinput.on("change", function (event) {
                     $scope.$broadcast('filechanged', $fileinput, event);
                 });

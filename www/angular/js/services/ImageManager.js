@@ -1,4 +1,5 @@
-define(['angular', './Authentication', './Couch'], function (angular) {
+/* globals angular:false */
+define(['./Authentication', './Couch'], function () {
     "use strict";
     
     var ImageManagerModule = angular.module(

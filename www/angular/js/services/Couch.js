@@ -1,6 +1,6 @@
-/* global emit:false */
+/* global emit:false, angular:false, jQuery:false */
 
-define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jquery) {
+define(['CornerCouch', './Random'], function () {
     "use strict";
     
     var CouchModule = angular.module('commissar.services.Couch', ['CornerCouch', 'ngCookies', 'commissar.services.Random']);
@@ -178,7 +178,7 @@ define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jque
                 
                 // Copy the document, so we don't modify the original
                 var deepCopy = true;
-                var document = jquery.extend(deepCopy, {}, documentObject);
+                var document = jQuery.extend(deepCopy, {}, documentObject);
                                     
                 // Convert all functions to strings
                 Couch.stringifyFunctions(document);
@@ -267,7 +267,7 @@ define(['angular', 'jquery', 'CornerCouch', './Random'], function (angular, jque
                         docId,
                         doc;
                     
-                    userCtx = jquery.extend({}, session);
+                    userCtx = jQuery.extend({}, session);
                     userCtx.db = database;
                     
                     try

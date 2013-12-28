@@ -1,4 +1,5 @@
-define(['angular'], function (angular) {
+/* globals angular:false */
+define([], function () {
     "use strict";
     
     var CapitalizeModule = angular.module('commissar.filters.Capitalize', []);
