@@ -1,8 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # Based on http://jswiki.lab-01.com/wiki/doku.php?id=install-couch
  
-if ! hash couchdb;
-then
+if [[ ! -f /.puphpet-stuff/install-couchdb ]]; then
 
     echo "Downloading Linux build tools and Erlang"
     sudo apt-get install build-essential libicu-dev libcurl4-gnutls-dev libtool erlang-dev erlang zip -y > /dev/null
@@ -59,7 +58,17 @@ then
     sudo chmod -R 0770 /usr/local/var/log/couchdb
     sudo chmod -R 0770 /usr/local/var/run/couchdb
 
+    ### remove leftovers from ubuntu packages
+    sudo rm /etc/logrotate.d/couchdb /etc/init.d/couchdb
+
+    ### install logrotate and initd scripts
+    sudo ln -s /usr/local/etc/logrotate.d/couchdb /etc/logrotate.d/couchdb
+    sudo ln -s /usr/local/etc/init.d/couchdb  /etc/init.d
+    sudo update-rc.d couchdb defaults
+    sudo service couchdb start
+
     echo "Done."
     echo "Now you can modify /usr/local/etc/couchdb/local.ini"
 
+    touch /.puphpet-stuff/install-couchdb;
 fi;

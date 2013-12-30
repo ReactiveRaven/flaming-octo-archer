@@ -1,4 +1,4 @@
-require('./utils/duckpunch_httplog'); // logs every http request made
+//require('./utils/duckpunch_httplog'); // logs every http request made
 (function (http, extend, conf, hostname, q) {
 
     if (typeof conf[hostname] === 'undefined') {
@@ -57,47 +57,67 @@ require('./utils/duckpunch_httplog'); // logs every http request made
         });
     }
 
-    function ensureAdmin(username, password, callback) {
+    function ensureAdmin(username, password, callback, needAuth) {
         if (!callback) { callback = noop; }
         
-        makeRequest({path: '/_config/admins'}, null, function (err, body) {
-            if (err) { callback("Cannot ensure admin '" + username + "' :- " + JSON.stringify(err)); return null; }
-            
-            if (body.error) { callback("Can't access /_config/admins", body.error + ": " + body.reason); return null; }
-            
-            if (!body[username]) {
-                makeRequest({path: '/_config/admins/' + username, method: 'PUT'}, JSON.stringify(password), function (err) {
-                    if (err) { callback("Could not create admin '" + username + "' :- " + JSON.stringify(err)); return null; }
-                    
-                    console.log("Created admin '" + username + "'");
-                    callback();
-                });
-            } else {
-                callback();
+        (function () {
+        
+            var ensureAdminOptions = {};
+            if (!needAuth) {
+                ensureAdminOptions.auth = null;
             }
-        });
+
+            makeRequest(extend(ensureAdminOptions, {path: '/_config/admins'}), null, function (err, body) {
+                if (err) { callback("Cannot ensure admin '" + username + "' :- " + JSON.stringify(err)); return null; }
+
+                if (body.error === 'unauthorized') { ensureAdmin(username, password, callback, true); return null; }
+                if (body.error) { callback("Can't access /_config/admins :- " + body.error + ": " + body.reason); return null; }
+
+                if (!body[username]) {
+                    makeRequest(extend(ensureAdminOptions, {path: '/_config/admins/' + username, method: 'PUT'}), JSON.stringify(password), function (err, body) {
+                        if (err) { callback("Could not create admin '" + username + "' :- " + JSON.stringify(err)); return null; }
+                        if (body.error) { callback("Could not create admin '" + username + "' :- " + JSON.stringify(body)); return null; }
+
+                        console.log("Created admin '" + username + "'", body);
+                        callback();
+                    });
+                } else {
+                    callback();
+                }
+            });
+        
+        })();
     }
     
     function ensureDatabase(database_name, callback) {
         if (!callback) { callback = noop; }
         
         makeRequest({path: '/' + database_name}, null, function (err, body) {
-            if (err) { callback("Cannot ensure database '" + database_name + "'", body); return null; }
+            if (err) { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(err)); return null; }
             
             if (body.error) {
-                if (body.error !== 'not_found') {
-                    console.error("Cannot ensure database '" + database_name + "'", body);
-                    callback();
-                }
+                if (body.error !== 'not_found') { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(body)); return null; }
                 
                 makeRequest({path: "/" + database_name, method: "PUT"}, null, function (err, body) {
-                    if (err) { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(err)); return null; }
+                    if (err && (!err.code || err.code !== 'ECONNRESET')) { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(err)); return null; }
+                    
+                    if (body && !body.ok) { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(body)); return null; }
+                    
+                    (function () {
+                        var internalCallback = function () {
+                            makeRequest({path: '/' + database_name}, null, function (err, body) {
+                                if (err) { callback("Cannot ensure database '" + database_name + "' during verify :- " + JSON.stringify(err)); return null; }
 
-                    console.log("Created database '" + database_name + "'");
-                    callback();
+                                console.log("Created database '" + database_name + "'");
+                                callback();
+                            });
+                        };
+                        setTimeout(internalCallback, 100);
+                    })();
                 });
+            } else {
+                callback();
             }
-            callback();
         });
     }
     
@@ -148,12 +168,18 @@ require('./utils/duckpunch_httplog'); // logs every http request made
     
     function makeRequest(options, body, callback) {
         if (!callback) { callback = noop; }
+        options = extend(
+            httpdefaults,
+            options
+        );
+        foreach(options, function (i, el) { 
+            if (el === null) {
+                delete options[i];
+            }
+        });
         
         var request = http.request(
-            extend(
-                httpdefaults,
-                options
-            ),
+            options,
             function (res) {
                 onComplete(res, function (inBody) {
                     try
@@ -170,6 +196,9 @@ require('./utils/duckpunch_httplog'); // logs every http request made
         if (body) {
             request.write(body);
         }
+        request.on("error", function (error) {
+            callback(error);
+        });
         request.end();
     }
     
@@ -179,7 +208,8 @@ require('./utils/duckpunch_httplog'); // logs every http request made
         var replicationId = replication.target + "__<--__" + replication.source;
         
         makeRequest({path: '/_replicator/' + replicationId}, null, function (err, body) {
-            if (err) { console.error("Cannot ensure replication '" + JSON.stringify(replication) + "'", body); callback(); }
+            if (err) { callback("Cannot ensure replication '" + replicationId + "' :- " + err); return null; }
+            if (!body) { callback("Cannot ensure replication '" + replicationId + "' as body is falsy :- " + JSON.stringify(body)); return null; }
             
             if (body.error && body.error === "not_found") {
                 var newDoc = {

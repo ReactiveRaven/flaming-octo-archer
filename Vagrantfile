@@ -37,6 +37,7 @@ Vagrant.configure("2") do |config|
     puppet.manifests_path = "puppet/manifests"
     puppet.options = ["--verbose", "--hiera_config /vagrant/hiera.yaml", "--parser future"]
   end
+  config.vm.provision :shell, :path => "shell/run-healthcheck.sh"
 
 
 
