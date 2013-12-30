@@ -14,7 +14,9 @@
                 "couchdb/delayed_commits": "false",
                 "couchdb/max_document_size": "31457280",
                 "couchdb/max_dbs_open": "1000",
-                "couch_httpd_auth/timeout": "2592000"
+                "couch_httpd_auth/timeout": "2592000",
+                "replicator/http_connections": "1000",
+                "compactions/_default": "[{db_fragmentation, \"70%\"}, {view_fragmentation, \"60%\"}, {from, \"23:00\"}, {to, \"04:00\"}]"
             },
             "databases": {
                 "commissar_instance_vagrant": {
@@ -56,12 +58,22 @@
                         "names": [],
                         "roles": []
                     }
+                },
+                "commissar_private": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }
                 }
             },
             "replications": [
                {
                    "source": "commissar_validation_global",
-                   "target": "commissar_public"
+                   "target": "commissar_validation_users"
                }
             ]
         }
@@ -81,7 +93,9 @@
                 "couchdb/delayed_commits": "false",
                 "couchdb/max_document_size": "31457280",
                 "couchdb/max_dbs_open": "1000",
-                "couch_httpd_auth/timeout": "2592000"
+                "couch_httpd_auth/timeout": "2592000",
+                "replicator/http_connections": "1000",
+                "compactions/_default": "[{db_fragmentation, \"70%\"}, {view_fragmentation, \"60%\"}, {from, \"23:00\"}, {to, \"04:00\"}]"
             },
             "databases": {
                 "commissar_instance_vagrant": {
@@ -123,8 +137,24 @@
                         "names": [],
                         "roles": []
                     }
+                },
+                "commissar_private": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    }
                 }
-            }
+            },
+            "replications": [
+               {
+                   "source": "commissar_validation_global",
+                   "target": "commissar_validation_users"
+               }
+            ]
         }
     }
 }
