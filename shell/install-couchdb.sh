@@ -1,24 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 # Based on http://jswiki.lab-01.com/wiki/doku.php?id=install-couch
  
-if ! hash couchdb;
-then
+if [[ ! -f /.puphpet-stuff/install-couchdb ]]; then
 
     echo "Downloading Linux build tools and Erlang"
-    sudo apt-get install build-essential libicu-dev libcurl4-gnutls-dev libtool erlang-dev erlang zip -y
+    sudo apt-get install build-essential libicu-dev libcurl4-gnutls-dev libtool erlang-dev erlang zip -y > /dev/null
 
     # Work on tmp directory
     cd /tmp
 
     # Spidermonkey is required
     echo "Spidermokey ..."
-    wget http://ftp.mozilla.org/pub/mozilla.org/js/js185-1.0.0.tar.gz
+    echo "    downloading";
+    wget http://ftp.mozilla.org/pub/mozilla.org/js/js185-1.0.0.tar.gz > /dev/null 2>&1
+    echo "    extracting";
     tar xfz js185-1.0.0.tar.gz
     cd js-1.8.5/js/src
-    ./configure
-    make
-    sudo make install
-    sudo /sbin/ldconfig
+    echo "    ./configure";
+    ./configure > /dev/null
+    echo "    make";
+    make > /dev/null 2>&1
+    echo "    sudo make install";
+    sudo make install > /dev/null
+    echo "    sudo /sbin/ldconfig";
+    sudo /sbin/ldconfig > /dev/null
     echo "Spidermonkey installed."
 
     # Return to tmp directory
@@ -26,12 +31,17 @@ then
 
     # Get CouchDB source code
     echo "CouchDB ..."
-    wget http://mirror.reverse.net/pub/apache/couchdb/source/1.5.0/apache-couchdb-1.5.0.tar.gz
+    echo "    downloading";
+    wget http://mirror.reverse.net/pub/apache/couchdb/source/1.5.0/apache-couchdb-1.5.0.tar.gz > /dev/null 2>&1
+    echo "    extracting";
     tar xfz apache-couchdb-1.5.0.tar.gz
     cd apache-couchdb-1.5.0
-    ./configure
-    make
-    sudo make install
+    echo "    ./configure";
+    ./configure > /dev/null
+    echo "    make";
+    make > /dev/null
+    echo "    sudo make install";
+    sudo make install > /dev/null
     echo "CouchDB installed."
 
     # Add couchdb user
@@ -48,7 +58,17 @@ then
     sudo chmod -R 0770 /usr/local/var/log/couchdb
     sudo chmod -R 0770 /usr/local/var/run/couchdb
 
+    ### remove leftovers from ubuntu packages
+    sudo rm /etc/logrotate.d/couchdb /etc/init.d/couchdb
+
+    ### install logrotate and initd scripts
+    sudo ln -s /usr/local/etc/logrotate.d/couchdb /etc/logrotate.d/couchdb
+    sudo ln -s /usr/local/etc/init.d/couchdb  /etc/init.d
+    sudo update-rc.d couchdb defaults
+    sudo service couchdb start
+
     echo "Done."
     echo "Now you can modify /usr/local/etc/couchdb/local.ini"
 
+    touch /.puphpet-stuff/install-couchdb;
 fi;

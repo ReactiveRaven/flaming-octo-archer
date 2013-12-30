@@ -1,6 +1,6 @@
 /* global afterEach:false, inject:false */
 
-define(['world', 'jquery'], function (world, jquery) {
+define(['world', 'jquery', 'constants'], function (world, jquery, constants) {
     "use strict";
     
     world.shut_up_jshint = true;
@@ -1433,7 +1433,7 @@ define(['world', 'jquery'], function (world, jquery) {
                     
                     var calls = functions.success.callCount + functions.failure.callCount;
 
-                    expect(calls).toBeGreaterThan(0);
+                    expect(calls).toBe(1);
                     expect(success).toBe(resolve);
                     expect(failure).toBe(reject);
                 };
@@ -1512,10 +1512,40 @@ define(['world', 'jquery'], function (world, jquery) {
                     testValidate(noAuthor, null, userDb, undefined, 'Cannot create a document without an author field');
                 });
                 
-                it('should require author to match own name, unless admin', function () {
+                it('should allow skipping author field if deleting', function () {
+                    var noAuthor = jquery.extend({}, validDocument);
+                    delete noAuthor.author;
+                    noAuthor["_deleted"] = true;
+                    
+                    testValidate(noAuthor, validDocument, userDb, true, undefined);
+                });
+                
+                it('should require author to match own name', function () {
                     var yours = jquery.extend({}, validDocument);
                     yours.author = 'susan';
                     testValidate(yours, null, userDb, undefined, 'Cannot forge authorship as another user');
+                });
+                
+                it('should allow forging authorship when +admin', function () {
+                    var yours = jquery.extend({}, validDocument);
+                    yours.author = 'susan';
+                    yours._id = 'susan_123';
+                    
+                    $rootScope.cornercouch.userCtx.roles.push("+admin");
+                    
+                    testValidate(yours, null, userDb, true, undefined);
+                });
+                
+                it('should only allow the author and admins to delete documents', function () {
+                    var yours = jquery.extend({}, validDocument);
+                    var deleted = {_id: yours._id, _deleted: true};
+                    yours.author = "susan";
+                    
+                    testValidate(deleted, yours, userDb, undefined, 'Cannot delete as you are not the author');
+                    
+                    $rootScope.cornercouch.userCtx.roles.push("+admin");
+                    
+                    testValidate(deleted, yours, userDb, true, undefined);
                 });
                 
                 it('should require ids to be pre-determined', function () {
@@ -1571,6 +1601,19 @@ define(['world', 'jquery'], function (world, jquery) {
                         var noCreated = jquery.extend({}, validDocument);
                         delete noCreated.created;
                         testValidate(noCreated, null, userDb, undefined, 'Media must have a created timestamp');
+                    });
+                    
+                    it('should restrict mediaType', function () {
+                        
+                        var validMediaType = jquery.extend({}, validDocument);
+                        for (var i = 0; i < constants.allowedMediaTypes.length; i++) {
+                            validMediaType.mediaType = constants.allowedMediaTypes[i];
+                            testValidate(validMediaType, null, userDb, true, undefined);
+                        }
+                        
+                        var invalidMediaType = jquery.extend({}, validDocument);
+                        invalidMediaType.mediaType = "wonkydonkey";
+                        testValidate(invalidMediaType, null, userDb, undefined, 'Invalid media type');
                     });
                     
                     describe('[views]', function () {
@@ -1661,6 +1704,61 @@ define(['world', 'jquery'], function (world, jquery) {
                             it("should not emit if the document is any other type", function () {
                                 var document = {
                                     type: 'other',
+                                    someKey: true,
+                                    author: 'john smith'
+                                };
+                                
+                                view.map(document);
+                                
+                                expect(emit).not.toHaveBeenCalled();
+                            });
+                        });
+                        
+                        describe("[noThumbnails]", function () {
+                            
+                            var view,
+                                emit;
+                            
+                            beforeEach(function () {
+                                view = Couch._designDocs.commissar_validation_users['_design/validation_user_media'].views.noThumbnails;
+                                window.emit = emit = jasmine.createSpy("emit");
+                            });
+                            
+                            it("should exist", function () {
+                                expect(Couch._designDocs.commissar_validation_users['_design/validation_user_media'].views.noThumbnails).toBeDefined();
+                            });
+                            
+                            it("should emit if the document is a media-type with no thumbnails attribute", function () {
+                                var document = {
+                                    type: 'media',
+                                    someKey: true,
+                                    author: 'john smith'
+                                };
+                                
+                                view.map(document);
+                                
+                                expect(emit).toHaveBeenCalledWith(null, document);
+                            });
+                            
+                            it("should not emit if the document is any other type", function () {
+                                var document = {
+                                    type: 'other',
+                                    someKey: true,
+                                    author: 'john smith'
+                                };
+                                
+                                view.map(document);
+                                
+                                expect(emit).not.toHaveBeenCalled();
+                            });
+                            
+                            it("should not emit if the document has a thumbnails attribute", function () {
+                                var document = {
+                                    type: 'media',
+                                    thumbnails: {
+                                        100: 'thumb_100x100.png',
+                                        500: 'thumb_500x500.png'
+                                    },
                                     someKey: true,
                                     author: 'john smith'
                                 };

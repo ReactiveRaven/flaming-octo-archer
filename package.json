@@ -20,7 +20,6 @@
     "karma-html2js-preprocessor": "~0.1.0",
     "karma-jasmine": "~0.1.0",
     "karma-requirejs": "~0.1.0",
-    "karma-coffee-preprocessor": "~0.1.0",
     "karma-phantomjs-launcher": "~0.1.0",
     "karma": "~0.10.1",
     "karma-ng-scenario": "*",
@@ -38,7 +37,9 @@
     "q": "~0.9.7",
     "grunt-ngmin": "0.0.3",
     "grunt-contrib-uglify": "~0.2.7",
-    "grunt-angular-templates": "~0.5.0"
+    "grunt-angular-templates": "~0.5.0",
+    "easyimage": "~0.1.6",
+    "nano": "~4.2.1"
   },
   "scripts": {
     "install": "./node_modules/grunt-cli/bin/grunt setup"

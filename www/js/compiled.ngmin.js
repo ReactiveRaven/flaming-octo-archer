@@ -415,14 +415,14 @@ define('services/Couch', [
                 _id: '_design/validation_global',
                 language: 'javascript',
                 validate_doc_update: function (newDoc, oldDoc, userCtx) {
-                  if (typeof newDoc['_deleted'] === 'undefined') {
-                    if (typeof newDoc.type === 'undefined') {
+                  if (!newDoc._deleted) {
+                    if (!newDoc.type) {
                       throw { forbidden: 'All documents must have a type' };
                     }
                     if (userCtx.db !== 'commissar_user_' + userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
                       throw { forbidden: 'Cannot alter documents outside your own database' };
                     }
-                    if (typeof newDoc.created !== 'undefined') {
+                    if (newDoc.created) {
                       if (String(parseInt(newDoc.created, 10)) !== String(newDoc.created)) {
                         throw { forbidden: 'Created timestamp must be in unix format' };
                       }
@@ -430,7 +430,7 @@ define('services/Couch', [
                         throw { forbidden: 'Cannot alter created timestamp once set' };
                       }
                     }
-                    if (typeof newDoc.updated !== 'undefined' && String(parseInt(newDoc.updated, 10)) !== String(newDoc.updated)) {
+                    if (newDoc.updated && String(parseInt(newDoc.updated, 10)) !== String(newDoc.updated)) {
                       throw { forbidden: 'Updated timestamp must be in unix format' };
                     }
                   }
@@ -442,25 +442,38 @@ define('services/Couch', [
                 _id: '_design/validation_user',
                 language: 'javascript',
                 validate_doc_update: function (newDoc, oldDoc, userCtx) {
-                  if (typeof newDoc.author === 'undefined') {
-                    throw { forbidden: 'Cannot create a document without an author field' };
-                  }
-                  if (newDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
-                    throw { forbidden: 'Cannot forge authorship as another user' };
-                  }
-                  if (typeof newDoc._id === 'undefined') {
+                  var undefined = function (undef) {
+                      return undef;
+                    }();
+                  if (newDoc._id === undefined) {
                     throw { forbidden: 'ID is missing' };
                   }
-                  if (newDoc._id.indexOf(userCtx.name) !== 0) {
+                  if (!newDoc.author && oldDoc && !newDoc._deleted) {
+                    throw { forbidden: 'Cannot create a document without an author field' };
+                  }
+                  if (newDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1 && oldDoc && !newDoc._deleted) {
+                    throw { forbidden: 'Cannot forge authorship as another user' };
+                  }
+                  if (newDoc._id.indexOf(newDoc.author) !== 0 && oldDoc && !newDoc._deleted) {
                     throw { forbidden: 'IDs must start with your username' };
                   }
-                  if (!!oldDoc) {
-                    if (typeof oldDoc.type !== 'undefined' && newDoc.type !== oldDoc.type) {
-                      throw { forbidden: 'Cannot change the type of a document' };
-                    }
-                    if (typeof oldDoc.author !== 'undefined' && newDoc.author !== oldDoc.author) {
-                      throw { forbidden: 'Cannot change the author of a document' };
-                    }
+                  if (oldDoc && oldDoc.type && newDoc.type !== oldDoc.type && !newDoc._deleted) {
+                    throw { forbidden: 'Cannot change the type of a document' };
+                  }
+                  if (oldDoc && oldDoc.author && newDoc.author !== oldDoc.author && !newDoc._deleted) {
+                    throw { forbidden: 'Cannot change the author of a document' };
+                  }
+                  if (!newDoc.author && !oldDoc) {
+                    throw { forbidden: 'Cannot create a document without an author field' };
+                  }
+                  if (newDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1 && !oldDoc) {
+                    throw { forbidden: 'Cannot forge authorship as another user' };
+                  }
+                  if (newDoc._id.indexOf(newDoc.author) !== 0 && !oldDoc) {
+                    throw { forbidden: 'IDs must start with your username' };
+                  }
+                  if (newDoc._deleted && oldDoc && oldDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
+                    throw { forbidden: 'Cannot delete as you are not the author' };
                   }
                 }
               },
@@ -492,6 +505,13 @@ define('services/Couch', [
                     map: function (document) {
                       if (typeof document.type === 'string' && document.type === 'media') {
                         emit(document.author, document);
+                      }
+                    }
+                  },
+                  noThumbnails: {
+                    map: function (document) {
+                      if (document.type && document.type === 'media' && !document.thumbnails) {
+                        emit(null, document);
                       }
                     }
                   }

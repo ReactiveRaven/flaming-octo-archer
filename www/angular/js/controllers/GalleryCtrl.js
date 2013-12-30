@@ -6,6 +6,7 @@ define(['constants', 'directives/UploadForm', 'directives/Media', 'services/Imag
         'commissar.controllers.GalleryCtrl',
         [
             'commissar.directives.UploadForm',
+            'commissar.directives.Media',
             'commissar.services.ImageManager',
             'commissar.services.ParanoidScope'
         ]
