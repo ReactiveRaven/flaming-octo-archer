@@ -5,20 +5,26 @@ if ! hash couchdb;
 then
 
     echo "Downloading Linux build tools and Erlang"
-    sudo apt-get install build-essential libicu-dev libcurl4-gnutls-dev libtool erlang-dev erlang zip -y
+    sudo apt-get install build-essential libicu-dev libcurl4-gnutls-dev libtool erlang-dev erlang zip -y > /dev/null
 
     # Work on tmp directory
     cd /tmp
 
     # Spidermonkey is required
     echo "Spidermokey ..."
-    wget http://ftp.mozilla.org/pub/mozilla.org/js/js185-1.0.0.tar.gz
+    echo "    downloading";
+    wget http://ftp.mozilla.org/pub/mozilla.org/js/js185-1.0.0.tar.gz > /dev/null 2>&1
+    echo "    extracting";
     tar xfz js185-1.0.0.tar.gz
     cd js-1.8.5/js/src
-    ./configure
-    make
-    sudo make install
-    sudo /sbin/ldconfig
+    echo "    ./configure";
+    ./configure > /dev/null
+    echo "    make";
+    make > /dev/null 2>&1
+    echo "    sudo make install";
+    sudo make install > /dev/null
+    echo "    sudo /sbin/ldconfig";
+    sudo /sbin/ldconfig > /dev/null
     echo "Spidermonkey installed."
 
     # Return to tmp directory
@@ -26,12 +32,17 @@ then
 
     # Get CouchDB source code
     echo "CouchDB ..."
-    wget http://mirror.reverse.net/pub/apache/couchdb/source/1.5.0/apache-couchdb-1.5.0.tar.gz
+    echo "    downloading";
+    wget http://mirror.reverse.net/pub/apache/couchdb/source/1.5.0/apache-couchdb-1.5.0.tar.gz > /dev/null 2>&1
+    echo "    extracting";
     tar xfz apache-couchdb-1.5.0.tar.gz
     cd apache-couchdb-1.5.0
-    ./configure
-    make
-    sudo make install
+    echo "    ./configure";
+    ./configure > /dev/null
+    echo "    make";
+    make > /dev/null
+    echo "    sudo make install";
+    sudo make install > /dev/null
     echo "CouchDB installed."
 
     # Add couchdb user

@@ -1,4 +1,3 @@
----
 vagrantfile-local:
     vm:
         box: precise64
@@ -51,8 +50,8 @@ server:
         - curl
         - git-core
         - nodejs
-        - npm
         - htop
+        - imagemagick
     dot_files:
         -
             bash_aliases: null

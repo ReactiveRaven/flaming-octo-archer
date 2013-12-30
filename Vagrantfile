@@ -25,6 +25,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision :shell, :path => "shell/initial-setup.sh"
+  config.vm.provision :shell, :path => "shell/install-node-repository.sh"
   config.vm.provision :shell, :path => "shell/install-couchdb.sh"
   config.vm.provision :shell, :path => "shell/update-puppet.sh"
   config.vm.provision :shell, :path => "shell/librarian-puppet-vagrant.sh"
