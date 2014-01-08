@@ -68,12 +68,26 @@
                         "names": [],
                         "roles": ["+admin"]
                     }
+                },
+                "commissar_user_fish": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": ["fish"],
+                        "roles": ["+admin"]
+                    }
                 }
             },
             "replications": [
                {
                    "source": "commissar_validation_global",
                    "target": "commissar_validation_users"
+               },
+               {
+                   "source": "commissar_validation_users",
+                   "target": "commissar_user_fish"
                }
             ],
             "users": [
@@ -154,12 +168,26 @@
                         "names": [],
                         "roles": ["+admin"]
                     }
+                },
+                "commissar_user_fish": {
+                    "admins": {
+                        "names": [],
+                        "roles": ["+admin"]
+                    },
+                    "members": {
+                        "names": ["fish"],
+                        "roles": ["+admin"]
+                    }
                 }
             },
             "replications": [
                {
                    "source": "commissar_validation_global",
                    "target": "commissar_validation_users"
+               },
+               {
+                   "source": "commissar_validation_users",
+                   "target": "commissar_user_fish"
                }
             ],
             "users": [
