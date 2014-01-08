@@ -1,21 +1,21 @@
 //require('./utils/duckpunch_httplog'); // logs every http request made
 module.exports = (function (httpdefaults) {
-    
+
     if (!httpdefaults.host) { throw 'httpdefaults.host not set'; }
     if (!httpdefaults.auth) { throw 'httpdefaults.auth not set'; }
     if (!httpdefaults.port) { throw 'httpdefaults.port not set'; }
-    
+
     var foreach = require('./utils/foreach');
     var extend = require('xtend');
     var http = require('http');
-    
+
     var api = {};
-    
+
     function noop() {}
-    
+
     function onComplete(res, callback) {
         if (!callback) { callback = noop; }
-        
+
         var body = "";
         res.setEncoding("utf8");
         res.on("data", function (chunk) {
@@ -28,14 +28,14 @@ module.exports = (function (httpdefaults) {
 
     function ensureConfig(path, value, callback) {
         if (!callback) { callback = noop; }
-        
+
         makeRequest({path: path}, null, function (err, body) {
             if (err) { callback("Cannot ensure config '" + path + "' = " + value + " :- " + JSON.stringify(err)); return null; }
-            
+
             if (body !== value) {
                 makeRequest({path: path, method: "PUT"}, JSON.stringify(value), function (err, body) {
                     if (err) { callback("Cannot ensure config '" + path + "' = " + value + " :- " + JSON.stringify(err)); return null; }
-                    
+
                     console.log("Updated " + path + " to " + value + " from " + body);
                     callback();
                 });
@@ -48,9 +48,9 @@ module.exports = (function (httpdefaults) {
 
     function ensureAdmin(username, password, callback, needAuth) {
         if (!callback) { callback = noop; }
-        
+
         (function () {
-        
+
             var ensureAdminOptions = {};
             if (!needAuth) {
                 ensureAdminOptions.auth = null;
@@ -74,25 +74,25 @@ module.exports = (function (httpdefaults) {
                     callback();
                 }
             });
-        
+
         })();
     }
     api.admin = ensureAdmin;
-    
+
     function ensureDatabase(database_name, callback) {
         if (!callback) { callback = noop; }
-        
+
         makeRequest({path: '/' + database_name}, null, function (err, body) {
             if (err) { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(err)); return null; }
-            
+
             if (body.error) {
                 if (body.error !== 'not_found') { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(body)); return null; }
-                
+
                 makeRequest({path: "/" + database_name, method: "PUT"}, null, function (err, body) {
                     if (err && (!err.code || err.code !== 'ECONNRESET')) { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(err)); return null; }
-                    
+
                     if (body && !body.ok) { callback("Cannot ensure database '" + database_name + "' :- " + JSON.stringify(body)); return null; }
-                    
+
                     (function () {
                         var internalCallback = function () {
                             makeRequest({path: '/' + database_name}, null, function (err, body) {
@@ -111,18 +111,18 @@ module.exports = (function (httpdefaults) {
         });
     }
     api.database = ensureDatabase;
-    
+
     function ensureDatabaseSecurity(database_name, desired_security, callback) {
         if (!callback) { callback = noop; }
-        
+
         ensureDatabase(database_name, function (err) {
             if (err) { callback("Cannot secure database '" + database_name + "' as requested :- " + JSON.stringify(err)); return null; }
-            
+
             makeRequest({path: '/' + database_name + '/_security'}, null, function (err, body) {
                 if (err) { callback("Cannot secure database '" + database_name + "' as requested :- " + JSON.stringify(err)); return null; }
-                
+
                 if (body.error) {callback("Cannot secure database '" + database_name + "' as requested", body.error + ": " + body.reason); return null;}
-                
+
                 var updates = [];
                 for (var key in desired_security) {
                     if (desired_security.hasOwnProperty(key)) {
@@ -141,7 +141,7 @@ module.exports = (function (httpdefaults) {
                 var newBody = JSON.stringify(body);
                 makeRequest({path: '/' + database_name + "/_security", method: "put"}, newBody, function (err, body) {
                     if (err) { callback("Cannot secure database '" + database_name + "' as requested :- " + JSON.stringify(err)); return null; }
-                    
+
                     if (updates.length) {
                         console.log("Security on '" + database_name + "' was updated as follows:");
                         for (var key in updates) {
@@ -157,19 +157,19 @@ module.exports = (function (httpdefaults) {
         });
     }
     api.databaseSecurity = ensureDatabaseSecurity;
-    
+
     function makeRequest(options, body, callback) {
         if (!callback) { callback = noop; }
         options = extend(
             httpdefaults,
             options
         );
-        foreach(options, function (i, el) { 
+        foreach(options, function (i, el) {
             if (el === null) {
                 delete options[i];
             }
         });
-        
+
         var request = http.request(
             options,
             function (res) {
@@ -180,7 +180,7 @@ module.exports = (function (httpdefaults) {
                     } catch (err) {
                         callback(err);
                     }
-                    
+
                     callback(null, inBody);
                 });
             }
@@ -196,14 +196,14 @@ module.exports = (function (httpdefaults) {
         });
         request.end();
     }
-    
+
     function ensureUser(username, password, roles, callback) {
         if (!callback) { callback = noop; }
-        
+
         makeRequest({path: '/_users/org.couchdb.user:' + username}, null, function (err, body) {
             if (err) { callback("Cannot ensure user '" + username + "' :- " + err); return null; }
             if (!body) { callback("Cannot ensure user '" + username + "' as body is falsy :- " + JSON.stringify(body)); return null; }
-            
+
             if (body.error && body.error === "not_found") {
                 var basicBody = {
                     'type': 'user',
@@ -215,9 +215,9 @@ module.exports = (function (httpdefaults) {
                 makeRequest({path: '/_users/org.couchdb.user:' + username, method: 'PUT'}, basicBody, function (err, body) {
                     if (err) { callback("Cannot ensure user '" + username + "' :- " + err); return null; }
                     if (!body.ok) { callback("Cannot ensure user '" + username + "' :- " + JSON.stringify(body)); return null; }
-                     
+
                     console.log("Created user '" + username + "' with roles " + JSON.stringify(basicBody.roles));
-                    
+
                     callback(null, true);
                 });
             } else {
@@ -232,10 +232,10 @@ module.exports = (function (httpdefaults) {
                     foreach(rolesMissing, function (i, el) {
                         newBody.roles.push(el);
                     });
-                    
+
                     makeRequest({path: '/_users/org.couchdb.user:' + username, method: 'PUT'}, newBody, function (err, body) {
                         if (err) { callback("Cannot ensure user '" + username + "' roles contain " + JSON.stringify(roles) + " :- " + err); return null; }
-                        
+
                         console.log("Updated user '" + username + "' roles to " + JSON.stringify(newBody.roles));
                         callback(null, true);
                     });
@@ -246,16 +246,16 @@ module.exports = (function (httpdefaults) {
         });
     }
     api.user = ensureUser;
-    
+
     function ensureReplication(replication, callback) {
         if (!callback) { callback = noop; }
-        
+
         var replicationId = replication.target + "__<--__" + replication.source;
-        
+
         makeRequest({path: '/_replicator/' + replicationId}, null, function (err, body) {
             if (err) { callback("Cannot ensure replication '" + replicationId + "' :- " + err); return null; }
             if (!body) { callback("Cannot ensure replication '" + replicationId + "' as body is falsy :- " + JSON.stringify(body)); return null; }
-            
+
             if (body.error && body.error === "not_found") {
                 var newDoc = {
                     '_id': replicationId,
@@ -269,11 +269,11 @@ module.exports = (function (httpdefaults) {
                 };
                 makeRequest({path: '/_replicator/' + replicationId, method: 'PUT'}, JSON.stringify(newDoc), function (err, body) {
                     if (err) { callback("Cannot ensure replication " + replicationId + " :- " + JSON.stringify(err)); return null; }
-                    
+
                     if (!body.ok) { callback("Cannot ensure replication " + replicationId, body); return null; }
-                    
+
                     console.log("Set up replication " + replicationId);
-                    
+
                     callback();
                 });
             } else if (body._replication_state && body._replication_state !== 'triggered') {
@@ -283,9 +283,9 @@ module.exports = (function (httpdefaults) {
                 });
                 makeRequest({path: '/_replicator/' + replicationId, method: 'PUT'}, JSON.stringify(newBody), function (err, replyBody) {
                     if (err) { callback("Cannot ensure replication " + replicationId + " :- " + JSON.stringify(err)); return null; }
-                    
+
                     if (!replyBody.ok) { callback("Cannot ensure replication " + replicationId + " :- " + JSON.stringify(err)); return null; }
-                    
+
                     console.log("Re-started replication '" + replicationId + "' from state '" + body._replication_state + "'");
                 });
             } else {
@@ -294,9 +294,9 @@ module.exports = (function (httpdefaults) {
         });
     }
     api.replication = ensureReplication;
-    
-    
-    
-    
+
+
+
+
     return api;
 });

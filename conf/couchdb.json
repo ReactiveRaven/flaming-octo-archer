@@ -47,7 +47,7 @@
                     "members": {
                         "names": [],
                         "roles": ["+admin"]
-                    }                    
+                    }
                 },
                 "commissar_public": {
                     "admins": {
@@ -133,7 +133,7 @@
                     "members": {
                         "names": [],
                         "roles": ["+admin"]
-                    }                    
+                    }
                 },
                 "commissar_public": {
                     "admins": {
