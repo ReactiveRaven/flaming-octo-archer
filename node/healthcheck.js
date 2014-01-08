@@ -1,4 +1,4 @@
-require('./utils/duckpunch_httplog'); // logs every http request made
+//require('./utils/duckpunch_httplog'); // logs every http request made
 (function (conf, q, foreach, ensure) {
 
     function echoError(err) {

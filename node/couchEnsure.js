@@ -263,7 +263,7 @@ module.exports = (function (httpdefaults) {
                     'target': replication.target,
                     'continuous': true,
                     'user_ctx': {
-                        'name': conf.adminuser,
+                        'name': httpdefaults.auth.split(":")[0],
                         'roles': ['_admin']
                     }
                 };
