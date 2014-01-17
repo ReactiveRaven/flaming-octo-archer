@@ -121,7 +121,7 @@ module.exports = (function (httpdefaults) {
             makeRequest({path: '/' + database_name + '/_security'}, null, function (err, body) {
                 if (err) { callback("Cannot secure database '" + database_name + "' as requested :- " + JSON.stringify(err)); return null; }
 
-                if (body.error) {callback("Cannot secure database '" + database_name + "' as requested", body.error + ": " + body.reason); return null;}
+                if (body.error) {callback("Cannot secure database '" + database_name + "' as requested :- " + body.error + ": " + body.reason); return null;}
 
                 var updates = [];
                 for (var key in desired_security) {
@@ -138,21 +138,26 @@ module.exports = (function (httpdefaults) {
                         }
                     }
                 }
-                var newBody = JSON.stringify(body);
-                makeRequest({path: '/' + database_name + "/_security", method: "put"}, newBody, function (err, body) {
-                    if (err) { callback("Cannot secure database '" + database_name + "' as requested :- " + JSON.stringify(err)); return null; }
+                if (updates.length) {
+                    var newBody = JSON.stringify(body);
+                    makeRequest({path: '/' + database_name + "/_security", method: "put"}, newBody, function (err, body) {
+                        if (err) { callback("Cannot secure database '" + database_name + "' as requested :- " + JSON.stringify(err)); return null; }
 
-                    if (updates.length) {
-                        console.log("Security on '" + database_name + "' was updated as follows:");
-                        for (var key in updates) {
-                            if (updates.hasOwnProperty(key)) {
-                                console.log("    " + updates[key]);
+                        if (updates.length) {
+                            console.log("Security on '" + database_name + "' was updated as follows:");
+                            for (var key in updates) {
+                                if (updates.hasOwnProperty(key)) {
+                                    console.log("    " + updates[key]);
+                                }
                             }
                         }
-                    }
+                        callback();
+                        return null;
+                    });
+                } else {
                     callback();
                     return null;
-                });
+                }
             });
         });
     }
@@ -196,6 +201,7 @@ module.exports = (function (httpdefaults) {
         });
         request.end();
     }
+    api._makeRequest = makeRequest;
 
     function ensureUser(username, password, roles, callback) {
         if (!callback) { callback = noop; }
@@ -270,7 +276,7 @@ module.exports = (function (httpdefaults) {
                 makeRequest({path: '/_replicator/' + replicationId, method: 'PUT'}, JSON.stringify(newDoc), function (err, body) {
                     if (err) { callback("Cannot ensure replication " + replicationId + " :- " + JSON.stringify(err)); return null; }
 
-                    if (!body.ok) { callback("Cannot ensure replication " + replicationId, body); return null; }
+                    if (!body.ok) { callback("Cannot ensure replication " + replicationId + "' :- " + JSON.stringify(body)); return null; }
 
                     console.log("Set up replication " + replicationId);
 

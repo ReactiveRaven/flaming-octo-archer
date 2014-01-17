@@ -415,6 +415,9 @@ define('services/Couch', [
                 _id: '_design/validation_global',
                 language: 'javascript',
                 validate_doc_update: function (newDoc, oldDoc, userCtx) {
+                  if (userCtx.roles.indexOf('_admin') !== -1) {
+                    return null;
+                  }
                   if (!newDoc._deleted) {
                     if (!newDoc.type) {
                       throw { forbidden: 'All documents must have a type' };
@@ -445,6 +448,9 @@ define('services/Couch', [
                   var undefined = function (undef) {
                       return undef;
                     }();
+                  if (userCtx.roles.indexOf('_admin') !== -1) {
+                    return null;
+                  }
                   if (newDoc._id === undefined) {
                     throw { forbidden: 'ID is missing' };
                   }
@@ -480,7 +486,10 @@ define('services/Couch', [
               '_design/validation_user_media': {
                 _id: '_design/validation_user_media',
                 language: 'javascript',
-                validate_doc_update: function (newDoc) {
+                validate_doc_update: function (newDoc, oldDoc, userCtx) {
+                  if (userCtx.roles.indexOf('_admin') !== -1) {
+                    return null;
+                  }
                   if (newDoc.type === 'media') {
                     if (typeof newDoc.title === 'undefined') {
                       throw { forbidden: 'Media must have a title' };

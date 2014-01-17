@@ -4,7 +4,8 @@ patcher = function(patchMe) {
   var original;
   original = patchMe.request;
   return patchMe.request = function(options, callback) {
-    console.log(options.path);
+      var method = options.method ? options.method : "GET";
+    console.log(method.toUpperCase() + " " + options.path);
     return original(options, callback);
   };
 };
