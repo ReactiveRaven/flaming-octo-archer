@@ -20,3 +20,4 @@ tests/jasmine/reports/coverage/*/
 .vagrant_remote
 VagrantSecrets.rb
 .vagrant_local/
+.nide

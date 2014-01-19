@@ -8,23 +8,11 @@ module.exports = (function (httpdefaults) {
     var foreach = require('./utils/foreach');
     var extend = require('xtend');
     var http = require('http');
+    var makeRequest = require('./utils/makeRequest')(httpdefaults);
 
     var api = {};
 
     function noop() {}
-
-    function onComplete(res, callback) {
-        if (!callback) { callback = noop; }
-
-        var body = "";
-        res.setEncoding("utf8");
-        res.on("data", function (chunk) {
-            body += ""+chunk;
-        });
-        res.on("end", function () {
-            callback(body);
-        });
-    }
 
     function ensureConfig(path, value, callback) {
         if (!callback) { callback = noop; }
@@ -163,44 +151,44 @@ module.exports = (function (httpdefaults) {
     }
     api.databaseSecurity = ensureDatabaseSecurity;
 
-    function makeRequest(options, body, callback) {
-        if (!callback) { callback = noop; }
-        options = extend(
-            httpdefaults,
-            options
-        );
-        foreach(options, function (i, el) {
-            if (el === null) {
-                delete options[i];
-            }
-        });
-
-        var request = http.request(
-            options,
-            function (res) {
-                onComplete(res, function (inBody) {
-                    try
-                    {
-                        inBody = JSON.parse(inBody);
-                    } catch (err) {
-                        callback(err);
-                    }
-
-                    callback(null, inBody);
-                });
-            }
-        );
-        if (body) {
-            if (typeof body !== 'string') {
-                body = JSON.stringify(body);
-            }
-            request.write(body);
-        }
-        request.on("error", function (error) {
-            callback(error);
-        });
-        request.end();
-    }
+//    function makeRequest(options, body, callback) {
+//        if (!callback) { callback = noop; }
+//        options = extend(
+//            httpdefaults,
+//            options
+//        );
+//        foreach(options, function (i, el) {
+//            if (el === null) {
+//                delete options[i];
+//            }
+//        });
+//
+//        var request = http.request(
+//            options,
+//            function (res) {
+//                onComplete(res, function (inBody) {
+//                    try
+//                    {
+//                        inBody = JSON.parse(inBody);
+//                    } catch (err) {
+//                        callback(err);
+//                    }
+//
+//                    callback(null, inBody);
+//                });
+//            }
+//        );
+//        if (body) {
+//            if (typeof body !== 'string') {
+//                body = JSON.stringify(body);
+//            }
+//            request.write(body);
+//        }
+//        request.on("error", function (error) {
+//            callback(error);
+//        });
+//        request.end();
+//    }
     api._makeRequest = makeRequest;
 
     function ensureUser(username, password, roles, callback) {
