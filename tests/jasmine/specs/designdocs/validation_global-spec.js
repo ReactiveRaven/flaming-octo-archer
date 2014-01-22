@@ -1,6 +1,6 @@
 /* global afterEach:false, inject:false */
 
-define(['world', 'jquery', 'constants'], function (world, jquery, constants) {
+define(['world', 'jquery'], function (world, jquery) {
     "use strict";
     
     describe('[commissar.services.Couch Design Documents]', function () {

@@ -415,6 +415,7 @@ define('services/Couch', [
                 _id: '_design/validation_global',
                 language: 'javascript',
                 validate_doc_update: function (newDoc, oldDoc, userCtx) {
+                  console.log(userCtx);
                   if (userCtx.roles.indexOf('_admin') !== -1) {
                     return null;
                   }
@@ -445,13 +446,10 @@ define('services/Couch', [
                 _id: '_design/validation_user',
                 language: 'javascript',
                 validate_doc_update: function (newDoc, oldDoc, userCtx) {
-                  var undefined = function (undef) {
-                      return undef;
-                    }();
                   if (userCtx.roles.indexOf('_admin') !== -1) {
                     return null;
                   }
-                  if (newDoc._id === undefined) {
+                  if (typeof newDoc._id === 'undefined') {
                     throw { forbidden: 'ID is missing' };
                   }
                   if (!newDoc.author && oldDoc && !newDoc._deleted) {
@@ -480,6 +478,10 @@ define('services/Couch', [
                   }
                   if (newDoc._deleted && oldDoc && oldDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
                     throw { forbidden: 'Cannot delete as you are not the author' };
+                  }
+                },
+                'filters': {
+                  'isPublished': function () {
                   }
                 }
               },
@@ -1980,12 +1982,25 @@ define('services/ImageManager', [
   ]);
   return ImageManagerModule;
 });
+define('filters/NotThumbnail', [], function () {
+  var NotThumbnailModule = angular.module('commissar.filters.NotThumbnail', []);
+  NotThumbnailModule.filter('NotThumbnail', function () {
+    return function (input) {
+      if (input) {
+        console.log(input);
+        return input;
+      }
+      return null;
+    };
+  });
+});
 define('controllers/GalleryCtrl', [
   'constants',
   'directives/UploadForm',
   'directives/Media',
   'services/ImageManager',
-  'services/ParanoidScope'
+  'services/ParanoidScope',
+  'filters/NotThumbnail'
 ], function (constants) {
   var GalleryCtrlModule = angular.module('commissar.controllers.GalleryCtrl', [
       'commissar.directives.UploadForm',

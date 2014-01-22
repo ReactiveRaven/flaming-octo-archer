@@ -1,5 +1,5 @@
 /* globals angular:false */
-define(['constants', 'directives/UploadForm', 'directives/Media', 'services/ImageManager', 'services/ParanoidScope'], function (constants) {
+define(['constants', 'directives/UploadForm', 'directives/Media', 'services/ImageManager', 'services/ParanoidScope', 'filters/NotThumbnail'], function (constants) {
     "use strict";
     
     var GalleryCtrlModule = angular.module(
@@ -8,7 +8,8 @@ define(['constants', 'directives/UploadForm', 'directives/Media', 'services/Imag
             'commissar.directives.UploadForm',
             'commissar.directives.Media',
             'commissar.services.ImageManager',
-            'commissar.services.ParanoidScope'
+            'commissar.services.ParanoidScope',
+            'commissar.filters.NotThumbnail'
         ]
     );
     

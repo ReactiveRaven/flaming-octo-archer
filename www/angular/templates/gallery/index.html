@@ -2,8 +2,8 @@
 
 <div id="gallery">
     <div class="media" data-ng-repeat="image in images">
-        <div class="attachment" data-ng-repeat="(filename, info) in image.value._attachments">
-            <img data-ng-src="/couchdb/commissar_user_{{image.value.author}}/{{image.value._id}}/{{filename}}" />
+        <div class="attachment" data-ng-repeat="(filename, info) in (image.value._attachments | NotThumbnail)">
+            <img data-ng-src="/node/thumbnail/100/commissar_user_{{image.value.author}}/{{image.value._id}}/{{filename}}" />
         </div>
     </div>
 </div>

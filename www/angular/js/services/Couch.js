@@ -52,13 +52,12 @@ define(['CornerCouch', './Random'], function () {
                         _id: '_design/validation_user',
                         language: 'javascript',
                         validate_doc_update: function (newDoc, oldDoc, userCtx) {
-                            var undefined = (function (undef) { return undef; })();
                             
                             if (userCtx.roles.indexOf('_admin') !== -1) {
                                 return null;
                             }
                             
-                            if (newDoc._id === undefined) {
+                            if (typeof newDoc._id === 'undefined') {
                                 throw ({forbidden: 'ID is missing'});
                             }
 
@@ -89,7 +88,11 @@ define(['CornerCouch', './Random'], function () {
                             if (newDoc._deleted && oldDoc && oldDoc.author !== userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
                                 throw ({forbidden: 'Cannot delete as you are not the author'});
                             }
-                            
+                        },
+                        "filters": {
+                            "isPublished": function () {
+                                
+                            }
                         }
                     },
                     '_design/validation_user_media': {
