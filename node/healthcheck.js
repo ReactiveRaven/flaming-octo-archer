@@ -16,6 +16,7 @@
             ensure.config('/_config/' + key, val, function (err) {
                 deferred.resolve(!echoError(err));
             });
+            configDeferreds.push(deferred);
         });
 
         var databaseDeferreds = [];
