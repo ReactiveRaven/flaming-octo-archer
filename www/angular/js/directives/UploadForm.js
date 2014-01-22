@@ -15,8 +15,17 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'servi
     UploadFormModule.controller('commissar.directives.UploadForm.controller', function ($scope, $q, Couch, Authentication, Random) {
         $scope.name = 'commissar.directives.UploadForm.controller';
         
+        $scope.errors = [];
+        
         $scope.valid = function () {
-            return ((!!$scope.uploadFormName) && (!!$scope.uploadFormFile));
+            $scope.errors = [];
+            if (!$scope.uploadFormName) {
+                $scope.errors.push("Your masterpiece needs a title");
+            }
+            if (!$scope.uploadFormFile) {
+                $scope.errors.push("You haven't selected a file to upload");
+            }
+            return !$scope.errors.length;
         };
         
         $scope.fileChanged = function (angularEvent, input) {

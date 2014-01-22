@@ -1,4 +1,6 @@
 <form accept-charset="UTF-8" id="formUpload" class="form-horizontal" role="form">
+    <!-- ngRepeat: (filename, info) in (image.value._attachments | NotThumbnail) -->
+    <!-- /ngRepeat -->
     <div class="form-group">
         <label for="formUploadName">Image Title</label>
         <input class="form-control" type="text" name="name" id="formUploadName" size="30" data-ng-model="uploadFormName" />
