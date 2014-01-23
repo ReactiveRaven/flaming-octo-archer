@@ -143,8 +143,12 @@ angular.module('CornerCouch', ['ng']).factory('cornercouch', [
           params: { rev: this._rev }
         });
       };
-      CouchDoc.prototype.attach = function (file, name) {
+      CouchDoc.prototype.attach = function (file, name, reloadCB) {
         var doc = this;
+        if (ng.isFunction(name)) {
+          reloadCB = name;
+          name = null;
+        }
         return $http({
           method: 'PUT',
           url: encodeUri(dbUri, doc._id, name || file.name),
@@ -152,8 +156,18 @@ angular.module('CornerCouch', ['ng']).factory('cornercouch', [
           headers: { 'Content-Type': file.type },
           data: file
         }).success(function () {
-          doc.load();
+          doc.load().success(reloadCB || ng.noop);
         });
+      };
+      CouchDoc.prototype.attachMulti = function (files, successCB) {
+        var doc = this;
+        var idx = 0;
+        function loopCB() {
+          if (idx < files.length)
+            doc.attach(files[idx], ++idx < files.length ? loopCB : successCB);
+        }
+        ;
+        loopCB();
       };
       CouchDoc.prototype.detach = function (name) {
         var doc = this;
@@ -174,6 +188,7 @@ angular.module('CornerCouch', ['ng']).factory('cornercouch', [
       this.rows = [];
       this.prevRows = [];
       this.nextRow = null;
+      this.queryActive = false;
     }
     CouchDB.prototype.getInfo = function () {
       var db = this;
@@ -204,15 +219,25 @@ angular.module('CornerCouch', ['ng']).factory('cornercouch', [
       return doc;
     };
     function executeQuery(db) {
+      db.queryActive = true;
       return $http(db.qConfig).success(function (data, dt, hd, config) {
         if (config.params && config.params.limit) {
-          if (data.rows.length == config.params.limit) {
+          if (data.rows.length === config.params.limit) {
             db.nextRow = data.rows.pop();
           } else {
             db.nextRow = null;
           }
         }
-        db.rows = data.rows;
+        if (config.append) {
+          for (var i in data.rows)
+            db.rows.push(data.rows[i]);
+          delete db.qConfig.append;
+        } else {
+          db.rows = data.rows;
+        }
+        db.queryActive = false;
+      }).error(function () {
+        db.queryActive = false;
       });
     }
     CouchDB.prototype.queryView = function (viewURL, qparams) {
@@ -250,7 +275,7 @@ angular.module('CornerCouch', ['ng']).factory('cornercouch', [
     };
     CouchDB.prototype.queryNext = function () {
       var row = this.nextRow;
-      if (row) {
+      if (row && !this.queryActive) {
         this.prevRows.push(this.rows[0]);
         this.qConfig.params.startkey = ng.toJson(row.key);
         if (row.id && row.id !== row.key)
@@ -259,9 +284,20 @@ angular.module('CornerCouch', ['ng']).factory('cornercouch', [
       } else
         return null;
     };
+    CouchDB.prototype.queryMore = function () {
+      var row = this.nextRow;
+      if (row && !this.queryActive) {
+        this.qConfig.params.startkey = ng.toJson(row.key);
+        if (row.id && row.id !== row.key)
+          this.qConfig.params.startkey_docid = row.id;
+        this.qConfig.append = true;
+        return executeQuery(this);
+      } else
+        return null;
+    };
     CouchDB.prototype.queryPrev = function () {
       var row = this.prevRows.pop();
-      if (row) {
+      if (row && !this.queryActive) {
         this.qConfig.params.startkey = ng.toJson(row.key);
         if (row.id && row.id !== row.key)
           this.qConfig.params.startkey_docid = row.id;
@@ -273,6 +309,9 @@ angular.module('CornerCouch', ['ng']).factory('cornercouch', [
       if (url) {
         this.uri = url;
         this.method = getMethod || 'JSONP';
+        if (this.method !== 'JSONP') {
+          $http.defaults.withCredentials = true;
+        }
       } else {
         this.uri = '';
         this.method = 'GET';
@@ -415,7 +454,6 @@ define('services/Couch', [
                 _id: '_design/validation_global',
                 language: 'javascript',
                 validate_doc_update: function (newDoc, oldDoc, userCtx) {
-                  console.log(userCtx);
                   if (userCtx.roles.indexOf('_admin') !== -1) {
                     return null;
                   }
@@ -1860,8 +1898,16 @@ define('directives/UploadForm', [
     'Random',
     function ($scope, $q, Couch, Authentication, Random) {
       $scope.name = 'commissar.directives.UploadForm.controller';
+      $scope.errors = [];
       $scope.valid = function () {
-        return !!$scope.uploadFormName && !!$scope.uploadFormFile;
+        $scope.errors = [];
+        if (!$scope.uploadFormName) {
+          $scope.errors.push('Your masterpiece needs a title');
+        }
+        if (!$scope.uploadFormFile) {
+          $scope.errors.push('You haven\'t selected a file to upload');
+        }
+        return !$scope.errors.length;
       };
       $scope.fileChanged = function (angularEvent, input) {
         $scope.$apply(function () {
@@ -1917,25 +1963,61 @@ define('directives/UploadForm', [
   });
   return UploadFormModule;
 });
+define('filters/NotThumbnail', [], function () {
+  var NotThumbnailModule = angular.module('commissar.filters.NotThumbnail', []);
+  NotThumbnailModule.filter('NotThumbnail', function () {
+    return function (input) {
+      if (input) {
+        var array = {};
+        angular.forEach(input, function (attachment, filename) {
+          if (filename.indexOf('__thumb_') < 0) {
+            array[filename] = attachment;
+          }
+        });
+        return array;
+      } else {
+        return null;
+      }
+    };
+  });
+});
 define('directives/Media', [
   'constants',
   'services/Authentication',
-  'services/ParanoidScope'
+  'services/ParanoidScope',
+  'filters/NotThumbnail'
 ], function (constants) {
   var MediaModule = angular.module('commissar.directives.Media', [
       'commissar.services.Authentication',
-      'commissar.services.ParanoidScope'
+      'commissar.services.ParanoidScope',
+      'commissar.filters.NotThumbnail'
     ]);
   MediaModule.controller('commissar.directives.Media.controller', [
     '$scope',
-    function ($scope) {
+    'NotThumbnailFilter',
+    '$element',
+    function ($scope, NotThumbnailFilter, $element) {
       $scope.name = 'commissar.directives.Media.controller';
+      angular.forEach($element.find('img'), function (el) {
+        console.log(angular.element(el));
+      });
       $scope.className = function () {
         var mediaType = $scope.document.mediaType;
         if (constants.allowedMediaTypes.indexOf(mediaType) < 0) {
           mediaType = '';
+          console.log('DIRTY!');
         }
         return 'media ' + mediaType;
+      };
+      $scope.mousemove = function (event) {
+        console.log(event);
+      };
+      $scope.thumbnail = function () {
+        var possibles = [];
+        angular.forEach(NotThumbnailFilter($scope.document._attachments), function (value, key) {
+          possibles.push(key);
+        });
+        return '/node/thumbnail/thumb-small/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
       };
     }
   ]);
@@ -1946,7 +2028,8 @@ define('directives/Media', [
         replace: true,
         transclude: true,
         restrict: 'AE',
-        scope: {},
+        require: 'document',
+        scope: { document: '=document' },
         controller: 'commissar.directives.Media.controller'
       };
     return Media;
@@ -1982,18 +2065,6 @@ define('services/ImageManager', [
   ]);
   return ImageManagerModule;
 });
-define('filters/NotThumbnail', [], function () {
-  var NotThumbnailModule = angular.module('commissar.filters.NotThumbnail', []);
-  NotThumbnailModule.filter('NotThumbnail', function () {
-    return function (input) {
-      if (input) {
-        console.log(input);
-        return input;
-      }
-      return null;
-    };
-  });
-});
 define('controllers/GalleryCtrl', [
   'constants',
   'directives/UploadForm',
@@ -2006,7 +2077,8 @@ define('controllers/GalleryCtrl', [
       'commissar.directives.UploadForm',
       'commissar.directives.Media',
       'commissar.services.ImageManager',
-      'commissar.services.ParanoidScope'
+      'commissar.services.ParanoidScope',
+      'commissar.filters.NotThumbnail'
     ]);
   GalleryCtrlModule.controller('GalleryCtrl', [
     '$scope',
@@ -2065,194 +2137,278 @@ define('app', [
   ]);
   return App;
 });
-angular.mock = {};
-angular.mock.$BrowserProvider = function () {
-  this.$get = function () {
-    return new angular.mock.$Browser();
-  };
-};
-angular.mock.$Browser = function () {
-  var self = this;
-  this.isMock = true;
-  self.$$url = 'http://server/';
-  self.$$lastUrl = self.$$url;
-  self.pollFns = [];
-  self.$$completeOutstandingRequest = angular.noop;
-  self.$$incOutstandingRequestCount = angular.noop;
-  self.onUrlChange = function (listener) {
-    self.pollFns.push(function () {
-      if (self.$$lastUrl != self.$$url) {
-        self.$$lastUrl = self.$$url;
-        listener(self.$$url);
-      }
-    });
-    return listener;
-  };
-  self.cookieHash = {};
-  self.lastCookieHash = {};
-  self.deferredFns = [];
-  self.deferredNextId = 0;
-  self.defer = function (fn, delay) {
-    delay = delay || 0;
-    self.deferredFns.push({
-      time: self.defer.now + delay,
-      fn: fn,
-      id: self.deferredNextId
-    });
-    self.deferredFns.sort(function (a, b) {
-      return a.time - b.time;
-    });
-    return self.deferredNextId++;
-  };
-  self.defer.now = 0;
-  self.defer.cancel = function (deferId) {
-    var fnIndex;
-    angular.forEach(self.deferredFns, function (fn, index) {
-      if (fn.id === deferId)
-        fnIndex = index;
-    });
-    if (fnIndex !== undefined) {
-      self.deferredFns.splice(fnIndex, 1);
-      return true;
-    }
-    return false;
-  };
-  self.defer.flush = function (delay) {
-    if (angular.isDefined(delay)) {
-      self.defer.now += delay;
-    } else {
-      if (self.deferredFns.length) {
-        self.defer.now = self.deferredFns[self.deferredFns.length - 1].time;
-      } else {
-        throw Error('No deferred tasks to be flushed');
-      }
-    }
-    while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
-      self.deferredFns.shift().fn();
-    }
-  };
-  self.$$baseHref = '';
-  self.baseHref = function () {
-    return this.$$baseHref;
-  };
-};
-angular.mock.$Browser.prototype = {
-  poll: function poll() {
-    angular.forEach(this.pollFns, function (pollFn) {
-      pollFn();
-    });
-  },
-  addPollFn: function (pollFn) {
-    this.pollFns.push(pollFn);
-    return pollFn;
-  },
-  url: function (url, replace) {
-    if (url) {
-      this.$$url = url;
-      return this;
-    }
-    return this.$$url;
-  },
-  cookies: function (name, value) {
-    if (name) {
-      if (value == undefined) {
-        delete this.cookieHash[name];
-      } else {
-        if (angular.isString(value) && value.length <= 4096) {
-          this.cookieHash[name] = value;
-        }
-      }
-    } else {
-      if (!angular.equals(this.cookieHash, this.lastCookieHash)) {
-        this.lastCookieHash = angular.copy(this.cookieHash);
-        this.cookieHash = angular.copy(this.cookieHash);
-      }
-      return this.cookieHash;
-    }
-  },
-  notifyWhenNoOutstandingRequests: function (fn) {
-    fn();
-  }
-};
-angular.mock.$ExceptionHandlerProvider = function () {
-  var handler;
-  this.mode = function (mode) {
-    switch (mode) {
-    case 'rethrow':
-      handler = function (e) {
-        throw e;
-      };
-      break;
-    case 'log':
-      var errors = [];
-      handler = function (e) {
-        if (arguments.length == 1) {
-          errors.push(e);
-        } else {
-          errors.push([].slice.call(arguments, 0));
-        }
-      };
-      handler.errors = errors;
-      break;
-    default:
-      throw Error('Unknown mode \'' + mode + '\', only \'log\'/\'rethrow\' modes are allowed!');
-    }
-  };
-  this.$get = function () {
-    return handler;
-  };
-  this.mode('rethrow');
-};
-angular.mock.$LogProvider = function () {
-  function concat(array1, array2, index) {
-    return array1.concat(Array.prototype.slice.call(array2, index));
-  }
-  this.$get = function () {
-    var $log = {
-        log: function () {
-          $log.log.logs.push(concat([], arguments, 0));
-        },
-        warn: function () {
-          $log.warn.logs.push(concat([], arguments, 0));
-        },
-        info: function () {
-          $log.info.logs.push(concat([], arguments, 0));
-        },
-        error: function () {
-          $log.error.logs.push(concat([], arguments, 0));
-        }
-      };
-    $log.reset = function () {
-      $log.log.logs = [];
-      $log.warn.logs = [];
-      $log.info.logs = [];
-      $log.error.logs = [];
+(function (window, angular, undefined) {
+  angular.mock = {};
+  angular.mock.$BrowserProvider = function () {
+    this.$get = function () {
+      return new angular.mock.$Browser();
     };
-    $log.assertEmpty = function () {
-      var errors = [];
-      angular.forEach([
-        'error',
-        'warn',
-        'info',
-        'log'
-      ], function (logLevel) {
-        angular.forEach($log[logLevel].logs, function (log) {
-          angular.forEach(log, function (logItem) {
-            errors.push('MOCK $log (' + logLevel + '): ' + String(logItem) + '\n' + (logItem.stack || ''));
+  };
+  angular.mock.$Browser = function () {
+    var self = this;
+    this.isMock = true;
+    self.$$url = 'http://server/';
+    self.$$lastUrl = self.$$url;
+    self.pollFns = [];
+    self.$$completeOutstandingRequest = angular.noop;
+    self.$$incOutstandingRequestCount = angular.noop;
+    self.onUrlChange = function (listener) {
+      self.pollFns.push(function () {
+        if (self.$$lastUrl != self.$$url) {
+          self.$$lastUrl = self.$$url;
+          listener(self.$$url);
+        }
+      });
+      return listener;
+    };
+    self.cookieHash = {};
+    self.lastCookieHash = {};
+    self.deferredFns = [];
+    self.deferredNextId = 0;
+    self.defer = function (fn, delay) {
+      delay = delay || 0;
+      self.deferredFns.push({
+        time: self.defer.now + delay,
+        fn: fn,
+        id: self.deferredNextId
+      });
+      self.deferredFns.sort(function (a, b) {
+        return a.time - b.time;
+      });
+      return self.deferredNextId++;
+    };
+    self.defer.now = 0;
+    self.defer.cancel = function (deferId) {
+      var fnIndex;
+      angular.forEach(self.deferredFns, function (fn, index) {
+        if (fn.id === deferId)
+          fnIndex = index;
+      });
+      if (fnIndex !== undefined) {
+        self.deferredFns.splice(fnIndex, 1);
+        return true;
+      }
+      return false;
+    };
+    self.defer.flush = function (delay) {
+      if (angular.isDefined(delay)) {
+        self.defer.now += delay;
+      } else {
+        if (self.deferredFns.length) {
+          self.defer.now = self.deferredFns[self.deferredFns.length - 1].time;
+        } else {
+          throw new Error('No deferred tasks to be flushed');
+        }
+      }
+      while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
+        self.deferredFns.shift().fn();
+      }
+    };
+    self.$$baseHref = '';
+    self.baseHref = function () {
+      return this.$$baseHref;
+    };
+  };
+  angular.mock.$Browser.prototype = {
+    poll: function poll() {
+      angular.forEach(this.pollFns, function (pollFn) {
+        pollFn();
+      });
+    },
+    addPollFn: function (pollFn) {
+      this.pollFns.push(pollFn);
+      return pollFn;
+    },
+    url: function (url, replace) {
+      if (url) {
+        this.$$url = url;
+        return this;
+      }
+      return this.$$url;
+    },
+    cookies: function (name, value) {
+      if (name) {
+        if (angular.isUndefined(value)) {
+          delete this.cookieHash[name];
+        } else {
+          if (angular.isString(value) && value.length <= 4096) {
+            this.cookieHash[name] = value;
+          }
+        }
+      } else {
+        if (!angular.equals(this.cookieHash, this.lastCookieHash)) {
+          this.lastCookieHash = angular.copy(this.cookieHash);
+          this.cookieHash = angular.copy(this.cookieHash);
+        }
+        return this.cookieHash;
+      }
+    },
+    notifyWhenNoOutstandingRequests: function (fn) {
+      fn();
+    }
+  };
+  angular.mock.$ExceptionHandlerProvider = function () {
+    var handler;
+    this.mode = function (mode) {
+      switch (mode) {
+      case 'rethrow':
+        handler = function (e) {
+          throw e;
+        };
+        break;
+      case 'log':
+        var errors = [];
+        handler = function (e) {
+          if (arguments.length == 1) {
+            errors.push(e);
+          } else {
+            errors.push([].slice.call(arguments, 0));
+          }
+        };
+        handler.errors = errors;
+        break;
+      default:
+        throw new Error('Unknown mode \'' + mode + '\', only \'log\'/\'rethrow\' modes are allowed!');
+      }
+    };
+    this.$get = function () {
+      return handler;
+    };
+    this.mode('rethrow');
+  };
+  angular.mock.$LogProvider = function () {
+    var debug = true;
+    function concat(array1, array2, index) {
+      return array1.concat(Array.prototype.slice.call(array2, index));
+    }
+    this.debugEnabled = function (flag) {
+      if (angular.isDefined(flag)) {
+        debug = flag;
+        return this;
+      } else {
+        return debug;
+      }
+    };
+    this.$get = function () {
+      var $log = {
+          log: function () {
+            $log.log.logs.push(concat([], arguments, 0));
+          },
+          warn: function () {
+            $log.warn.logs.push(concat([], arguments, 0));
+          },
+          info: function () {
+            $log.info.logs.push(concat([], arguments, 0));
+          },
+          error: function () {
+            $log.error.logs.push(concat([], arguments, 0));
+          },
+          debug: function () {
+            if (debug) {
+              $log.debug.logs.push(concat([], arguments, 0));
+            }
+          }
+        };
+      $log.reset = function () {
+        $log.log.logs = [];
+        $log.info.logs = [];
+        $log.warn.logs = [];
+        $log.error.logs = [];
+        $log.debug.logs = [];
+      };
+      $log.assertEmpty = function () {
+        var errors = [];
+        angular.forEach([
+          'error',
+          'warn',
+          'info',
+          'log',
+          'debug'
+        ], function (logLevel) {
+          angular.forEach($log[logLevel].logs, function (log) {
+            angular.forEach(log, function (logItem) {
+              errors.push('MOCK $log (' + logLevel + '): ' + String(logItem) + '\n' + (logItem.stack || ''));
+            });
           });
         });
-      });
-      if (errors.length) {
-        errors.unshift('Expected $log to be empty! Either a message was logged unexpectedly, or an expected ' + 'log message was not checked and removed:');
-        errors.push('');
-        throw new Error(errors.join('\n---------\n'));
-      }
+        if (errors.length) {
+          errors.unshift('Expected $log to be empty! Either a message was logged unexpectedly, or ' + 'an expected log message was not checked and removed:');
+          errors.push('');
+          throw new Error(errors.join('\n---------\n'));
+        }
+      };
+      $log.reset();
+      return $log;
     };
-    $log.reset();
-    return $log;
   };
-};
-(function () {
+  angular.mock.$IntervalProvider = function () {
+    this.$get = [
+      '$rootScope',
+      '$q',
+      function ($rootScope, $q) {
+        var repeatFns = [], nextRepeatId = 0, now = 0;
+        var $interval = function (fn, delay, count, invokeApply) {
+          var deferred = $q.defer(), promise = deferred.promise, iteration = 0, skipApply = angular.isDefined(invokeApply) && !invokeApply;
+          count = angular.isDefined(count) ? count : 0, promise.then(null, null, fn);
+          promise.$$intervalId = nextRepeatId;
+          function tick() {
+            deferred.notify(iteration++);
+            if (count > 0 && iteration >= count) {
+              var fnIndex;
+              deferred.resolve(iteration);
+              angular.forEach(repeatFns, function (fn, index) {
+                if (fn.id === promise.$$intervalId)
+                  fnIndex = index;
+              });
+              if (fnIndex !== undefined) {
+                repeatFns.splice(fnIndex, 1);
+              }
+            }
+            if (!skipApply)
+              $rootScope.$apply();
+          }
+          repeatFns.push({
+            nextTime: now + delay,
+            delay: delay,
+            fn: tick,
+            id: nextRepeatId,
+            deferred: deferred
+          });
+          repeatFns.sort(function (a, b) {
+            return a.nextTime - b.nextTime;
+          });
+          nextRepeatId++;
+          return promise;
+        };
+        $interval.cancel = function (promise) {
+          var fnIndex;
+          angular.forEach(repeatFns, function (fn, index) {
+            if (fn.id === promise.$$intervalId)
+              fnIndex = index;
+          });
+          if (fnIndex !== undefined) {
+            repeatFns[fnIndex].deferred.reject('canceled');
+            repeatFns.splice(fnIndex, 1);
+            return true;
+          }
+          return false;
+        };
+        $interval.flush = function (millis) {
+          now += millis;
+          while (repeatFns.length && repeatFns[0].nextTime <= now) {
+            var task = repeatFns[0];
+            task.fn();
+            task.nextTime += task.delay;
+            repeatFns.sort(function (a, b) {
+              return a.nextTime - b.nextTime;
+            });
+          }
+          return millis;
+        };
+        return $interval;
+      }
+    ];
+  };
   var R_ISO8061_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
   function jsonStringToDate(string) {
     var match;
@@ -2325,6 +2481,9 @@ angular.mock.$LogProvider = function () {
     self.getSeconds = function () {
       return self.date.getSeconds();
     };
+    self.getMilliseconds = function () {
+      return self.date.getMilliseconds();
+    };
     self.getTimezoneOffset = function () {
       return offset * 60;
     };
@@ -2358,7 +2517,6 @@ angular.mock.$LogProvider = function () {
       };
     }
     var unimplementedMethods = [
-        'getMilliseconds',
         'getUTCDay',
         'getYear',
         'setDate',
@@ -2391,386 +2549,517 @@ angular.mock.$LogProvider = function () {
       ];
     angular.forEach(unimplementedMethods, function (methodName) {
       self[methodName] = function () {
-        throw Error('Method \'' + methodName + '\' is not implemented in the TzDate mock');
+        throw new Error('Method \'' + methodName + '\' is not implemented in the TzDate mock');
       };
     });
     return self;
   };
   angular.mock.TzDate.prototype = Date.prototype;
-}());
-angular.mock.dump = function (object) {
-  return serialize(object);
-  function serialize(object) {
-    var out;
-    if (angular.isElement(object)) {
-      object = angular.element(object);
-      out = angular.element('<div></div>');
-      angular.forEach(object, function (element) {
-        out.append(angular.element(element).clone());
-      });
-      out = out.html();
-    } else if (angular.isArray(object)) {
-      out = [];
-      angular.forEach(object, function (o) {
-        out.push(serialize(o));
-      });
-      out = '[ ' + out.join(', ') + ' ]';
-    } else if (angular.isObject(object)) {
-      if (angular.isFunction(object.$eval) && angular.isFunction(object.$apply)) {
-        out = serializeScope(object);
-      } else if (object instanceof Error) {
-        out = object.stack || '' + object.name + ': ' + object.message;
-      } else {
-        out = angular.toJson(object, true);
-      }
-    } else {
-      out = String(object);
-    }
-    return out;
+  var animateLoaded;
+  try {
+    angular.module('ngAnimate');
+    animateLoaded = true;
+  } catch (e) {
   }
-  function serializeScope(scope, offset) {
-    offset = offset || '  ';
-    var log = [offset + 'Scope(' + scope.$id + '): {'];
-    for (var key in scope) {
-      if (scope.hasOwnProperty(key) && !key.match(/^(\$|this)/)) {
-        log.push('  ' + key + ': ' + angular.toJson(scope[key]));
-      }
-    }
-    var child = scope.$$childHead;
-    while (child) {
-      log.push(serializeScope(child, offset + '  '));
-      child = child.$$nextSibling;
-    }
-    log.push('}');
-    return log.join('\n' + offset);
-  }
-};
-angular.mock.$HttpBackendProvider = function () {
-  this.$get = [createHttpBackendMock];
-};
-function createHttpBackendMock($delegate, $browser) {
-  var definitions = [], expectations = [], responses = [], responsesPush = angular.bind(responses, responses.push);
-  function createResponse(status, data, headers) {
-    if (angular.isFunction(status))
-      return status;
-    return function () {
-      return angular.isNumber(status) ? [
-        status,
-        data,
-        headers
-      ] : [
-        200,
-        status,
-        data
-      ];
-    };
-  }
-  function $httpBackend(method, url, data, callback, headers) {
-    var xhr = new MockXhr(), expectation = expectations[0], wasExpected = false;
-    function prettyPrint(data) {
-      return angular.isString(data) || angular.isFunction(data) || data instanceof RegExp ? data : angular.toJson(data);
-    }
-    if (expectation && expectation.match(method, url)) {
-      if (!expectation.matchData(data))
-        throw Error('Expected ' + expectation + ' with different data\n' + 'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
-      if (!expectation.matchHeaders(headers))
-        throw Error('Expected ' + expectation + ' with different headers\n' + 'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' + prettyPrint(headers));
-      expectations.shift();
-      if (expectation.response) {
-        responses.push(function () {
-          var response = expectation.response(method, url, data, headers);
-          xhr.$$respHeaders = response[2];
-          callback(response[0], response[1], xhr.getAllResponseHeaders());
+  if (animateLoaded) {
+    angular.module('ngAnimate').config([
+      '$provide',
+      function ($provide) {
+        var reflowQueue = [];
+        $provide.value('$$animateReflow', function (fn) {
+          reflowQueue.push(fn);
+          return angular.noop;
         });
-        return;
+        $provide.decorator('$animate', function ($delegate) {
+          $delegate.triggerReflow = function () {
+            if (reflowQueue.length === 0) {
+              throw new Error('No animation reflows present');
+            }
+            angular.forEach(reflowQueue, function (fn) {
+              fn();
+            });
+            reflowQueue = [];
+          };
+          return $delegate;
+        });
       }
-      wasExpected = true;
-    }
-    var i = -1, definition;
-    while (definition = definitions[++i]) {
-      if (definition.match(method, url, data, headers || {})) {
-        if (definition.response) {
-          ($browser ? $browser.defer : responsesPush)(function () {
-            var response = definition.response(method, url, data, headers);
-            xhr.$$respHeaders = response[2];
-            callback(response[0], response[1], xhr.getAllResponseHeaders());
-          });
-        } else if (definition.passThrough) {
-          $delegate(method, url, data, callback, headers);
-        } else
-          throw Error('No response defined !');
-        return;
-      }
-    }
-    throw wasExpected ? Error('No response defined !') : Error('Unexpected request: ' + method + ' ' + url + '\n' + (expectation ? 'Expected ' + expectation : 'No more request expected'));
+    ]);
   }
-  $httpBackend.when = function (method, url, data, headers) {
-    var definition = new MockHttpExpectation(method, url, data, headers), chain = {
+  angular.mock.animate = angular.module('mock.animate', ['ng']).config([
+    '$provide',
+    function ($provide) {
+      $provide.decorator('$animate', function ($delegate) {
+        var animate = {
+            queue: [],
+            enabled: $delegate.enabled,
+            flushNext: function (name) {
+              var tick = animate.queue.shift();
+              if (!tick)
+                throw new Error('No animation to be flushed');
+              if (tick.method !== name) {
+                throw new Error('The next animation is not "' + name + '", but is "' + tick.method + '"');
+              }
+              tick.fn();
+              return tick;
+            }
+          };
+        angular.forEach([
+          'enter',
+          'leave',
+          'move',
+          'addClass',
+          'removeClass'
+        ], function (method) {
+          animate[method] = function () {
+            var params = arguments;
+            animate.queue.push({
+              method: method,
+              params: params,
+              element: angular.isElement(params[0]) && params[0],
+              parent: angular.isElement(params[1]) && params[1],
+              after: angular.isElement(params[2]) && params[2],
+              fn: function () {
+                $delegate[method].apply($delegate, params);
+              }
+            });
+          };
+        });
+        return animate;
+      });
+    }
+  ]);
+  angular.mock.dump = function (object) {
+    return serialize(object);
+    function serialize(object) {
+      var out;
+      if (angular.isElement(object)) {
+        object = angular.element(object);
+        out = angular.element('<div></div>');
+        angular.forEach(object, function (element) {
+          out.append(angular.element(element).clone());
+        });
+        out = out.html();
+      } else if (angular.isArray(object)) {
+        out = [];
+        angular.forEach(object, function (o) {
+          out.push(serialize(o));
+        });
+        out = '[ ' + out.join(', ') + ' ]';
+      } else if (angular.isObject(object)) {
+        if (angular.isFunction(object.$eval) && angular.isFunction(object.$apply)) {
+          out = serializeScope(object);
+        } else if (object instanceof Error) {
+          out = object.stack || '' + object.name + ': ' + object.message;
+        } else {
+          out = angular.toJson(object, true);
+        }
+      } else {
+        out = String(object);
+      }
+      return out;
+    }
+    function serializeScope(scope, offset) {
+      offset = offset || '  ';
+      var log = [offset + 'Scope(' + scope.$id + '): {'];
+      for (var key in scope) {
+        if (Object.prototype.hasOwnProperty.call(scope, key) && !key.match(/^(\$|this)/)) {
+          log.push('  ' + key + ': ' + angular.toJson(scope[key]));
+        }
+      }
+      var child = scope.$$childHead;
+      while (child) {
+        log.push(serializeScope(child, offset + '  '));
+        child = child.$$nextSibling;
+      }
+      log.push('}');
+      return log.join('\n' + offset);
+    }
+  };
+  angular.mock.$HttpBackendProvider = function () {
+    this.$get = [
+      '$rootScope',
+      createHttpBackendMock
+    ];
+  };
+  function createHttpBackendMock($rootScope, $delegate, $browser) {
+    var definitions = [], expectations = [], responses = [], responsesPush = angular.bind(responses, responses.push), copy = angular.copy;
+    function createResponse(status, data, headers) {
+      if (angular.isFunction(status))
+        return status;
+      return function () {
+        return angular.isNumber(status) ? [
+          status,
+          data,
+          headers
+        ] : [
+          200,
+          status,
+          data
+        ];
+      };
+    }
+    function $httpBackend(method, url, data, callback, headers, timeout, withCredentials) {
+      var xhr = new MockXhr(), expectation = expectations[0], wasExpected = false;
+      function prettyPrint(data) {
+        return angular.isString(data) || angular.isFunction(data) || data instanceof RegExp ? data : angular.toJson(data);
+      }
+      function wrapResponse(wrapped) {
+        if (!$browser && timeout && timeout.then)
+          timeout.then(handleTimeout);
+        return handleResponse;
+        function handleResponse() {
+          var response = wrapped.response(method, url, data, headers);
+          xhr.$$respHeaders = response[2];
+          callback(copy(response[0]), copy(response[1]), xhr.getAllResponseHeaders());
+        }
+        function handleTimeout() {
+          for (var i = 0, ii = responses.length; i < ii; i++) {
+            if (responses[i] === handleResponse) {
+              responses.splice(i, 1);
+              callback(-1, undefined, '');
+              break;
+            }
+          }
+        }
+      }
+      if (expectation && expectation.match(method, url)) {
+        if (!expectation.matchData(data))
+          throw new Error('Expected ' + expectation + ' with different data\n' + 'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
+        if (!expectation.matchHeaders(headers))
+          throw new Error('Expected ' + expectation + ' with different headers\n' + 'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' + prettyPrint(headers));
+        expectations.shift();
+        if (expectation.response) {
+          responses.push(wrapResponse(expectation));
+          return;
+        }
+        wasExpected = true;
+      }
+      var i = -1, definition;
+      while (definition = definitions[++i]) {
+        if (definition.match(method, url, data, headers || {})) {
+          if (definition.response) {
+            ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
+          } else if (definition.passThrough) {
+            $delegate(method, url, data, callback, headers, timeout, withCredentials);
+          } else
+            throw new Error('No response defined !');
+          return;
+        }
+      }
+      throw wasExpected ? new Error('No response defined !') : new Error('Unexpected request: ' + method + ' ' + url + '\n' + (expectation ? 'Expected ' + expectation : 'No more request expected'));
+    }
+    $httpBackend.when = function (method, url, data, headers) {
+      var definition = new MockHttpExpectation(method, url, data, headers), chain = {
+          respond: function (status, data, headers) {
+            definition.response = createResponse(status, data, headers);
+          }
+        };
+      if ($browser) {
+        chain.passThrough = function () {
+          definition.passThrough = true;
+        };
+      }
+      definitions.push(definition);
+      return chain;
+    };
+    createShortMethods('when');
+    $httpBackend.expect = function (method, url, data, headers) {
+      var expectation = new MockHttpExpectation(method, url, data, headers);
+      expectations.push(expectation);
+      return {
         respond: function (status, data, headers) {
-          definition.response = createResponse(status, data, headers);
+          expectation.response = createResponse(status, data, headers);
         }
       };
-    if ($browser) {
-      chain.passThrough = function () {
-        definition.passThrough = true;
-      };
-    }
-    definitions.push(definition);
-    return chain;
-  };
-  createShortMethods('when');
-  $httpBackend.expect = function (method, url, data, headers) {
-    var expectation = new MockHttpExpectation(method, url, data, headers);
-    expectations.push(expectation);
-    return {
-      respond: function (status, data, headers) {
-        expectation.response = createResponse(status, data, headers);
+    };
+    createShortMethods('expect');
+    $httpBackend.flush = function (count) {
+      $rootScope.$digest();
+      if (!responses.length)
+        throw new Error('No pending request to flush !');
+      if (angular.isDefined(count)) {
+        while (count--) {
+          if (!responses.length)
+            throw new Error('No more pending request to flush !');
+          responses.shift()();
+        }
+      } else {
+        while (responses.length) {
+          responses.shift()();
+        }
+      }
+      $httpBackend.verifyNoOutstandingExpectation();
+    };
+    $httpBackend.verifyNoOutstandingExpectation = function () {
+      $rootScope.$digest();
+      if (expectations.length) {
+        throw new Error('Unsatisfied requests: ' + expectations.join(', '));
       }
     };
-  };
-  createShortMethods('expect');
-  $httpBackend.flush = function (count) {
-    if (!responses.length)
-      throw Error('No pending request to flush !');
-    if (angular.isDefined(count)) {
-      while (count--) {
-        if (!responses.length)
-          throw Error('No more pending request to flush !');
-        responses.shift()();
+    $httpBackend.verifyNoOutstandingRequest = function () {
+      if (responses.length) {
+        throw new Error('Unflushed requests: ' + responses.length);
       }
-    } else {
-      while (responses.length) {
-        responses.shift()();
-      }
+    };
+    $httpBackend.resetExpectations = function () {
+      expectations.length = 0;
+      responses.length = 0;
+    };
+    return $httpBackend;
+    function createShortMethods(prefix) {
+      angular.forEach([
+        'GET',
+        'DELETE',
+        'JSONP'
+      ], function (method) {
+        $httpBackend[prefix + method] = function (url, headers) {
+          return $httpBackend[prefix](method, url, undefined, headers);
+        };
+      });
+      angular.forEach([
+        'PUT',
+        'POST',
+        'PATCH'
+      ], function (method) {
+        $httpBackend[prefix + method] = function (url, data, headers) {
+          return $httpBackend[prefix](method, url, data, headers);
+        };
+      });
     }
-    $httpBackend.verifyNoOutstandingExpectation();
-  };
-  $httpBackend.verifyNoOutstandingExpectation = function () {
-    if (expectations.length) {
-      throw Error('Unsatisfied requests: ' + expectations.join(', '));
-    }
-  };
-  $httpBackend.verifyNoOutstandingRequest = function () {
-    if (responses.length) {
-      throw Error('Unflushed requests: ' + responses.length);
-    }
-  };
-  $httpBackend.resetExpectations = function () {
-    expectations.length = 0;
-    responses.length = 0;
-  };
-  return $httpBackend;
-  function createShortMethods(prefix) {
-    angular.forEach([
-      'GET',
-      'DELETE',
-      'JSONP'
-    ], function (method) {
-      $httpBackend[prefix + method] = function (url, headers) {
-        return $httpBackend[prefix](method, url, undefined, headers);
-      };
-    });
-    angular.forEach([
-      'PUT',
-      'POST',
-      'PATCH'
-    ], function (method) {
-      $httpBackend[prefix + method] = function (url, data, headers) {
-        return $httpBackend[prefix](method, url, data, headers);
-      };
-    });
   }
-}
-function MockHttpExpectation(method, url, data, headers) {
-  this.data = data;
-  this.headers = headers;
-  this.match = function (m, u, d, h) {
-    if (method != m)
-      return false;
-    if (!this.matchUrl(u))
-      return false;
-    if (angular.isDefined(d) && !this.matchData(d))
-      return false;
-    if (angular.isDefined(h) && !this.matchHeaders(h))
-      return false;
-    return true;
-  };
-  this.matchUrl = function (u) {
-    if (!url)
+  function MockHttpExpectation(method, url, data, headers) {
+    this.data = data;
+    this.headers = headers;
+    this.match = function (m, u, d, h) {
+      if (method != m)
+        return false;
+      if (!this.matchUrl(u))
+        return false;
+      if (angular.isDefined(d) && !this.matchData(d))
+        return false;
+      if (angular.isDefined(h) && !this.matchHeaders(h))
+        return false;
       return true;
-    if (angular.isFunction(url.test))
-      return url.test(u);
-    return url == u;
-  };
-  this.matchHeaders = function (h) {
-    if (angular.isUndefined(headers))
-      return true;
-    if (angular.isFunction(headers))
-      return headers(h);
-    return angular.equals(headers, h);
-  };
-  this.matchData = function (d) {
-    if (angular.isUndefined(data))
-      return true;
-    if (data && angular.isFunction(data.test))
-      return data.test(d);
-    if (data && !angular.isString(data))
-      return angular.toJson(data) == d;
-    return data == d;
-  };
-  this.toString = function () {
-    return method + ' ' + url;
-  };
-}
-function MockXhr() {
-  MockXhr.$$lastInstance = this;
-  this.open = function (method, url, async) {
-    this.$$method = method;
-    this.$$url = url;
-    this.$$async = async;
-    this.$$reqHeaders = {};
-    this.$$respHeaders = {};
-  };
-  this.send = function (data) {
-    this.$$data = data;
-  };
-  this.setRequestHeader = function (key, value) {
-    this.$$reqHeaders[key] = value;
-  };
-  this.getResponseHeader = function (name) {
-    var header = this.$$respHeaders[name];
-    if (header)
+    };
+    this.matchUrl = function (u) {
+      if (!url)
+        return true;
+      if (angular.isFunction(url.test))
+        return url.test(u);
+      return url == u;
+    };
+    this.matchHeaders = function (h) {
+      if (angular.isUndefined(headers))
+        return true;
+      if (angular.isFunction(headers))
+        return headers(h);
+      return angular.equals(headers, h);
+    };
+    this.matchData = function (d) {
+      if (angular.isUndefined(data))
+        return true;
+      if (data && angular.isFunction(data.test))
+        return data.test(d);
+      if (data && angular.isFunction(data))
+        return data(d);
+      if (data && !angular.isString(data))
+        return angular.equals(data, angular.fromJson(d));
+      return data == d;
+    };
+    this.toString = function () {
+      return method + ' ' + url;
+    };
+  }
+  function createMockXhr() {
+    return new MockXhr();
+  }
+  function MockXhr() {
+    MockXhr.$$lastInstance = this;
+    this.open = function (method, url, async) {
+      this.$$method = method;
+      this.$$url = url;
+      this.$$async = async;
+      this.$$reqHeaders = {};
+      this.$$respHeaders = {};
+    };
+    this.send = function (data) {
+      this.$$data = data;
+    };
+    this.setRequestHeader = function (key, value) {
+      this.$$reqHeaders[key] = value;
+    };
+    this.getResponseHeader = function (name) {
+      var header = this.$$respHeaders[name];
+      if (header)
+        return header;
+      name = angular.lowercase(name);
+      header = this.$$respHeaders[name];
+      if (header)
+        return header;
+      header = undefined;
+      angular.forEach(this.$$respHeaders, function (headerVal, headerName) {
+        if (!header && angular.lowercase(headerName) == name)
+          header = headerVal;
+      });
       return header;
-    name = angular.lowercase(name);
-    header = this.$$respHeaders[name];
-    if (header)
-      return header;
-    header = undefined;
-    angular.forEach(this.$$respHeaders, function (headerVal, headerName) {
-      if (!header && angular.lowercase(headerName) == name)
-        header = headerVal;
-    });
-    return header;
-  };
-  this.getAllResponseHeaders = function () {
-    var lines = [];
-    angular.forEach(this.$$respHeaders, function (value, key) {
-      lines.push(key + ': ' + value);
-    });
-    return lines.join('\n');
-  };
-  this.abort = angular.noop;
-}
-angular.mock.$RootElementProvider = function () {
-  this.$get = function () {
-    return angular.element('<div ng-app></div>');
-  };
-};
-angular.module('ngMock', ['ng']).provider({
-  $browser: angular.mock.$BrowserProvider,
-  $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
-  $log: angular.mock.$LogProvider,
-  $httpBackend: angular.mock.$HttpBackendProvider,
-  $rootElement: angular.mock.$RootElementProvider
-}).config(function ($provide) {
-  $provide.decorator('$timeout', function ($delegate, $browser) {
+    };
+    this.getAllResponseHeaders = function () {
+      var lines = [];
+      angular.forEach(this.$$respHeaders, function (value, key) {
+        lines.push(key + ': ' + value);
+      });
+      return lines.join('\n');
+    };
+    this.abort = angular.noop;
+  }
+  angular.mock.$TimeoutDecorator = function ($delegate, $browser) {
     $delegate.flush = function (delay) {
       $browser.defer.flush(delay);
     };
+    $delegate.verifyNoPendingTasks = function () {
+      if ($browser.deferredFns.length) {
+        throw new Error('Deferred tasks to flush (' + $browser.deferredFns.length + '): ' + formatPendingTasksAsString($browser.deferredFns));
+      }
+    };
+    function formatPendingTasksAsString(tasks) {
+      var result = [];
+      angular.forEach(tasks, function (task) {
+        result.push('{id: ' + task.id + ', ' + 'time: ' + task.time + '}');
+      });
+      return result.join(', ');
+    }
     return $delegate;
-  });
-});
-angular.module('ngMockE2E', ['ng']).config([
-  '$provide',
-  function ($provide) {
-    $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-  }
-]);
-angular.mock.e2e = {};
-angular.mock.e2e.$httpBackendDecorator = [
-  '$delegate',
-  '$browser',
-  createHttpBackendMock
-];
-angular.mock.clearDataCache = function () {
-  var key, cache = angular.element.cache;
-  for (key in cache) {
-    if (cache.hasOwnProperty(key)) {
-      var handle = cache[key].handle;
-      handle && angular.element(handle.elem).unbind();
-      delete cache[key];
+  };
+  angular.mock.$RootElementProvider = function () {
+    this.$get = function () {
+      return angular.element('<div ng-app></div>');
+    };
+  };
+  angular.module('ngMock', ['ng']).provider({
+    $browser: angular.mock.$BrowserProvider,
+    $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
+    $log: angular.mock.$LogProvider,
+    $interval: angular.mock.$IntervalProvider,
+    $httpBackend: angular.mock.$HttpBackendProvider,
+    $rootElement: angular.mock.$RootElementProvider
+  }).config([
+    '$provide',
+    function ($provide) {
+      $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
     }
-  }
-};
-window.jasmine && function (window) {
-  afterEach(function () {
-    var spec = getCurrentSpec();
-    var injector = spec.$injector;
-    spec.$injector = null;
-    spec.$modules = null;
-    if (injector) {
-      injector.get('$rootElement').unbind();
-      injector.get('$browser').pollFns.length = 0;
+  ]);
+  angular.module('ngMockE2E', ['ng']).config([
+    '$provide',
+    function ($provide) {
+      $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
     }
-    angular.mock.clearDataCache();
-    angular.forEach(angular.element.fragments, function (val, key) {
-      delete angular.element.fragments[key];
-    });
-    MockXhr.$$lastInstance = null;
-    angular.forEach(angular.callbacks, function (val, key) {
-      delete angular.callbacks[key];
-    });
-    angular.callbacks.counter = 0;
-  });
-  function getCurrentSpec() {
-    return jasmine.getEnv().currentSpec;
-  }
-  function isSpecRunning() {
-    var spec = getCurrentSpec();
-    return spec && spec.queue.running;
-  }
-  window.module = angular.mock.module = function () {
-    var moduleFns = Array.prototype.slice.call(arguments, 0);
-    return isSpecRunning() ? workFn() : workFn;
-    function workFn() {
-      var spec = getCurrentSpec();
-      if (spec.$injector) {
-        throw Error('Injector already created, can not register a module!');
-      } else {
-        var modules = spec.$modules || (spec.$modules = []);
-        angular.forEach(moduleFns, function (module) {
-          modules.push(module);
-        });
+  ]);
+  angular.mock.e2e = {};
+  angular.mock.e2e.$httpBackendDecorator = [
+    '$rootScope',
+    '$delegate',
+    '$browser',
+    createHttpBackendMock
+  ];
+  angular.mock.clearDataCache = function () {
+    var key, cache = angular.element.cache;
+    for (key in cache) {
+      if (Object.prototype.hasOwnProperty.call(cache, key)) {
+        var handle = cache[key].handle;
+        handle && angular.element(handle.elem).off();
+        delete cache[key];
       }
     }
   };
-  window.inject = angular.mock.inject = function () {
-    var blockFns = Array.prototype.slice.call(arguments, 0);
-    var errorForStack = new Error('Declaration Location');
-    return isSpecRunning() ? workFn() : workFn;
-    function workFn() {
-      var spec = getCurrentSpec();
-      var modules = spec.$modules || [];
-      modules.unshift('ngMock');
-      modules.unshift('ng');
-      var injector = spec.$injector;
-      if (!injector) {
-        injector = spec.$injector = angular.injector(modules);
+  if (window.jasmine || window.mocha) {
+    var currentSpec = null, isSpecRunning = function () {
+        return currentSpec && (window.mocha || currentSpec.queue.running);
+      };
+    beforeEach(function () {
+      currentSpec = this;
+    });
+    afterEach(function () {
+      var injector = currentSpec.$injector;
+      currentSpec.$injector = null;
+      currentSpec.$modules = null;
+      currentSpec = null;
+      if (injector) {
+        injector.get('$rootElement').off();
+        injector.get('$browser').pollFns.length = 0;
       }
-      for (var i = 0, ii = blockFns.length; i < ii; i++) {
-        try {
-          injector.invoke(blockFns[i] || angular.noop, this);
-        } catch (e) {
-          if (e.stack && errorForStack)
-            e.stack += '\n' + errorForStack.stack;
-          throw e;
-        } finally {
-          errorForStack = null;
+      angular.mock.clearDataCache();
+      angular.forEach(angular.element.fragments, function (val, key) {
+        delete angular.element.fragments[key];
+      });
+      MockXhr.$$lastInstance = null;
+      angular.forEach(angular.callbacks, function (val, key) {
+        delete angular.callbacks[key];
+      });
+      angular.callbacks.counter = 0;
+    });
+    window.module = angular.mock.module = function () {
+      var moduleFns = Array.prototype.slice.call(arguments, 0);
+      return isSpecRunning() ? workFn() : workFn;
+      function workFn() {
+        if (currentSpec.$injector) {
+          throw new Error('Injector already created, can not register a module!');
+        } else {
+          var modules = currentSpec.$modules || (currentSpec.$modules = []);
+          angular.forEach(moduleFns, function (module) {
+            if (angular.isObject(module) && !angular.isArray(module)) {
+              modules.push(function ($provide) {
+                angular.forEach(module, function (value, key) {
+                  $provide.value(key, value);
+                });
+              });
+            } else {
+              modules.push(module);
+            }
+          });
         }
       }
-    }
-  };
-}(window);
+    };
+    var ErrorAddingDeclarationLocationStack = function (e, errorForStack) {
+      this.message = e.message;
+      this.name = e.name;
+      if (e.line)
+        this.line = e.line;
+      if (e.sourceId)
+        this.sourceId = e.sourceId;
+      if (e.stack && errorForStack)
+        this.stack = e.stack + '\n' + errorForStack.stack;
+      if (e.stackArray)
+        this.stackArray = e.stackArray;
+    };
+    ErrorAddingDeclarationLocationStack.prototype.toString = Error.prototype.toString;
+    window.inject = angular.mock.inject = function () {
+      var blockFns = Array.prototype.slice.call(arguments, 0);
+      var errorForStack = new Error('Declaration Location');
+      return isSpecRunning() ? workFn() : workFn;
+      function workFn() {
+        var modules = currentSpec.$modules || [];
+        modules.unshift('ngMock');
+        modules.unshift('ng');
+        var injector = currentSpec.$injector;
+        if (!injector) {
+          injector = currentSpec.$injector = angular.injector(modules);
+        }
+        for (var i = 0, ii = blockFns.length; i < ii; i++) {
+          try {
+            injector.invoke(blockFns[i] || angular.noop, this);
+          } catch (e) {
+            if (e.stack && errorForStack) {
+              throw new ErrorAddingDeclarationLocationStack(e, errorForStack);
+            }
+            throw e;
+          } finally {
+            errorForStack = null;
+          }
+        }
+      }
+    };
+  }
+}(window, window.angular));
 define('angularMocks', function () {
 });
 define('startup', [
@@ -2829,7 +3118,6 @@ define('startup', [
       top.postMessage({ type: 'apploaded' }, '*');
       console.log('Posted message!');
     }
-    console.log(angular.module('commissar'));
     if (window.useTemplateModule) {
       var templatedApp = angular.module('commissar_templated', [app['name']]);
       require(['/js/templates.min.js'], function (templates) {

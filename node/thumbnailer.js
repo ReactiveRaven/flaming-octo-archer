@@ -5,22 +5,25 @@
 
     app.use(express.cookieParser());
 
-    app.get("/thumbnail/:width/:db/:id/:file", function (req, res) {
+    function handleThumbnailPresets(preset) {
+        "use strict";
 
-        thumbnailer_action(req, req.params.db + "/" + req.params.id, req.params.file, req.params.width, req.params.width, false, res);
+        var presets = {
+            'thumb-small': {
+                'width': 200,
+                'height': 200,
+                'crop': true
+            }
+        };
 
-//        request.get('http://' + httpdefaults.auth + '@' + httpdefaults.host + ':' + httpdefaults.port + '/' + req.params.db + "/" + req.params.id + "/" + req.params.file).pipe(res);
+        preset = presets[preset];
 
+        return function (req, res) {
+            thumbnailer_action(req, req.params.db + "/" + req.params.id, req.params.file, preset.width, preset.height, preset.crop, res);
+        };
+    }
 
-
-//        makeRequest({path: "/" + req.params.db + "/" + req.params.id + "/" + req.params.file}, null, function (err, body, req) {
-//        //makeRequest({path: "/"}, null, function (err, body) {
-//            if (err || body.error) { res.send(404, "Not found"); }
-//            //var decoded = new Buffer(body, "base64").toString();
-//            res.setHeader("Content-Type", req.headers['content-type']);
-//            res.send(body);
-//        });
-    });
+    app.get("/thumbnail/thumb-small/:db/:id/:file", handleThumbnailPresets("thumb-small"));
 
     app.listen(port);
     console.log("listening on " + port);

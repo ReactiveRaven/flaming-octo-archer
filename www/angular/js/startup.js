@@ -40,8 +40,6 @@ define(
                 console.log("Posted message!");
             }
             
-            console.log(angular.module('commissar'));
-            
             if (window.useTemplateModule) {
                 var templatedApp = angular.module('commissar_templated', [app['name']]);
                 
