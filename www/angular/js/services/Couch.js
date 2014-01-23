@@ -21,7 +21,6 @@ define(['CornerCouch', './Random'], function () {
                         _id: '_design/validation_global',
                         language: 'javascript',
                         validate_doc_update: function (newDoc, oldDoc, userCtx) {
-                            console.log(userCtx);
                             if (userCtx.roles.indexOf('_admin') !== -1) {
                                 return null;
                             }
