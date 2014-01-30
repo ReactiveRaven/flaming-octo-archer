@@ -4,7 +4,7 @@
   "dependencies": {
     "angular": "~1.2.0",
     "bootstrap": "3.0.0",
-    "font-awesome": "~3.2.1",
+    "font-awesome": "*",
     "angular-mocks": "~1.2.0",
     "angular-resource": "~1.2.0",
     "marked": "~0.2.9",
@@ -12,7 +12,8 @@
     "angular-cookies": "~1.2.0",
     "requirejs": "~2.1.8",
     "waitFor": "git://github.com/cybus10/waitFor.git",
-    "ngUpload": "~0.3.17"
+    "ngUpload": "~0.3.17",
+    "angular-moment": "~0.6.0"
   },
   "exportsOverride": {
     "marked": {

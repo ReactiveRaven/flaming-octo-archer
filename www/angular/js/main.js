@@ -10,7 +10,9 @@ require.config({
         CornerCouch: '/bower_components/CornerCouch/angular-cornercouch',
         jquery: '/bower_components/jquery/jquery',
         bootstrap: '/bower_components/bootstrap/bootstrap',
-        ngUpload: '/bower_components/ngUpload/ng-upload'
+        ngUpload: '/bower_components/ngUpload/ng-upload',
+        'angular-moment': '/bower_components/angular-moment/angular-moment',
+        moment: '/bower_components/moment/moment'
     },
     baseUrl: '/angular/js',
     shim: {

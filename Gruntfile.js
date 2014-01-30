@@ -384,6 +384,8 @@ module.exports = function (grunt) {
                     ],
                     paths: {
 //                        angular: '../../bower_components/angular/angular',
+                        moment: '../../bower_components/moment/moment',
+                        'angular-moment': '../../bower_components/angular-moment/angular-moment',
                         requirejs: '../../bower_components/requirejs/require',
                         angularMocks: '../../bower_components/angular-mocks/angular-mocks',
                         angularCookies: '../../bower_components/angular-cookies/angular-cookies',
@@ -412,6 +414,8 @@ module.exports = function (grunt) {
                         'angular'
                     ],
                     paths: {
+                        moment: '../../bower_components/moment/moment',
+                        'angular-moment': '../../bower_components/angular-moment/angular-moment',
                         angular: '../../bower_components/angular/angular',
                         requirejs: '../../bower_components/requirejs/require',
                         angularMocks: '../../bower_components/angular-mocks/angular-mocks',

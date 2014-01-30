@@ -1,5 +1,66 @@
 <a href="#!/my/gallery/upload" class="btn btn-primary" id="galleryButtonUpload">Upload new media</a>
 
-<div id="gallery">
-    <div data-media="true" data-document="image.value" data-ng-repeat="image in images"></div>
-</div>
+<div data-gallery="true" data-collections="collections" data-active-image="activeImage" data-active-collection="activeCollection" ></div>
+
+<style>
+    .mmediagroup {
+        float:left;
+        margin: 5px;
+        border: 5px solid white;
+        box-shadow: 0 0 0 1px silver;
+    }
+    .mmediagroup .title {
+        font-size: 1.5em;
+        font-weight:bold;
+        text-align: center;
+        width: 100%;
+        margin-top: 5px;
+    }
+    .mmedia-image img
+    {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .mmedia {
+        display: inline-block;
+    }
+    
+    .mmedia-scrub .not-scrub {
+        display: none;
+    }
+    
+    .mmedia-thumbnail .not-thumbnail {
+        display: none;
+    }
+    
+    .mmedia-thumbnail {
+        border: 1px solid #aaa;
+        background: silver;
+        margin: 5px;
+        padding: 5px;
+        position: relative;
+    }
+    
+    .mmedia-thumbnail .created
+    {
+        position: absolute;
+        top: 0;
+        right: 0;
+        border-bottom-left-radius: 5px;
+        background: silver;
+        display: none;
+        padding: 5px;
+    }
+    
+    .mmedia-thumbnail:hover .created {
+        display: block;
+    }
+    
+    .mmedia .only-fullview {
+        display: none;
+    }
+    .mmedia-fullview .only-fullview {
+        display: block;
+    }
+</style>

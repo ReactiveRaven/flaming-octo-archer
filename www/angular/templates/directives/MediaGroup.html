@@ -1,0 +1,23 @@
+<div class="mmediagroup">
+    <div data-ng-hide="isOpened()" data-ng-click="open()" >
+        <div 
+            data-ng-repeat="document in documents"
+            data-media="true" 
+            data-document="document.value"
+            data-visible="active==$index"
+            data-mode="scrub"
+            >
+        </div>
+        <div class="title">{{ name }}</div>
+    </div>
+    <div data-ng-show="isOpened()">
+        <button type="button" data-ng-click="close()">Close mmediagroup {{ name }}</button>
+        <div 
+            data-ng-repeat="document in documents" 
+            data-media="true"
+            data-document="document.value"
+            data-visible="true"
+            data-mode="thumbnail">
+        </div>
+    </div>
+</div>

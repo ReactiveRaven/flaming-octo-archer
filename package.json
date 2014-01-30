@@ -44,7 +44,8 @@
     "request": "~2.33.0",
     "node-uuid": "~1.4.1",
     "mmmagic": "~0.3.5",
-    "deferred": "~0.6.8"
+    "deferred": "~0.6.8",
+    "CBuffer": "~0.1.4"
   },
   "scripts": {
     "install": "./node_modules/grunt-cli/bin/grunt setup"

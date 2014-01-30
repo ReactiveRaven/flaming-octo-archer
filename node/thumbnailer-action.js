@@ -17,17 +17,20 @@ module.exports = (function (request, fs, conf, uuid, easyimg, mmm, deferred) {
                 uri: path + key,
                 method: 'GET',
                 jar: jar,
+                headers: inPipe.headers,
                 encoding: null
             },
             function (error, response, body) {
-                if (response.statusCode === 200) {
+                if (response.statusCode === 200 || response.statusCode === 304) {
                     // OK! Just send the thumb.
                     outPipe.set(response.headers);
-                    outPipe.send(body);
-                    console.log("cached: " + path + key);
+                    outPipe.set("cache-control", "private, max-age=86400");
+                    outPipe.send(body, response.statusCode);
+                    console.log("cached " + response.statusCode + ": " + path + key);
                 } else {
                     // Gosh. Fine. I'll build the thumb then.
                     console.log("generating: " + path + key);
+                    console.log("status code: " + response.statusCode);
                     var filename = '/tmp/thumbnailer-' + uuid.v4();
                     var deferredRev = (function () {
                         var def = deferred();

@@ -1,5 +1,5 @@
 /* globals angular:false */
-define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filters/NotThumbnail'], function (constants) {
+define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filters/NotThumbnail', 'moment', 'angular-moment'], function (constants) {
     "use strict";
 
     var MediaModule = angular.module(
@@ -7,20 +7,13 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
         [
             'commissar.services.Authentication',
             'commissar.services.ParanoidScope',
-            'commissar.filters.NotThumbnail'
+            'commissar.filters.NotThumbnail',
+            'angularMoment'
         ]
     );
     
     MediaModule.controller('commissar.directives.Media.controller', function ($scope, NotThumbnailFilter, $element) {
         $scope.name = 'commissar.directives.Media.controller';
-
-        angular.forEach($element.find("img"), function (el) {
-            var $el = angular.element(el);
-            $el.bind("mousemove", function (event) {
-                console.log(event, this);
-            });
-            console.log($el);
-        });
 
         $scope.className = function () {
             var mediaType = $scope.document.mediaType;
@@ -28,12 +21,8 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
                 mediaType = "";
                 console.log("DIRTY!");
             }
-            return 'media ' + mediaType;
+            return 'mmedia mmedia-' + mediaType + ' mmedia-' + $scope.mode + ' mmedia-' + $scope.mode + '-' + mediaType;
         };
-
-        $scope.mousemove = function (event) {
-            console.log(event);
-        }
 
         $scope.thumbnail = function () {
             var possibles = [];
@@ -41,7 +30,7 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
                 possibles.push(key);
             });
             return '/node/thumbnail/thumb-small/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
-        }
+        };
     });
 
     MediaModule.directive("media", function (/** /$rootScope/**/) {
@@ -53,7 +42,9 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
             restrict: 'AE',
             require: 'document',
             scope: {
-                document: '=document'
+                document: '=',
+                visible: '=',
+                mode: '@'
             },
             controller: 'commissar.directives.Media.controller'
         };
