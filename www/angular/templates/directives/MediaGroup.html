@@ -1,23 +1,35 @@
 <div class="mmediagroup">
-    <div data-ng-hide="isOpened()" data-ng-click="open()" >
-        <div 
-            data-ng-repeat="document in documents"
-            data-media="true" 
-            data-document="document.value"
-            data-visible="active==$index"
-            data-mode="scrub"
-            >
+    <div data-ng-switch="mode()">
+        <div data-ng-switch-when="closed" data-ng-click="open()" data-ng-mousemove="mousemove($event)">
+            <div 
+                data-ng-repeat="document in documents"
+                data-media="true" 
+                data-document="document.value"
+                data-visible="active==$index"
+                data-mode="scrub"
+                >
+            </div>
+            <div class="title">{{ name }}</div>
         </div>
-        <div class="title">{{ name }}</div>
-    </div>
-    <div data-ng-show="isOpened()">
-        <button type="button" data-ng-click="close()">Close mmediagroup {{ name }}</button>
-        <div 
-            data-ng-repeat="document in documents" 
-            data-media="true"
-            data-document="document.value"
-            data-visible="true"
-            data-mode="thumbnail">
+        <div data-ng-switch-when="open">
+            <!-- <button type="button" data-ng-click="close()">Close mmediagroup {{ name }}</button> -->
+            <div 
+                data-ng-repeat="document in documents" 
+                data-media="true"
+                data-document="document.value"
+                data-visible="true"
+                data-media-opened="mediaOpened"
+                data-mode="thumbnail">
+            </div>
         </div>
+        <data data-ng-switch-when="zoomed">
+            <div
+                data-media="true"
+                data-document="zoomedDocument()"
+                data-visible="true"
+                data-media-opened="mediaOpened"
+                data-mode="zoom">
+            </div>
+        </data>
     </div>
 </div>

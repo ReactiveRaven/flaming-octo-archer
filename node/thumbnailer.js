@@ -13,6 +13,11 @@
                 'width': 200,
                 'height': 200,
                 'crop': true
+            },
+            'display-resize': {
+                'width': 500,
+                'height': 500,
+                'crop': false
             }
         };
 
@@ -24,6 +29,7 @@
     }
 
     app.get("/thumbnail/thumb-small/:db/:id/:file", handleThumbnailPresets("thumb-small"));
+    app.get("/thumbnail/display-resize/:db/:id/:file", handleThumbnailPresets("display-resize"));
 
     app.listen(port);
     console.log("listening on " + port);

@@ -12,24 +12,66 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
         ]
     );
     
-    MediaModule.controller('commissar.directives.Media.controller', function ($scope, NotThumbnailFilter, $element) {
-        $scope.name = 'commissar.directives.Media.controller';
+    MediaModule.controller('commissar.directives.Media.controller', function ($scope, NotThumbnailFilter, $element, ParanoidScope) {
+        $scope.controllerName = 'commissar.directives.Media.controller';
+        
+        $scope.name = $scope.document.title;
+        
+        $scope.editableDocument = angular.copy($scope.document);
 
         $scope.className = function () {
             var mediaType = $scope.document.mediaType;
             if (constants.allowedMediaTypes.indexOf(mediaType) < 0) {
                 mediaType = "";
-                console.log("DIRTY!");
             }
-            return 'mmedia mmedia-' + mediaType + ' mmedia-' + $scope.mode + ' mmedia-' + $scope.mode + '-' + mediaType;
+            var mode = $scope.mode();
+            return 'mmedia mmedia-' + mediaType + ' mmedia-' + mode + ' mmedia-' + mode + '-' + mediaType;
         };
 
-        $scope.thumbnail = function () {
+        $scope.thumbnail = function (type) {
             var possibles = [];
             angular.forEach(NotThumbnailFilter($scope.document._attachments), function (value, key) {
                 possibles.push(key);
             });
-            return '/node/thumbnail/thumb-small/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
+            return '/node/thumbnail/' + type + '/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
+        };
+        
+        $scope.isOpened = function () {
+            return $scope.mediaOpened($scope.name);
+        };
+        
+        $scope.open = function () {
+            console.log("open", $scope.name);
+            if (!$scope.isOpened()) {
+                $scope.mediaOpened($scope.name, true);
+            }
+        };
+        
+        $scope.close = function () {
+            console.log("close");
+            if ($scope.isOpened()) {
+                $scope.mediaOpened($scope.name, false);
+            }
+        };
+        
+        $scope.mode = function () {
+            return $scope.parentMode;
+        };
+        
+        $scope.isMode = function (input) {
+            return $scope.mode === input;
+        };
+        
+        $scope.edit = function () {
+            ParanoidScope.apply($scope, function () {
+                $scope.editing = true;
+            });
+        };
+        
+        $scope.save = function () {
+            ParanoidScope.apply($scope, function () {
+                $scope.editing = false;
+            });
         };
     });
 
@@ -44,7 +86,8 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
             scope: {
                 document: '=',
                 visible: '=',
-                mode: '@'
+                parentMode: '@mode',
+                mediaOpened: '='
             },
             controller: 'commissar.directives.Media.controller'
         };

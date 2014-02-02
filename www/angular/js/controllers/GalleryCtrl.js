@@ -7,6 +7,7 @@ define(
         'directives/Gallery',
         'services/ImageManager',
         'services/ParanoidScope',
+        'services/Authentication',
         'filters/NotThumbnail'
     ], function (constants) {
     "use strict";
@@ -19,14 +20,17 @@ define(
             'commissar.directives.Gallery',
             'commissar.services.ImageManager',
             'commissar.services.ParanoidScope',
+            'commissar.services.Authentication',
             'commissar.filters.NotThumbnail'
         ]
     );
     
-    GalleryCtrlModule.controller('GalleryCtrl', function ($scope, ImageManager, ParanoidScope, $routeParams, $location) {
+    GalleryCtrlModule.controller('GalleryCtrl', function ($scope, ImageManager, ParanoidScope, $routeParams, $location, Authentication) {
         $scope.name = 'GalleryCtrl';
         
         $scope.collections = {};
+        
+        $scope.activeAuthor = Authentication.getUsername();
         
         $scope.activeCollection = $routeParams.collection;
         $scope.activeImage = $routeParams.image;
@@ -75,13 +79,6 @@ define(
                 options
             );
         }
-        $routeProvider.when(
-            '/my/gallery/upload',
-            {
-                templateUrl: constants.templatePrefix + 'gallery/upload.html',
-                controller: 'GalleryCtrl'
-            }
-        );
     });
     
     return GalleryCtrlModule;

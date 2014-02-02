@@ -1,6 +1,16 @@
 <a href="#!/my/gallery/upload" class="btn btn-primary" id="galleryButtonUpload">Upload new media</a>
 
-<div data-gallery="true" data-collections="collections" data-active-image="activeImage" data-active-collection="activeCollection" ></div>
+<ol class="breadcrumb">
+    <li><a data-ng-click="activeCollection=null">{{ activeAuthor }}</a></li>
+    <li data-ng-show="activeCollection" data-ng-click="activeImage=null"><a>{{ activeCollection }}</a></li>
+    <li data-ng-show="activeImage"><a>{{ activeImage }}</a></li>
+</ol>
+<div 
+    data-gallery="true" 
+    data-collections="collections" 
+    data-active-image="activeImage" 
+    data-active-collection="activeCollection">
+</div>
 
 <style>
     .mmediagroup {
@@ -15,11 +25,6 @@
         text-align: center;
         width: 100%;
         margin-top: 5px;
-    }
-    .mmedia-image img
-    {
-        width: 200px;
-        height: 200px;
     }
     
     .mmedia {

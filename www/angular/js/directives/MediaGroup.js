@@ -25,24 +25,14 @@ define(['constants', 'services/ParanoidScope', 'directives/Media'], function (co
             });
         };
 
-        $scope.mouseout = function (event) {
-            ParanoidScope.apply($scope, function () {
-                $scope.active = 0;
-            });
-        };
-
         $scope.active=0;
 
         $scope.isActive = function ($index) {
             return $scope.active === $index;
         };
         
-        $scope.biggenated=function () {
-            return $scope.activecollection=$scope.wark;
-        };
-        
         $scope.isOpened = function () {
-            var isOpened = $scope.opened($scope.name);
+            var isOpened = $scope.collectionOpened($scope.name);
             console.log("isOpened", isOpened, $scope.name);
             return isOpened;
         };
@@ -50,19 +40,41 @@ define(['constants', 'services/ParanoidScope', 'directives/Media'], function (co
         $scope.open = function () {
             console.log("open");
             if (!$scope.isOpened()) {
-                $scope.opened($scope.name, true);
+                $scope.collectionOpened($scope.name, true);
             }
         };
         
         $scope.close = function () {
             console.log("close");
             if ($scope.isOpened()) {
-                $scope.opened($scope.name, false);
+                $scope.collectionOpened($scope.name, false);
             }
-        }
-
-        $element.bind("mousemove", $scope.mousemove);
-        //$element.bind("mouseout", $scope.mouseout);
+        };
+        
+        $scope.zoomedDocument = function () {
+            var result = null;
+            
+            angular.forEach($scope.documents, function (el) {
+                var document = el.value;
+                console.log(document.title);
+                if ($scope.mediaOpened(document.title)) {
+                    console.log("DOCUMENT FOUND");
+                    result = document;
+                }
+            });
+            
+            return result;
+        };
+        
+        $scope.mode = function () {
+            if ($scope.isOpened()) {
+                if ($scope.zoomedDocument()) {
+                    return "zoomed";
+                }
+                return "open";
+            }
+            return "closed";
+        };
     });
 
     MediaGroupModule.directive("mediagroup", function (/** /$rootScope/**/) {
@@ -79,7 +91,8 @@ define(['constants', 'services/ParanoidScope', 'directives/Media'], function (co
             scope: {
                 documents: '=documents',
                 name: '=',
-                opened: '='
+                collectionOpened: '=',
+                mediaOpened: '='
             },
             controller: 'commissar.directives.MediaGroup.controller'
         };

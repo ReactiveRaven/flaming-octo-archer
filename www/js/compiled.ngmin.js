@@ -1963,6 +1963,32 @@ define('directives/UploadForm', [
   });
   return UploadFormModule;
 });
+define('controllers/UploadCtrl', [
+  'constants',
+  'directives/UploadForm',
+  'services/ParanoidScope'
+], function (constants) {
+  var UploadCtrlModule = angular.module('commissar.controllers.UploadCtrl', [
+      'commissar.directives.UploadForm',
+      'commissar.services.ParanoidScope'
+    ]);
+  UploadCtrlModule.controller('UploadCtrl', [
+    '$scope',
+    function ($scope) {
+      $scope.name = 'UploadCtrl';
+    }
+  ]);
+  UploadCtrlModule.config([
+    '$routeProvider',
+    function ($routeProvider) {
+      $routeProvider.when('/my/gallery/upload', {
+        templateUrl: constants.templatePrefix + 'gallery/upload.html',
+        controller: 'UploadCtrl'
+      });
+    }
+  ]);
+  return UploadCtrlModule;
+});
 define('filters/NotThumbnail', [], function () {
   var NotThumbnailModule = angular.module('commissar.filters.NotThumbnail', []);
   NotThumbnailModule.filter('NotThumbnail', function () {
@@ -3836,21 +3862,43 @@ define('directives/Media', [
     'NotThumbnailFilter',
     '$element',
     function ($scope, NotThumbnailFilter, $element) {
-      $scope.name = 'commissar.directives.Media.controller';
+      $scope.controllerName = 'commissar.directives.Media.controller';
+      $scope.name = $scope.document.title;
       $scope.className = function () {
         var mediaType = $scope.document.mediaType;
         if (constants.allowedMediaTypes.indexOf(mediaType) < 0) {
           mediaType = '';
-          console.log('DIRTY!');
         }
-        return 'mmedia mmedia-' + mediaType + ' mmedia-' + $scope.mode + ' mmedia-' + $scope.mode + '-' + mediaType;
+        var mode = $scope.mode();
+        return 'mmedia mmedia-' + mediaType + ' mmedia-' + mode + ' mmedia-' + mode + '-' + mediaType;
       };
-      $scope.thumbnail = function () {
+      $scope.thumbnail = function (type) {
         var possibles = [];
         angular.forEach(NotThumbnailFilter($scope.document._attachments), function (value, key) {
           possibles.push(key);
         });
-        return '/node/thumbnail/thumb-small/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
+        return '/node/thumbnail/' + type + '/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
+      };
+      $scope.isOpened = function () {
+        return $scope.mediaOpened($scope.name);
+      };
+      $scope.open = function () {
+        console.log('open', $scope.name);
+        if (!$scope.isOpened()) {
+          $scope.mediaOpened($scope.name, true);
+        }
+      };
+      $scope.close = function () {
+        console.log('close');
+        if ($scope.isOpened()) {
+          $scope.mediaOpened($scope.name, false);
+        }
+      };
+      $scope.mode = function () {
+        return $scope.parentMode;
+      };
+      $scope.isMode = function (input) {
+        return $scope.mode === input;
       };
     }
   ]);
@@ -3865,7 +3913,8 @@ define('directives/Media', [
         scope: {
           document: '=',
           visible: '=',
-          mode: '@'
+          parentMode: '@mode',
+          mediaOpened: '='
         },
         controller: 'commissar.directives.Media.controller'
       };
@@ -3899,36 +3948,48 @@ define('directives/MediaGroup', [
           }
         });
       };
-      $scope.mouseout = function (event) {
-        ParanoidScope.apply($scope, function () {
-          $scope.active = 0;
-        });
-      };
       $scope.active = 0;
       $scope.isActive = function ($index) {
         return $scope.active === $index;
       };
-      $scope.biggenated = function () {
-        return $scope.activecollection = $scope.wark;
-      };
       $scope.isOpened = function () {
-        var isOpened = $scope.opened($scope.name);
+        var isOpened = $scope.collectionOpened($scope.name);
         console.log('isOpened', isOpened, $scope.name);
         return isOpened;
       };
       $scope.open = function () {
         console.log('open');
         if (!$scope.isOpened()) {
-          $scope.opened($scope.name, true);
+          $scope.collectionOpened($scope.name, true);
         }
       };
       $scope.close = function () {
         console.log('close');
         if ($scope.isOpened()) {
-          $scope.opened($scope.name, false);
+          $scope.collectionOpened($scope.name, false);
         }
       };
-      $element.bind('mousemove', $scope.mousemove);
+      $scope.zoomedDocument = function () {
+        var result = null;
+        angular.forEach($scope.documents, function (el) {
+          var document = el.value;
+          console.log(document.title);
+          if ($scope.mediaOpened(document.title)) {
+            console.log('DOCUMENT FOUND');
+            result = document;
+          }
+        });
+        return result;
+      };
+      $scope.mode = function () {
+        if ($scope.isOpened()) {
+          if ($scope.zoomedDocument()) {
+            return 'zoomed';
+          }
+          return 'open';
+        }
+        return 'closed';
+      };
     }
   ]);
   MediaGroupModule.directive('mediagroup', function () {
@@ -3945,7 +4006,8 @@ define('directives/MediaGroup', [
         scope: {
           documents: '=documents',
           name: '=',
-          opened: '='
+          collectionOpened: '=',
+          mediaOpened: '='
         },
         controller: 'commissar.directives.MediaGroup.controller'
       };
@@ -3977,16 +4039,28 @@ define('directives/Gallery', [
           $scope.activeImage = newImage;
         });
       };
-      $scope.opened = function (title, force) {
+      $scope.collectionOpened = function (title, force) {
         if (force === undefined) {
           return $scope.activeCollection === title;
         }
-        console.log('opened with force');
+        console.log('opened collection with force');
         console.log(force, title);
         if (force) {
           $scope.setActiveCollection(title);
         } else if ($scope.activeCollection === title) {
           $scope.setActiveCollection(null);
+        }
+      };
+      $scope.mediaOpened = function (title, force) {
+        if (force === undefined) {
+          return $scope.activeImage === title;
+        }
+        console.log('opened media with force');
+        console.log(force, title);
+        if (force) {
+          $scope.setActiveImage(title);
+        } else if ($scope.activeImage === title) {
+          $scope.setActiveImage(null);
         }
       };
     }
@@ -4028,7 +4102,7 @@ define('services/ImageManager', [
       ImageManager.getMyImages = function () {
         var deferred = $q.defer();
         Authentication.getUsername().then(function (username) {
-          $http.get('/couchdb/' + Authentication.getDatabaseName(username) + '/_design/validation_user_media/_view/all').success(function (data) {
+          $http.get('/couchdb/' + Authentication.getDatabaseName(username) + '/_design/validation_user_media/_view/all?descending=true').success(function (data) {
             deferred.resolve(data['rows']);
           }).error(deferred.reject);
         }, deferred.reject);
@@ -4046,6 +4120,7 @@ define('controllers/GalleryCtrl', [
   'directives/Gallery',
   'services/ImageManager',
   'services/ParanoidScope',
+  'services/Authentication',
   'filters/NotThumbnail'
 ], function (constants) {
   var GalleryCtrlModule = angular.module('commissar.controllers.GalleryCtrl', [
@@ -4054,6 +4129,7 @@ define('controllers/GalleryCtrl', [
       'commissar.directives.Gallery',
       'commissar.services.ImageManager',
       'commissar.services.ParanoidScope',
+      'commissar.services.Authentication',
       'commissar.filters.NotThumbnail'
     ]);
   GalleryCtrlModule.controller('GalleryCtrl', [
@@ -4062,9 +4138,11 @@ define('controllers/GalleryCtrl', [
     'ParanoidScope',
     '$routeParams',
     '$location',
-    function ($scope, ImageManager, ParanoidScope, $routeParams, $location) {
+    'Authentication',
+    function ($scope, ImageManager, ParanoidScope, $routeParams, $location, Authentication) {
       $scope.name = 'GalleryCtrl';
       $scope.collections = {};
+      $scope.activeAuthor = Authentication.getUsername();
       $scope.activeCollection = $routeParams.collection;
       $scope.activeImage = $routeParams.image;
       $scope.$watch('activeCollection', function () {
@@ -4108,10 +4186,6 @@ define('controllers/GalleryCtrl', [
       for (var i = 0; i < routes.length; i++) {
         $routeProvider.when(routes[i], options);
       }
-      $routeProvider.when('/my/gallery/upload', {
-        templateUrl: constants.templatePrefix + 'gallery/upload.html',
-        controller: 'GalleryCtrl'
-      });
     }
   ]);
   return GalleryCtrlModule;
@@ -4122,6 +4196,7 @@ define('app', [
   'controllers/IndexCtrl',
   'controllers/WelcomeCtrl',
   'controllers/MenuCtrl',
+  'controllers/UploadCtrl',
   'controllers/GalleryCtrl'
 ], function () {
   var App = angular.module('commissar', [
@@ -4130,6 +4205,7 @@ define('app', [
       'commissar.controllers.IndexCtrl',
       'commissar.controllers.MenuCtrl',
       'commissar.controllers.WelcomeCtrl',
+      'commissar.controllers.UploadCtrl',
       'commissar.controllers.GalleryCtrl'
     ]);
   App.config([

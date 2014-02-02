@@ -7,6 +7,7 @@ define(
         'controllers/IndexCtrl',
         'controllers/WelcomeCtrl',
         'controllers/MenuCtrl',
+        'controllers/UploadCtrl',
         'controllers/GalleryCtrl'
     ],
     function () {
@@ -20,6 +21,7 @@ define(
                 'commissar.controllers.IndexCtrl',
                 'commissar.controllers.MenuCtrl',
                 'commissar.controllers.WelcomeCtrl',
+                'commissar.controllers.UploadCtrl',
                 'commissar.controllers.GalleryCtrl'
             ]
         );

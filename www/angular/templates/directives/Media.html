@@ -1,11 +1,32 @@
-<div data-ng-class="className()" data-ng-show="visible">
-    <img data-ng-src="{{ thumbnail() }}" />
-    <div class="title not-scrub">{{ document.title }}</div>
-    <div class="created not-scrub" data-am-time-ago="document.created * 1000"></div>
-    <div class="only-fullview">
-        <label for="mmedia-title">
-            Title
-        </label>
-        <input data-ng-model="document.title" id="mmedia-title">
+<div data-ng-class="className()">
+    <div data-ng-switch="mode()">
+        <div data-ng-switch-when="scrub" data-ng-show="visible">
+            <img data-ng-src="{{ thumbnail('thumb-small') }}" />
+        </div>
+        <div data-ng-switch-when="thumbnail" data-ng-click="open()">
+            <img data-ng-src="{{ thumbnail('thumb-small') }}" />
+            <div class="title">{{ document.title }}</div>
+            <div class="created" data-am-time-ago="document.created * 1000"></div>
+        </div>
+        <div data-ng-switch-when="zoom">
+            <img data-ng-src="{{ thumbnail('display-resize') }}" />
+            <div data-ng-show="!editing">
+                <div class="title">{{ document.title }}</div>
+                <div class="created" data-am-time-ago="document.created * 1000"></div>
+                <div class="tags">{{ document.tags }}</div>
+                <div class="btn btn-primary" data-ng-click="edit()">Edit</div>
+            </div>
+            <div data-ng-show="editing">
+                <label for="mmedia-title">
+                    Title
+                </label>
+                <input data-ng-model="editableDocument.title" id="mmedia-title" />
+                <label for="mmedia-tags">
+                    Tags
+                </label>
+                <input data-ng-model="editabledocument.tags" id="mmedia-tags" />
+                <div class="btn btn-success" data-ng-click="save()">Save</div>
+            </div>
+        </div>
     </div>
 </div>

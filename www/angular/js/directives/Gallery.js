@@ -25,12 +25,12 @@ define(['constants', 'services/ParanoidScope', 'directives/MediaGroup'], functio
             });
         };
         
-        $scope.opened = function (title, force) {
+        $scope.collectionOpened = function (title, force) {
             if (force === undefined) {
                 return $scope.activeCollection === title;
             }
             
-            console.log("opened with force");
+            console.log("opened collection with force");
             console.log(force, title);
             
             if (force) {
@@ -38,6 +38,21 @@ define(['constants', 'services/ParanoidScope', 'directives/MediaGroup'], functio
             } else if ($scope.activeCollection === title) {
                 $scope.setActiveCollection(null);
             }  
+        };
+        
+        $scope.mediaOpened = function (title, force) {
+            if (force === undefined) {
+                return $scope.activeImage === title;
+            }
+            
+            console.log("opened media with force");
+            console.log(force, title);
+            
+            if (force) {
+                $scope.setActiveImage(title);
+            } else if ($scope.activeImage === title) {
+                $scope.setActiveImage(null);
+            }
         };
     });
 

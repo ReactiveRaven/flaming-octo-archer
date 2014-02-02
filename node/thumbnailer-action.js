@@ -49,7 +49,11 @@ module.exports = (function (request, fs, conf, uuid, easyimg, mmm, deferred) {
                     }).pipe(fs.createWriteStream(filename)).on(
                         "close",
                         function () {
-                            easyimg.thumbnail({src: filename, dst: filename + "_out", width: width}, function (info) {
+                            var func = easyimg.resize;
+                            if (crop) {
+                                func = easyimg.thumbnail;
+                            }
+                            func({src: filename, dst: filename + "_out", width: width}, function (info) {
                                 magic.detectFile(filename + "_out", function (err, type) {
                                     var contents = fs.readFileSync(filename + "_out");
 
