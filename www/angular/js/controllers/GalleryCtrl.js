@@ -35,6 +35,9 @@ define(
         $scope.activeCollection = $routeParams.collection;
         $scope.activeImage = $routeParams.image;
         
+        $scope.allUploads = [];
+        $scope.allUploadsTitle="All Uploads";
+        
         $scope.$watch("activeCollection", function () {
             if ($scope.activeCollection) {
                 $location.path("/my/gallery/" + $scope.activeCollection);
@@ -55,7 +58,17 @@ define(
         
         ImageManager.getMyImages().then(function (data) {
             ParanoidScope.apply($scope, function () {
-                $scope.collections["All Uploads"] = data;
+                angular.forEach(data, function (el) {
+                    var tags = el.value.tags ? el.value.tags.split(",") : [];
+                    angular.forEach(tags, function (tag) {
+                        if ($scope.collections[tag] === undefined) {
+                            $scope.collections[tag] = [];
+                        }
+                        $scope.collections[tag].push(el);
+                    });
+                    $scope.allUploads.push(el);
+                });
+                
             });
         });
     });

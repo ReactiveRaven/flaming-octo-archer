@@ -1,5 +1,5 @@
 /* globals angular:false */
-define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filters/NotThumbnail', 'moment', 'angular-moment'], function (constants) {
+define(['constants', 'services/Authentication', 'services/ParanoidScope', 'services/ImageManager', 'filters/NotThumbnail', 'moment', 'angular-moment'], function (constants) {
     "use strict";
 
     var MediaModule = angular.module(
@@ -7,12 +7,13 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
         [
             'commissar.services.Authentication',
             'commissar.services.ParanoidScope',
+            'commissar.services.ImageManager',
             'commissar.filters.NotThumbnail',
             'angularMoment'
         ]
     );
     
-    MediaModule.controller('commissar.directives.Media.controller', function ($scope, NotThumbnailFilter, $element, ParanoidScope) {
+    MediaModule.controller('commissar.directives.Media.controller', function ($scope, NotThumbnailFilter, $element, ParanoidScope, ImageManager) {
         $scope.controllerName = 'commissar.directives.Media.controller';
         
         $scope.name = $scope.document.title;
@@ -70,7 +71,12 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'filte
         
         $scope.save = function () {
             ParanoidScope.apply($scope, function () {
-                $scope.editing = false;
+                ImageManager.save($scope.editableDocument).then(function () {
+                    $scope.editing = false;
+                    $scope.open($scope.editableDocument.title, true);
+                }, function (err) {
+                    alert("Couldn't save! " + err);
+                });
             });
         };
     });

@@ -225,7 +225,9 @@ define(['CornerCouch', './Random'], function () {
 
                     // Update remote and save it out
                     updateRemote(document, remoteDocument);
-                    remoteDocument.save().then(function () {
+                    remoteDocument.save().then(function (reply) {
+                        document._rev = reply.data.rev;
+                        
                         deferred.resolve(true);
                     }, deferred.reject);
 

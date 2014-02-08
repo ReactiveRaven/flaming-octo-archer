@@ -75,6 +75,10 @@ define(['constants', 'services/ParanoidScope', 'directives/Media'], function (co
             }
             return "closed";
         };
+        
+        $scope.visible = function () {
+            return !$scope.collectionOpened() || $scope.isOpened();
+        };
     });
 
     MediaGroupModule.directive("mediagroup", function (/** /$rootScope/**/) {

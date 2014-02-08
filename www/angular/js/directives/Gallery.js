@@ -26,6 +26,11 @@ define(['constants', 'services/ParanoidScope', 'directives/MediaGroup'], functio
         };
         
         $scope.collectionOpened = function (title, force) {
+            
+            if (title === undefined) {
+                return $scope.activeCollection;
+            }
+            
             if (force === undefined) {
                 return $scope.activeCollection === title;
             }
@@ -41,6 +46,11 @@ define(['constants', 'services/ParanoidScope', 'directives/MediaGroup'], functio
         };
         
         $scope.mediaOpened = function (title, force) {
+            
+            if (title === undefined) { 
+                return $scope.activeImage;
+            }
+            
             if (force === undefined) {
                 return $scope.activeImage === title;
             }
@@ -69,7 +79,9 @@ define(['constants', 'services/ParanoidScope', 'directives/MediaGroup'], functio
             scope: {
                 collections: '=',
                 activeCollection: '=',
-                activeImage: '='
+                activeImage: '=',
+                allUploads: '=',
+                allUploadsTitle: '='
             },
             controller: 'commissar.directives.Gallery.controller'
         };

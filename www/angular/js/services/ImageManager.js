@@ -24,6 +24,21 @@ define(['./Authentication', './Couch'], function () {
             
             return deferred.promise;
         };
+        
+        ImageManager.save = function (document) {
+            var deferred = $q.defer();
+            
+            Authentication.getUsername().then(function (username) {
+                if (document.author !== username) {
+                    deferred.reject();
+                    return false;
+                }
+                
+                Couch.applyStaticChanges(Authentication.getDatabaseName(username), document).then(deferred.resolve, deferred.reject);
+            });
+            
+            return deferred.promise;
+        };
 
         return ImageManager;
     });
