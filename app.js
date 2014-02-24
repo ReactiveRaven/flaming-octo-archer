@@ -1,12 +1,12 @@
 
 (function (express, makeRequest, httpdefaults, request, thumbnailer_action) {
+	
+	"use strict";
 
     /**
      * Module dependencies.
      */
 
-    var routes = require('./routes');
-    var user = require('./routes/user');
     var http = require('http');
     var path = require('path');
     var httpProxy = require('http-proxy');
@@ -41,25 +41,10 @@
     
     // development only
     if ('development' === app.get('env')) {
-      app.use(express.errorHandler());
+		app.use(express.errorHandler());
     }
-    
-//    function forwardToCouch(req, res, next) {
-//        
-//        req.url = req.url.replace(/^\/couchdb/, "");
-//        
-//        console.log(req.url);
-//        
-//        httpProxy.web(req, res);
-//    }
-
-//    app.get('/', routes.index);
-//    app.get('/users', user.list);
-//    app.all('/couchdb*', forwardToCouch);
-
 
     function handleThumbnailPresets(preset) {
-        "use strict";
 
         var presets = {
             'thumb-small': {
@@ -85,8 +70,8 @@
     app.get("/thumbnail/display-resize/:db/:id/:file", handleThumbnailPresets("display-resize"));
 
 
-    http.createServer(app).listen(app.get('port'), function(){
-      console.log('Express server listening on port ' + app.get('port'));
+    http.createServer(app).listen(app.get('port'), function () {
+		console.log('Express server listening on port ' + app.get('port'));
     });
 
     
