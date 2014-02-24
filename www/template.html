@@ -6,69 +6,71 @@
 		<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css' />
 		<link href='/css/template.css' rel="stylesheet" />
 		<script src="/bower_components/angular/angular.js"></script>
-	</head>
-	<body ng-app="templateApp">
-		<h1>Kommissioner</h1>
-		
-		<div class="commission-panel" ng-controller="templateController">
-      <h2>Commissions</h2>
-      
-      <div class="commissions-list active-commissions-list">
-        <h3>Active Commissions</h3>
-        <div class="commissions-list-toggle active-commissions-list-toggle"></div>
-        <ul ng-if="activeCommissionListDisclosed">
-          <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': $index == selectedCommissionIndex }" ng-repeat="commission in commissions  | filter: { status: 'active' }">
-            <div class="person-image" ng-class="{ 'person-image-generic': !commission.buyer.image }">
-              <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
-            </div>
-            <h4>{{ commission.title }}</h4>
-            <p>{{ commission.buyer.name }}</p>
-          </li>
-        </ul>
-      </div>
-      
-      <div class="commissions-list active-commissions-list">
-        <h3>Requests</h3>
-        <div class="commissions-list-toggle request-commissions-list-toggle"></div>
-        <ul ng-if="requestCommissionListDisclosed">
-          <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0 }" ng-repeat="commission in commissions  | filter: { status: 'request' }">
-            <div class="person-image" ng-class="{ 'person-image-generic': !commission.buyer.image }">
-              <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
-            </div>
-            <h4>{{ commission.title }}</h4>
-            <p>{{ commission.buyer.name }}</p>
-          </li>
-        </ul>
-      </div>
-      
-      <div class="commissions-list active-commissions-list">
-        <h3>Completed</h3>
-        <div class="commissions-list-toggle completed-commissions-list-toggle"></div>
-        <ul ng-if="completedCommissionListDisclosed">
-          <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0 }" ng-repeat="commission in commissions  | filter: { status: 'completed' }">
-            <div class="person-image" ng-class="{ 'person-image-generic': !commission.buyer.image }">
-              <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
-            </div>
-            <h4>{{ commission.title }}</h4>
-            <p>{{ commission.buyer.name }}</p>
-          </li>
-        </ul>
-      </div>
-      
-		</div>
-
-		
 		<script src="/bower_components/jquery/jquery.js"></script>
+	</head>
+	<body ng-app="app">
+		<h1 class="kommissioner-header">Kommissioner</h1>
+		<div class="kommissioner-view">
+		  <div commission-panel class="commission-panel" ng-controller="commissionPanelController">
+        <h2 class="commission-panel-header">Commissions</h2>
+        
+        <div class="commissions-lists">
+          <div class="commissions-list active-commissions-list">
+            <h3 class="commissions-list-header">Active Commissions</h3>
+            <div class="commissions-list-toggle active-commissions-list-toggle" ng-click="commissionPanel.activeCommissionListDisclosed = !commissionPanel.activeCommissionListDisclosed" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed}"></div>
+            
+            <ul ng-if="commissionPanel.activeCommissionListDisclosed">
+              <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'active' }" ng-click="commissionPanel.selectedCommission = commission">
+                <div class="commission-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+                  <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
+                </div>
+                <h4 class="commission-title">{{ commission.title }}</h4>
+                <p class="commission-person-name">{{ commission.buyer.name }}</p>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="commissions-list request-commissions-list">
+            <h3 class="commissions-list-header">Requests</h3>
+            <div class="commissions-list-toggle request-commissions-list-toggle" ng-click="commissionPanel.requestCommissionListDisclosed = !commissionPanel.requestCommissionListDisclosed" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.requestCommissionListDisclosed}"></div>
+            
+            <ul ng-if="commissionPanel.requestCommissionListDisclosed">
+              <li class="commission request-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'request' }" ng-click="commissionPanel.selectedCommission = commission">
+                <div class="commission-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+                  <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
+                </div>
+                <h4 class="commission-title">{{ commission.title }}</h4>
+                <p class="commission-person-name">{{ commission.buyer.name }}</p>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="commissions-list completed-commissions-list">
+            <h3 class="commissions-list-header">Completed</h3>
+            <div class="commissions-list-toggle completed-commissions-list-toggle" ng-click="commissionPanel.completedCommissionListDisclosed = !commissionPanel.completedCommissionListDisclosed" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.completedCommissionListDisclosed}"></div>
+            
+            <ul ng-if="commissionPanel.completedCommissionListDisclosed">
+              <li class="commission completed-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'completed' }" ng-click="commissionPanel.selectedCommission = commission">
+                <div class="commission-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+                  <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
+                </div>
+                <h4 class="commission-title">{{ commission.title }}</h4>
+                <p class="commission-person-name">{{ commission.buyer.name }}</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+		
     <script>
-      var templateApp = angular.module('templateApp', []);
+      var app = angular.module('app', []);
       
-      var controller = templateApp.controller('templateController', function($scope) {
-        $scope.activeCommissionListDisclosed = true;
-        $scope.requestCommissionListDisclosed = true;
-        $scope.completedCommissionListDisclosed = false;
-        
-        $scope.selectedCommissionIndex = 0;
-        
+      var commissionPanelController = app.controller('commissionPanelController', function($scope) {
+        $scope.commissionPanel = {};
+        $scope.commissionPanel.activeCommissionListDisclosed = true;
+        $scope.commissionPanel.requestCommissionListDisclosed = true;
+        $scope.commissionPanel.completedCommissionListDisclosed = false;
         $scope.commissions = [
           {
             title: 'DRAW MAH OC',
@@ -76,7 +78,7 @@
               name: 'PippySmudgebutt', 
               image: 'example_images/pippy.png' 
             },
-            unreadMessageCount: 0,
+            unreadMessageCount: 1,
             lastUpdated: new Date(2014, 1, 23),
             price: 7.00,
             status: 'active',
@@ -125,9 +127,9 @@
             ]
           },
           {
-            title: 'Commission Title Here',
+            title: 'Commission Dun Goes Here',
             buyer: { name: 'Jane Doe' },
-            unreadMessageCount: 1,
+            unreadMessageCount: 0,
             lastUpdated: new Date(2014, 1, 11),
             status: 'active',
             price: 0,
@@ -192,7 +194,44 @@
               }
             ]
           },
+          {
+            title: 'Beautiful Fish',
+            buyer: { name: 'Mr Place' },
+            unreadMessageCount: 1,
+            lastUpdated: new Date(2013, 1, 23),
+            status: 'completed',
+            price: 0,
+            addons: [],
+            messages: [
+              {
+                from: 'Mr Place',
+                date: new Date(2014, 1, 23),
+                body: "Thank you : )",
+                attachments: []
+              }
+            ]          
+          },
+          {
+            title: 'Knuckles',
+            buyer: { name: 'Sanic' },
+            unreadMessageCount: 1,
+            lastUpdated: new Date(2013, 1, 23),
+            status: 'completed',
+            price: 0,
+            addons: [],
+            messages: [
+              {
+                from: 'Sanic',
+                date: new Date(2014, 1, 23),
+                body: "I hope senpai noices me.",
+                attachments: []
+              }
+            ]
+          },
+          
         ];
+        
+        $scope.commissionPanel.selectedCommission = $scope.commissions[0];
       });
     </script>
 	</body>
