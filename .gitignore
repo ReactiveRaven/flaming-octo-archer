@@ -21,3 +21,4 @@ tests/jasmine/reports/coverage/*/
 VagrantSecrets.rb
 .vagrant_local/
 .nide
+www/css/*.css
