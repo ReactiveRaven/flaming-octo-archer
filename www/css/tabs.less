@@ -9,9 +9,15 @@ ul.tabs {
 		border-bottom: 1px solid transparent;
 		padding-bottom: 10px;
 		font-weight: 300;
+		cursor: pointer;
 		
 		&:hover {
 			border-bottom: 1px solid @blue;
+			
+			&:active {
+				padding-bottom: 5px;
+				margin-bottom: 5px;
+			}
 		}
 		
 		&.active {
@@ -19,6 +25,12 @@ ul.tabs {
 			padding-bottom: 10px;
 			border-bottom: 1px solid @blue;
 			font-size: 13px;
+			cursor: default;
+			
+			&:active {
+				padding-bottom: 10px;
+				margin-bottom: 0;
+			}
 		}
 		
 		&.more {

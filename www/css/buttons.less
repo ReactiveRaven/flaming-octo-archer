@@ -1,0 +1,55 @@
+.btn
+{
+	display: inline-block;
+	border: 1px solid @blue;
+	border-radius: 5px;
+	padding: 10px 24px;
+	text-transform: uppercase;
+	font-size: 11px;
+	margin: 5px 5px;
+	font-weight: 300;
+	
+	&:hover {
+		cursor: pointer;
+	}
+	
+	&.active, &:active {
+		background: @blue;
+		color: @lightblue;
+	}
+	
+	&.active:active {
+		background: transparent;
+		color: @blue;
+	}
+	
+	&.danger {
+		border-color: @red;
+		color: @red;
+		
+		&.active, &:active {
+			background-color: @red;
+			color: @lightblue;
+		}
+	
+		&.active:active {
+			background: transparent;
+			color: @red;
+		}
+	}
+	
+	&.success {
+		border-color: @green;
+		color: @green;
+		
+		&.active, &:active {
+			background-color: @green;
+			color: @lightblue;
+		}
+	
+		&.active:active {
+			background: transparent;
+			color: @green;
+		}
+	}
+}
