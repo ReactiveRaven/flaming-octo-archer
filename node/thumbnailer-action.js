@@ -11,7 +11,9 @@ module.exports = (function (request, fs, conf, uuid, easyimg, mmm, deferred) {
         var path = baseurl + document + "/" + file;
         var docpath = baseurl + document;
         var jar = request.jar();
-        jar.setCookie("AuthSession=" + inPipe.cookies['AuthSession'], baseurl);
+        if (inPipe.cookies && inPipe.cookies.AuthSession) {
+            jar.setCookie("AuthSession=" + inPipe.cookies.AuthSession, baseurl);
+        }
 
         request({
                 uri: path + key,
@@ -21,6 +23,9 @@ module.exports = (function (request, fs, conf, uuid, easyimg, mmm, deferred) {
                 encoding: null
             },
             function (error, response, body) {
+                if (error) {
+                    throw error;
+                }
                 if (response.statusCode === 200 || response.statusCode === 304) {
                     // OK! Just send the thumb.
                     outPipe.set(response.headers);

@@ -3854,6 +3854,23 @@ define('filters/NotThumbnail', [], function () {
         scope.$on('$destroy', function () {
           cancelTimer();
         });
+        scope.$on('amMoment:languageChange', function () {
+          updateMoment();
+        });
+      };
+    }
+  ]).factory('amMoment', [
+    '$window',
+    '$rootScope',
+    function ($window, $rootScope) {
+      return {
+        changeLanguage: function (lang) {
+          var result = $window.moment.lang(lang);
+          if (angular.isDefined(lang)) {
+            $rootScope.$broadcast('amMoment:languageChange');
+          }
+          return result;
+        }
       };
     }
   ]).filter('amCalendar', [
@@ -3939,7 +3956,7 @@ define('directives/Media', [
         angular.forEach(NotThumbnailFilter($scope.document._attachments), function (value, key) {
           possibles.push(key);
         });
-        return '/node/thumbnail/' + type + '/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
+        return '/thumbnail/' + type + '/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
       };
       $scope.isOpened = function () {
         return $scope.mediaOpened($scope.name);
@@ -4162,7 +4179,9 @@ define('directives/Gallery', [
         scope: {
           collections: '=',
           activeCollection: '=',
-          activeImage: '='
+          activeImage: '=',
+          allUploads: '=',
+          allUploadsTitle: '='
         },
         controller: 'commissar.directives.Gallery.controller'
       };
@@ -4202,6 +4221,8 @@ define('controllers/GalleryCtrl', [
       $scope.activeAuthor = Authentication.getUsername();
       $scope.activeCollection = $routeParams.collection;
       $scope.activeImage = $routeParams.image;
+      $scope.allUploads = [];
+      $scope.allUploadsTitle = 'All Uploads';
       $scope.$watch('activeCollection', function () {
         if ($scope.activeCollection) {
           $location.path('/my/gallery/' + $scope.activeCollection);
@@ -4220,7 +4241,6 @@ define('controllers/GalleryCtrl', [
       });
       ImageManager.getMyImages().then(function (data) {
         ParanoidScope.apply($scope, function () {
-          $scope.collections['All Uploads'] = data;
           angular.forEach(data, function (el) {
             var tags = el.value.tags ? el.value.tags.split(',') : [];
             angular.forEach(tags, function (tag) {
@@ -4229,6 +4249,7 @@ define('controllers/GalleryCtrl', [
               }
               $scope.collections[tag].push(el);
             });
+            $scope.allUploads.push(el);
           });
         });
       });

@@ -40,14 +40,18 @@
     "grunt-angular-templates": "~0.5.0",
     "easyimage": "~0.1.6",
     "nano": "~4.2.1",
-    "express": "~3.4.8",
+    "express": "3.4.8",
     "request": "~2.33.0",
     "node-uuid": "~1.4.1",
     "mmmagic": "~0.3.5",
     "deferred": "~0.6.8",
-    "CBuffer": "~0.1.4"
+    "CBuffer": "~0.1.4",
+    "jade": "*",
+    "less-middleware": "*",
+    "http-proxy": "~1.0.2"
   },
   "scripts": {
-    "install": "./node_modules/grunt-cli/bin/grunt setup"
+    "install": "./node_modules/grunt-cli/bin/grunt setup",
+    "start": "node app.js"
   }
 }

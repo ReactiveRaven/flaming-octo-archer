@@ -34,7 +34,7 @@ define(['constants', 'services/Authentication', 'services/ParanoidScope', 'servi
             angular.forEach(NotThumbnailFilter($scope.document._attachments), function (value, key) {
                 possibles.push(key);
             });
-            return '/node/thumbnail/' + type + '/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
+            return '/thumbnail/' + type + '/commissar_user_' + $scope.document.author + '/' + $scope.document._id + '/' + possibles[0];
         };
         
         $scope.isOpened = function () {

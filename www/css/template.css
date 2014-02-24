@@ -1,0 +1,51 @@
+body {
+  background: #f7f9fc;
+  color: #4b94f2;
+  margin-top: 43px;
+}
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+}
+.right {
+  float: right;
+}
+.left {
+  float: left;
+}
+.clearfix {
+  clear: both;
+  overflow: hidden;
+}
+nav {
+  border-bottom: 2px solid #4b94f2;
+  padding-bottom: 20px;
+}
+nav h1 {
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  font-weight: normal;
+}
+nav .vr {
+  height: 30px;
+  width: 0px;
+  border-left: 1px solid #4b94f2;
+  margin: 0 25px -20px 25px;
+}
+input {
+  margin: 0 5px 0 5px;
+}
+.search {
+  border: 1px solid #4b94f2;
+  border-radius: 100px;
+}
+.search input {
+  background: transparent;
+  border: 0px solid black;
+  line-height: 28px;
+}
