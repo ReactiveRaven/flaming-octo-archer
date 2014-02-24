@@ -61,3 +61,29 @@ input
 		line-height: 28px;
 	}
 }
+
+.commission-panel {
+  border-width: 1.5pt;
+  border-radius: 4pt;
+  position: relative;
+  border-color: @blue;
+}
+.commissions-list ul {
+  padding-left: 0;
+}
+.commission {
+  padding-left: 1.5em;
+  position: relative;
+}
+.selected-commission {
+  background: @lightblue;
+}
+.commission-with-unread-messages::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 1em;
+  background: black;
+}
