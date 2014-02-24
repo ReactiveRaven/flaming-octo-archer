@@ -97,13 +97,15 @@ body {
   margin-top: 0;
 }
 .commissions-lists {
-  width: 369px;
+  width: 370px;
   position: absolute;
   left: 0;
   top: 66px;
   bottom: 0px;
   border-right: 2px solid #4b94f2;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -111,8 +113,12 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
+.commissions-lists * {
+  cursor: default;
+}
 .commissions-list {
   position: relative;
+  width: 370px;
 }
 .commissions-list ul {
   padding: 0;
@@ -208,4 +214,12 @@ body {
 }
 .disclosed-commission-list-toggle:before {
   content: none;
+}
+.commission-actions {
+  position: absolute;
+  top: 66px;
+  right: 0;
+  height: 50px;
+  width: 368px;
+  border-bottom: 1px solid #4b94f2;
 }
