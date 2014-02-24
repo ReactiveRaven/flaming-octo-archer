@@ -51,14 +51,12 @@ h6 {
 }
 html,
 body {
-  overflow: hidden;
   padding: 0;
   margin-top: 0;
   height: 100%;
 }
 .kommissioner-view {
   height: 100%;
-  overflow: hidden;
   position: relative;
 }
 .kommissioner-header {
@@ -67,13 +65,16 @@ body {
   margin: 0;
 }
 .commission-panel {
-  position: relative;
+  position: absolute;
   border-width: 2px;
   border-radius: 6px;
   border-style: solid;
   border-color: #4b94f2;
   width: 740px;
-  height: 80%;
+  top: 0;
+  bottom: 50px;
+  min-height: 398px;
+  margin-bottom: 100px;
 }
 .commission-panel-header {
   font-size: 20px;
