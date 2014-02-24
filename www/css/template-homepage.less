@@ -1,27 +1,122 @@
 @import "base.less";
 
-ul.pager {
+.banner {
+	padding: 10px;
+	border-bottom: 2px solid @blue;
+	position: relative;
 	
-	li {
-		display: inline-block;
-		list-style-type: none;
-		margin: 3px;
-		border: 1px solid @blue;
-		border-radius: 3px;
-		width: 28px;
-		height: 28px;
+	.bluegirl {
+		position: relative;
+		left: 50px;
+	}
+	
+	h2 {
+		margin: auto;
+		position: absolute;
+		top: 0; left: 0; bottom: 0; right: 0;
+		height: 95px;
+		font-size: 40px;
+		font-weight: 100;
 		text-align: center;
-		line-height: 28px;
-		
-		&.active {
-			background: @blue;
-			color: @lightblue;
-		}
-		
-		&.more {
-			border-color: transparent;
-			position: relative;
-			top: 4px;
-		}
+		width: 375px;
+		padding-left: 375px;
 	}
 }
+
+
+.row {
+	ul.tabs {
+		padding-top: 13px;
+	}
+	
+	.btn:last-child {
+		margin-right: 0;
+	}
+}
+
+.artist-profile
+{
+	border: 1px solid @blue;
+	border-radius: 5px;
+	padding: 19px;
+	margin-bottom: 25px;
+	
+	.media {
+		border: 1px solid @blue;
+		display: inline-block;
+		whitespace: nowrap;
+		font-size: 0;
+		line-height: 0;
+		margin-right: 17px;
+	}
+	
+	.artist-profile__deets {
+		display: inline-block;
+		width: 250px;
+		vertical-align: top;
+	}
+	
+	.artist-profile__prices
+	{
+		border-top: 1px solid @blue;
+		border-bottom: 1px solid @blue;
+		padding: 12px 0;
+		display: inline-block;
+		width: 100%;
+		
+		.artist-profile__prices__label
+		{
+			display: inline-block;
+			font-size: 12px;
+		}
+		
+		.artist-profile__prices__price
+		{
+			font-size: 32px;
+			line-height: 1em;
+			display: inline-block;
+		}
+	}
+	
+	.artist-profile__userinfo {
+		margin-bottom: 15px;
+		
+		img {
+			float: left;
+			margin-right: 17px;
+		}
+		.artist-profile__userinfo__name
+		{
+			font-size: 16px;
+			display: block;
+			margin: 0 0 3px 0;
+		}
+		
+		.artist-profile__userinfo__status
+		{
+			display: inline-block;
+			clear: both;
+			
+			font-weight: 300;
+			
+			strong {
+				font-weight: 400;
+			}
+		}
+	}
+	
+	.artist-profile__tags
+	{
+		margin-top:7px;
+		float: right;
+		
+		.tag:last-child {
+			margin-right: 0;
+		}
+	}
+	
+	&.artist-profile--mini {
+	}
+}
+
+
