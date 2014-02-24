@@ -22,10 +22,10 @@ html, body {
   border-radius: 6px;
   border-style: solid;
   border-color: @blue;
-  width: 740px;
+  width: 739px;
   top: 0;
   bottom: 50px;
-  min-height: 398px;
+  min-height: 524px;
   margin-bottom: 100px;
 }
 .commission-panel-header {
@@ -54,7 +54,7 @@ html, body {
   left: 0;
   top: 66px;
   bottom: 0px;
-  border-right: 2px solid @blue;
+  border-right: 1px solid @blue;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
@@ -141,6 +141,7 @@ html, body {
   height: 15px;
   border: 1px solid white;
   border-radius: 10px;
+  pointer-events: none;
 }
 .commissions-list-toggle:after {
   content: '';
@@ -173,7 +174,38 @@ html, body {
   position: absolute;
   top: 66px;
   right: 0;
-  height: 50px;
-  width: 368px;
+  height: 30px;
+  width: 329px;
   border-bottom: 1px solid @blue;
+  padding: 10px 20px;
+}
+.commission-action {
+	margin: 0;
+}
+.commission-action:first-child {
+	float: left;
+}
+.commission-action:last-child {
+	float: right;
+}
+.commission-conversation {
+	position: absolute;
+	top: 117px;
+    width: 329px;
+	right: 0;
+	bottom: 119px;
+    padding: 20px 20px;
+	background: @lightgreyblue;
+}
+.commission-files {
+	position: absolute;
+	right: 0;
+	width: 329px;
+	bottom: -2px;
+	height: 76px;
+	border-radius: 0 0 6px 0;
+    padding: 20px 20px;
+	border-top: 1px solid @blue;
+	border-bottom: 2px solid @blue;
+	background-color: @greyblue; 
 }

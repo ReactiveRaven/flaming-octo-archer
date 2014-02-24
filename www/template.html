@@ -16,8 +16,8 @@
         
         <div class="commissions-lists">
           <div class="commissions-list active-commissions-list">
-            <h3 class="commissions-list-header">Active Commissions</h3>
-            <div class="commissions-list-toggle active-commissions-list-toggle" ng-click="commissionPanel.activeCommissionListDisclosed = !commissionPanel.activeCommissionListDisclosed" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed}"></div>
+            <h3 class="commissions-list-header" ng-click="commissionPanel.activeCommissionListDisclosed = !commissionPanel.activeCommissionListDisclosed">Active Commissions</h3>
+            <div class="commissions-list-toggle active-commissions-list-toggle"  ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed}"></div>
             
             <ul ng-if="commissionPanel.activeCommissionListDisclosed">
               <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'active' }" ng-click="commissionPanel.selectedCommission = commission">
@@ -31,8 +31,8 @@
           </div>
           
           <div class="commissions-list request-commissions-list">
-            <h3 class="commissions-list-header">Requests</h3>
-            <div class="commissions-list-toggle request-commissions-list-toggle" ng-click="commissionPanel.requestCommissionListDisclosed = !commissionPanel.requestCommissionListDisclosed" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.requestCommissionListDisclosed}"></div>
+            <h3 class="commissions-list-header" ng-click="commissionPanel.requestCommissionListDisclosed = !commissionPanel.requestCommissionListDisclosed">Requests</h3>
+            <div class="commissions-list-toggle request-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.requestCommissionListDisclosed}"></div>
             
             <ul ng-if="commissionPanel.requestCommissionListDisclosed">
               <li class="commission request-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'request' }" ng-click="commissionPanel.selectedCommission = commission">
@@ -46,8 +46,8 @@
           </div>
           
           <div class="commissions-list completed-commissions-list">
-            <h3 class="commissions-list-header">Completed</h3>
-            <div class="commissions-list-toggle completed-commissions-list-toggle" ng-click="commissionPanel.completedCommissionListDisclosed = !commissionPanel.completedCommissionListDisclosed" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.completedCommissionListDisclosed}"></div>
+            <h3 class="commissions-list-header" ng-click="commissionPanel.completedCommissionListDisclosed = !commissionPanel.completedCommissionListDisclosed">Completed</h3>
+            <div class="commissions-list-toggle completed-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.completedCommissionListDisclosed}"></div>
             
             <ul ng-if="commissionPanel.completedCommissionListDisclosed">
               <li class="commission completed-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'completed' }" ng-click="commissionPanel.selectedCommission = commission">
@@ -62,9 +62,18 @@
         </div>
       
         <div class="commission-actions">
-          <a class="action btn active">Reply</button>
-          <a class="action btn">Mark as complete</button>
+          <a class="commission-action btn active">Reply</a>
+          <a class="commission-action btn">Mark as complete</a>
         </div>
+		
+        <div class="commission-conversation">
+        
+        </div>
+		
+        <div class="commission-files">
+        
+        </div>
+		
       </div>
     </div>
 		
