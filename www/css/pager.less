@@ -1,0 +1,45 @@
+ul.pager {
+	
+	li {
+		display: inline-block;
+		list-style-type: none;
+		margin: 3px;
+		border: 1px solid @blue;
+		border-radius: 3px;
+		width: 28px;
+		height: 28px;
+		text-align: center;
+		line-height: 28px;
+		cursor: pointer;
+		
+		&:hover {
+			background: @lightgreyblue;
+			
+			&:active {
+				background: @greyblue;
+			}
+		}
+		
+		&.active {
+			background: @blue;
+			color: @lightblue;
+			cursor: default;
+			
+			&:active {
+				background: @blue;
+				color: @lightblue;
+			}
+		}
+		
+		&.more {
+			border-color: transparent;
+			position: relative;
+			top: 4px;
+			cursor: default;
+			
+			&:hover {
+				background: transparent;
+			}
+		}
+	}
+}
