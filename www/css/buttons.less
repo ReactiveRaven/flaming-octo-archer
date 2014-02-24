@@ -1,4 +1,4 @@
-.btn
+.btn, .tag
 {
 	display: inline-block;
 	border: 1px solid @blue;
@@ -7,10 +7,7 @@
 	text-transform: uppercase;
 	font-size: 11px;
 	margin: 5px 4px;
-	
-	&:hover {
-		cursor: pointer;
-	}
+	cursor: pointer;
 	
 	&.active, &:active {
 		background: @blue;
@@ -51,4 +48,12 @@
 			color: @green;
 		}
 	}
+}
+
+.tag {
+	cursor: default;
+	text-transform: lowercase;
+	padding: 3px 8px 4px 8px;
+	border-radius: 3px;
+	line-height: 1em;
 }
