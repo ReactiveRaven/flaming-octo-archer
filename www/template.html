@@ -67,7 +67,23 @@
         </div>
 		
         <div class="commission-conversation">
-        
+        	<div class="commission-message" ng-repeat="message in commissionPanel.selectedCommission.messages">
+            <div class="commission-person-image commission-person-image-small" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+              <img ng-if="message.sender.image" ng-src="{{ message.sender.image }}">
+            </div>
+            <div class="commission-message-sender">
+              {{ message.sender.name }}
+            </div>
+            <div class="commission-message-body">
+              {{ message.body }}
+            </div>
+            <div ng-if="message.attachments.length > 0" class="commission-message-attachments">
+              <div class="commission-message-attachment" ng-repeat="attachment in message.attachments">
+                {{ attachment.name }} -
+                <small>{{ attachment.size }}K</small>
+              </div>
+            </div>
+          </div>
         </div>
 		
         <div class="commission-files">
@@ -104,13 +120,18 @@
             ],
             messages: [
               {
-                from: 'Roman Razor',
+                sender: { 
+            	    name: 'RomanRazor',
+            	  },
                 date: new Date(2014, 1, 23),
                 body: 'Yeah, sure',
                 attachments: []
               },
               {
-                from: 'Pippy Smudgebutt',
+                sender:  { 
+            	    name: 'PippySmudgebutt', 
+            	    image: 'example_images/pippy.png' 
+            	},
                 date: new Date(2014, 1, 23),
                 body: "Hey There,\n Can I commission you to do a thing? Ref attached.\n- Pippy",
                 read: true,
@@ -120,7 +141,31 @@
                     size: 249,
                   }
                 ]
-              }
+              },
+              {
+                sender: { 
+            	    name: 'RomanRazor',
+            	  },
+                date: new Date(2014, 1, 23),
+                body: 'Yeah, sure',
+                attachments: []
+              },
+              {
+                sender:  { 
+            	    name: 'PippySmudgebutt', 
+            	    image: 'example_images/pippy.png' 
+            	},
+                date: new Date(2014, 1, 23),
+                body: "Hey There,\n Can I commission you to do a thing? Ref attached.\n- Pippy",
+                read: true,
+                attachments: [
+                  {
+                    name: 'Smudebutt-ref.jpg',
+                    size: 249,
+                  }
+                ]
+              },
+              
             ]
           },
           {
@@ -133,7 +178,9 @@
             addons: [],
             messages: [
               {
-                from: 'John Doe',
+				        sender:  { 
+              	  name: 'John Doe', 
+              	},
                 date: new Date(2014, 1, 23),
                 body: "Hi!",
                 attachments: []
@@ -150,7 +197,7 @@
             addons: [],
             messages: [
               {
-                from: 'John Doe',
+                sender: { name: 'Jane Doe' },
                 date: new Date(2014, 1, 23),
                 body: "Boop!",
                 attachments: []
@@ -167,7 +214,7 @@
             addons: [],
             messages: [
               {
-                from: 'John Doe',
+                sender: { name: 'Carol Vordamon' },
                 date: new Date(2014, 1, 23),
                 body: "Yes!",
                 attachments: []
@@ -184,7 +231,7 @@
             addons: [],
             messages: [
               {
-                from: 'John Doe',
+                sender: { name: 'Charleston Chew' },
                 date: new Date(2014, 1, 23),
                 body: "No!",
                 attachments: []
@@ -201,7 +248,7 @@
             addons: [],
             messages: [
               {
-                from: 'John Doe',
+                sender: { name: 'Knuckles' },
                 date: new Date(2014, 1, 23),
                 body: "Maybe, I don't know, can you repeat, the, question?",
                 attachments: []
@@ -218,7 +265,7 @@
             addons: [],
             messages: [
               {
-                from: 'Mr Place',
+                sender: { name: 'Mr Place' },
                 date: new Date(2014, 1, 23),
                 body: "Thank you : )",
                 attachments: []
@@ -235,7 +282,7 @@
             addons: [],
             messages: [
               {
-                from: 'Sanic',
+                sender: { name: 'Sanic' },
                 date: new Date(2014, 1, 23),
                 body: "I hope senpai noices me.",
                 attachments: []

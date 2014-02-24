@@ -308,6 +308,7 @@ body {
   position: relative;
   height: 42px;
   overflow: hidden;
+  clear: both;
 }
 .commissions-list {
   margin-bottom: 20px;
@@ -318,9 +319,16 @@ body {
   background-color: #4b94f2;
   float: left;
 }
+.commission-person-image-small {
+  width: 23px;
+  height: 23px;
+  background-color: #4b94f2;
+  float: left;
+  margin: 10px 8px 10px 0;
+}
 .commission-person-image img {
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 100%;
 }
 .commission-title {
   line-height: 14px;
@@ -416,6 +424,31 @@ body {
   bottom: 119px;
   padding: 20px 20px;
   background: #e6effa;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.commission-message {
+  position: relative;
+  margin-bottom: 30px;
+}
+.commission-message-sender {
+  padding: 12px 0 4px 0;
+}
+.commission-message-body {
+  border: 1px solid #4b94f2;
+  border-radius: 6px;
+  margin-top: 9px;
+  padding: 19px;
+  background: #f7f9fc;
+  color: #4b94f2;
+}
+.commission-message-attachments {
+  border: 1px solid #4b94f2;
+  border-radius: 0 0px 6px 6px;
+  margin-top: -6px;
+  padding: 19px;
+  background: #f7f9fc;
+  color: #4b94f2;
 }
 .commission-files {
   position: absolute;
