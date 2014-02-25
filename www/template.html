@@ -72,7 +72,7 @@
       
         <div class="commission-actions">
           <a class="commission-action btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">Reply</a>
-          <a class="commission-action btn" ng-click="commissionPanel.selectedCommission.status = 'complete'">Mark as complete</a>
+          <a class="commission-action btn" ng-click="commissionPanel.selectedCommission.status = 'completed'">Mark as complete</a>
         </div>
 		
         <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
@@ -295,6 +295,9 @@
           {
             title: 'Commission Title Here',
             buyer: { name: 'John Doe' },
+            artist: {
+              name: 'RomanRazor' 
+            },
             unreadMessageCount: 1,
             replyDisclosed: false,
             replyBody: '',
@@ -318,6 +321,9 @@
           {
             title: 'Commission Dun Goes Here',
             buyer: { name: 'Jane Doe' },
+            artist: {
+              name: 'RomanRazor' 
+            },
             unreadMessageCount: 0,
             lastUpdated: new Date(2014, 1, 11),
             status: 'active',
@@ -337,11 +343,16 @@
           {
             title: 'Vowel porn',
             buyer: { name: 'Carol Vordamon' },
+            artist: {
+              name: 'RomanRazor' 
+            },
             unreadMessageCount: 0,
             replyDisclosed: false,
             replyBody: '',
             lastUpdated: new Date(2013, 11, 5),
             status: 'active',
+            artistMarkedAsCompleted: false,
+            buyerMarkedAsCompleted: true,
             description: 'Sketch',
             price: 7.00,
             totalPrice: 7.00,
@@ -358,6 +369,9 @@
           {
             title: 'Advertisement',
             buyer: { name: 'Charleston Chew' },
+            artist: {
+              name: 'RomanRazor' 
+            },
             unreadMessageCount: 1,
             replyDisclosed: false,
             replyBody: '',
@@ -379,6 +393,9 @@
           {
             title: 'Sanic',
             buyer: { name: 'Knuckles' },
+            artist: {
+              name: 'RomanRazor' 
+            },
             unreadMessageCount: 1,
             replyDisclosed: false,
             replyBody: '',
@@ -400,6 +417,9 @@
           {
             title: 'Beautiful Fish',
             buyer: { name: 'Mr Place' },
+            artist: {
+              name: 'RomanRazor' 
+            },
             unreadMessageCount: 1,
             replyDisclosed: false,
             replyBody: '',
@@ -421,6 +441,9 @@
           {
             title: 'Knuckles',
             buyer: { name: 'Sanic' },
+            artist: {
+              name: 'RomanRazor' 
+            },
             unreadMessageCount: 1,
             replyDisclosed: false,
             replyBody: '',
@@ -469,7 +492,7 @@
           var replyMessage = {
             sender: selectedCommission.artist,
             date: new Date(),
-            body: selectedCommission.replyBody.replace(/\<br\\?>/g, "\n"),
+            body: selectedCommission.replyBody,
             attachments: []
           }
           selectedCommission.messages.unshift(replyMessage);
