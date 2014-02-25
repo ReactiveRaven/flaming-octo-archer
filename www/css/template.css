@@ -243,7 +243,7 @@ h6 {
 html,
 body {
   padding: 0;
-  margin-top: 0;
+  margin: 8px;
   height: 100%;
 }
 .kommissioner-view {
@@ -438,7 +438,7 @@ body {
   top: 117px;
   width: 329px;
   right: 0;
-  bottom: 119px;
+  bottom: 117px;
   padding: 20px 20px;
   background: #e6effa;
   overflow-y: scroll;
@@ -459,13 +459,22 @@ body {
   background: #f7f9fc;
   color: #4b93f3;
 }
+.commission-message-with-attachments .commission-message-body {
+  border-radius: 6px 6px 0 0;
+}
 .commission-message-attachments {
   border: 1px solid #4b93f3;
-  border-radius: 0 0px 6px 6px;
-  margin-top: -6px;
+  border-top: none;
+  margin-top: 0px;
   padding: 19px;
   background: #f7f9fc;
   color: #4b93f3;
+}
+.commission-message-attachments:last-child {
+  border-radius: 0 0 6px 6px;
+}
+.commission-message-with-attachments {
+  border-radius: 6px 6px 0 0;
 }
 .commission-files {
   position: absolute;
@@ -478,4 +487,54 @@ body {
   border-top: 1px solid #4b93f3;
   border-bottom: 2px solid #4b93f3;
   background-color: #c6daf5;
+}
+.commission-request-header {
+  border: 1px solid #4b93f3;
+  border-top: 0;
+  border-radius: 6px 6px 0 0;
+  padding: 10px 19px 10px 19px;
+  background: #4b93f3;
+  color: white;
+}
+.commission-request-details {
+  border: 1px solid #4b93f3;
+  padding: 8px 19px 8px 19px;
+  background: #f7f9fc;
+  color: #4b93f3;
+}
+.commission-request-total {
+  border: 1px solid #4b93f3;
+  border-top: 0;
+  border-radius: 0 0 6px 6px;
+  padding: 8px 19px 8px 19px;
+  background: #f7f9fc;
+  color: #4b93f3;
+}
+.commission-details-table {
+  width: 100%;
+  margin: 0;
+}
+.commission-details-cell {
+  padding: 4px 0 4px 0;
+}
+.commission-price {
+  text-align: right;
+}
+.commission-currency-symbol {
+  font-size: 17px;
+}
+.commission-request-total .commission-currency-symbol {
+  font-size: 24px;
+}
+.commission-price-dollars {
+  font-size: 17px;
+}
+.commission-request-total .commission-price-dollars {
+  font-size: 24px;
+}
+.commission-price-seperator {
+  font-size: 12px;
+}
+.commission-price-cents {
+  font-size: 12px;
 }
