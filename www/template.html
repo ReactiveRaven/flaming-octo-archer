@@ -19,7 +19,7 @@
             <h3 class="commissions-list-header" ng-click="commissionPanel.activeCommissionListDisclosed = !commissionPanel.activeCommissionListDisclosed">
               Active Commissions
             </h3>
-            <div class="commissions-list-toggle active-commissions-list-toggle"  ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed }"></div>
+            <div class="commissions-list-toggle active-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed }"></div>
             
             <ul ng-if="commissionPanel.activeCommissionListDisclosed">
               <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'active' }" ng-click="commissionPanel.selectedCommission = commission">
@@ -46,6 +46,7 @@
                 </div>
                 <h4 class="commission-title">{{ commission.title }}</h4>
                 <p class="commission-person-name">{{ commission.buyer.name }}</p>
+                <div class="commisssion-last-updated-date">{{ commissionPanel.formatDate(commission.lastUpdated) }}</p>
               </li>
             </ul>
           </div>
@@ -63,18 +64,37 @@
                 </div>
                 <h4 class="commission-title">{{ commission.title }}</h4>
                 <p class="commission-person-name">{{ commission.buyer.name }}</p>
+                <div class="commisssion-last-updated-date">{{ commissionPanel.formatDate(commission.lastUpdated) }}</p>
               </li>
             </ul>
           </div>
         </div>
       
         <div class="commission-actions">
-          <a class="commission-action btn active">Reply</a>
-          <a class="commission-action btn">Mark as complete</a>
+          <a class="commission-action btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">Reply</a>
+          <a class="commission-action btn" ng-click="commissionPanel.selectedCommission.status = 'complete'">Mark as complete</a>
         </div>
 		
         <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
-        	<div class="commission-message" ng-repeat="message in commissionPanel.selectedCommission.messages" ng-class="{ 'commission-message-with-attachments': message.attachments.length > 0 }">
+        	<div class="commission-message commission-message-reply" ng-if="commissionPanel.selectedCommission.replyDisclosed">
+            <div class="commission-person-image commission-person-image-small" ng-class="{ 'commission-person-image-generic': !commissionPanel.selectedCommission.artist.image }">
+              <img ng-if="commissionPanel.selectedCommission.artist.image" ng-src="{{ commissionPanel.selectedCommission.artist.image }}">
+            </div>
+            <div class="commission-message-sender">
+              {{ commissionPanel.selectedCommission.artist.name }}
+            </div>
+            <div class="commission-message-body">
+              <textarea autofocus kommi-expand-to-fit kommi-enter="commissionPanel.reply()" ng-model="commissionPanel.selectedCommission.replyBody" class="commission-message-reply-body kommi-expand-to-fit"></textarea>
+            </div>
+            <div ng-if="message.attachments.length > 0" ng-repeat="attachment in message.attachments" class="commission-message-attachments">
+              <div class="commission-message-attachment">
+                {{ attachment.name }} -
+                <span class="commission-attachment-size">{{ attachment.size }}K</span class="commission-attachment-size">
+              </div>
+            </div>
+          </div>
+          
+          <div class="commission-message" ng-repeat="message in commissionPanel.selectedCommission.messages" ng-class="{ 'commission-message-with-attachments': message.attachments.length > 0 }">
             <div class="commission-person-image commission-person-image-small" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
               <img ng-if="message.sender.image" ng-src="{{ message.sender.image }}">
             </div>
@@ -149,6 +169,46 @@
     <script>
       var app = angular.module('app', []);
       
+      var expandToFitDirective = app.directive('kommiExpandToFit', function () {
+        return {
+          link: function (scope, element) {
+            var hiddenDiv = $(document.createElement('div'));
+            var content = null;
+            var commonClasses = $(element).attr('class');
+
+            $(element).addClass('kommi-expand-to-fit-no-resize');
+            hiddenDiv.addClass('kommi-expand-to-fit-hidden-div kommi-expand-to-fit-no-resize ' + commonClasses);
+
+            $('body').append(hiddenDiv);
+
+            var updateHeight = function () {
+              content = $(element).val();
+
+              content = content.replace(/\n/g, '<br>');
+              hiddenDiv.html(content + '<br class="kommi-expand-to-fit-line-break">');
+
+              $(element).css('height', hiddenDiv.height());
+            };
+
+            updateHeight();
+            $(element).on('keyup', updateHeight);
+          }
+        }
+      });
+      
+      var enterDirective = app.directive('kommiEnter', function () {
+        return {
+          link: function (scope, element, attrs) {
+            console.log('yes');
+            $(element).keypress(function(e) {
+              if (e.which == 13) { 
+                if (!e.shiftKey) scope.$apply(attrs['kommiEnter']);
+              }
+            });
+          }
+        };
+      })
+      
       var commissionPanelController = app.controller('commissionPanelController', function($scope) {
         $scope.commissionPanel = {};
         $scope.commissionPanel.activeCommissionListDisclosed = true;
@@ -157,11 +217,16 @@
         $scope.commissions = [
           {
             title: 'DRAW MAH OC',
+            artist: {
+              name: 'RomanRazor' 
+            },
             buyer: { 
               name: 'PippySmudgebutt', 
               image: 'example_images/pippy.png' 
             },
             unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
             lastUpdated: new Date(2014, 1, 23),
             price: 7.00,
             status: 'active',
@@ -231,6 +296,8 @@
             title: 'Commission Title Here',
             buyer: { name: 'John Doe' },
             unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
             lastUpdated: new Date(2014, 1, 23),
             status: 'active',
             description: 'Sketch',
@@ -271,6 +338,8 @@
             title: 'Vowel porn',
             buyer: { name: 'Carol Vordamon' },
             unreadMessageCount: 0,
+            replyDisclosed: false,
+            replyBody: '',
             lastUpdated: new Date(2013, 11, 5),
             status: 'active',
             description: 'Sketch',
@@ -290,6 +359,8 @@
             title: 'Advertisement',
             buyer: { name: 'Charleston Chew' },
             unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
             lastUpdated: new Date(2013, 1, 23),
             status: 'request',
             description: 'Sketch',
@@ -309,6 +380,8 @@
             title: 'Sanic',
             buyer: { name: 'Knuckles' },
             unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
             lastUpdated: new Date(2013, 1, 23),
             status: 'request',
             description: 'Sketch',
@@ -328,6 +401,8 @@
             title: 'Beautiful Fish',
             buyer: { name: 'Mr Place' },
             unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
             lastUpdated: new Date(2013, 1, 23),
             status: 'completed',
             description: 'Sketch',
@@ -347,6 +422,8 @@
             title: 'Knuckles',
             buyer: { name: 'Sanic' },
             unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
             lastUpdated: new Date(2013, 1, 23),
             status: 'completed',
             description: 'Sketch',
@@ -380,11 +457,25 @@
         $scope.commissionPanel.commissionHasAttachments = function (commission) {
           var attachments = $scope.commissionPanel.attachementsFromCommission(commission);
           return attachments.length > 0;
-        }
+        };
         
         $scope.commissionPanel.formatDate = function (date) {
           return moment(date).format("MMM Do, YYYY");
+        };
+        
+        $scope.commissionPanel.reply = function(replyBody) {
+          var selectedCommission = $scope.commissionPanel.selectedCommission;
+          selectedCommission.replyDisclosed = false;
+          var replyMessage = {
+            sender: selectedCommission.artist,
+            date: new Date(),
+            body: selectedCommission.replyBody,
+            attachments: []
+          }
+          selectedCommission.messages.unshift(replyMessage);
+          selectedCommission.replyBody = '';
         }
+        
       });
     </script>
 	</body>
