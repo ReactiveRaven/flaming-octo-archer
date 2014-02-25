@@ -469,7 +469,7 @@
           var replyMessage = {
             sender: selectedCommission.artist,
             date: new Date(),
-            body: selectedCommission.replyBody,
+            body: selectedCommission.replyBody.replace(/\<br\\?>/g, "\n"),
             attachments: []
           }
           selectedCommission.messages.unshift(replyMessage);
