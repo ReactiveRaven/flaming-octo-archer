@@ -7,6 +7,7 @@
 		<link href='/css/template.css' rel="stylesheet" />
 		<script src="/bower_components/angular/angular.js"></script>
 		<script src="/bower_components/jquery/jquery.js"></script>
+		<script src="/bower_components/momentjs/moment.js"></script>
 	</head>
 	<body ng-app="app">
 		<div class="kommissioner-view">
@@ -15,8 +16,10 @@
         
         <div class="commissions-lists">
           <div class="commissions-list active-commissions-list">
-            <h3 class="commissions-list-header" ng-click="commissionPanel.activeCommissionListDisclosed = !commissionPanel.activeCommissionListDisclosed">Active Commissions</h3>
-            <div class="commissions-list-toggle active-commissions-list-toggle"  ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed}"></div>
+            <h3 class="commissions-list-header" ng-click="commissionPanel.activeCommissionListDisclosed = !commissionPanel.activeCommissionListDisclosed">
+              Active Commissions
+            </h3>
+            <div class="commissions-list-toggle active-commissions-list-toggle"  ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed }"></div>
             
             <ul ng-if="commissionPanel.activeCommissionListDisclosed">
               <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'active' }" ng-click="commissionPanel.selectedCommission = commission">
@@ -25,12 +28,15 @@
                 </div>
                 <h4 class="commission-title">{{ commission.title }}</h4>
                 <p class="commission-person-name">{{ commission.buyer.name }}</p>
+                <div class="commisssion-last-updated-date">{{ commissionPanel.formatDate(commission.lastUpdated) }}</p>
               </li>
             </ul>
           </div>
           
           <div class="commissions-list request-commissions-list">
-            <h3 class="commissions-list-header" ng-click="commissionPanel.requestCommissionListDisclosed = !commissionPanel.requestCommissionListDisclosed">Requests</h3>
+            <h3 class="commissions-list-header" ng-click="commissionPanel.requestCommissionListDisclosed = !commissionPanel.requestCommissionListDisclosed">
+              Requests
+            </h3>
             <div class="commissions-list-toggle request-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.requestCommissionListDisclosed}"></div>
             
             <ul ng-if="commissionPanel.requestCommissionListDisclosed">
@@ -45,7 +51,9 @@
           </div>
           
           <div class="commissions-list completed-commissions-list">
-            <h3 class="commissions-list-header" ng-click="commissionPanel.completedCommissionListDisclosed = !commissionPanel.completedCommissionListDisclosed">Completed</h3>
+            <h3 class="commissions-list-header" ng-click="commissionPanel.completedCommissionListDisclosed = !commissionPanel.completedCommissionListDisclosed">
+              Completed
+            </h3>
             <div class="commissions-list-toggle completed-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.completedCommissionListDisclosed}"></div>
             
             <ul ng-if="commissionPanel.completedCommissionListDisclosed">
@@ -65,7 +73,7 @@
           <a class="commission-action btn">Mark as complete</a>
         </div>
 		
-        <div class="commission-conversation">
+        <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
         	<div class="commission-message" ng-repeat="message in commissionPanel.selectedCommission.messages" ng-class="{ 'commission-message-with-attachments': message.attachments.length > 0 }">
             <div class="commission-person-image commission-person-image-small" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
               <img ng-if="message.sender.image" ng-src="{{ message.sender.image }}">
@@ -79,12 +87,12 @@
             <div ng-if="message.attachments.length > 0" ng-repeat="attachment in message.attachments" class="commission-message-attachments">
               <div class="commission-message-attachment">
                 {{ attachment.name }} -
-                <small>{{ attachment.size }}K</small>
+                <span class="commission-attachment-size">{{ attachment.size }}K</span class="commission-attachment-size">
               </div>
             </div>
           </div>
           
-          <div class="commission-request-header">Commission request for</div>
+          <h4 class="commission-request-header">Commission request for</h4>
           <div class="commission-request-details">
             <table class="commission-details-table" border="0">
               <tr>
@@ -123,8 +131,16 @@
           
         </div>
 		
-        <div class="commission-files">
-          
+        <div class="commission-files" ng-if="commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission)">
+          <h4 class="commission-files-header">
+            Commission files
+          </h4>
+          <div ng-repeat="attachment in commissionPanel.attachementsFromCommission(commissionPanel.selectedCommission)">
+            <div class="commission-attachment">
+              {{ attachment.name }} -
+              <span class="commission-attachment-size">{{ attachment.size }}K</span class="commission-attachment-size">
+            </div>
+          </div>
         </div>
 		
       </div>
@@ -199,11 +215,11 @@
                 read: true,
                 attachments: [
                   {
-                    name: 'Smudebutt-ref.jpg',
+                    name: 'Smudebutt-ref v1.jpg',
                     size: 249,
                   },
                   {
-                    name: 'Smudebutt-ref-2.jpg',
+                    name: 'Other-ref v2.jpg',
                     size: 300,
                   }
                 ]
@@ -350,6 +366,25 @@
         ];
         
         $scope.commissionPanel.selectedCommission = $scope.commissions[0];
+        
+        $scope.commissionPanel.attachementsFromCommission = function(commission) {
+          var attachments = [];
+          commission.messages.forEach(function (message) {
+            message.attachments.forEach(function (attachment) {
+              attachments.push(attachment);
+            });
+          });
+          return attachments;
+        };
+        
+        $scope.commissionPanel.commissionHasAttachments = function (commission) {
+          var attachments = $scope.commissionPanel.attachementsFromCommission(commission);
+          return attachments.length > 0;
+        }
+        
+        $scope.commissionPanel.formatDate = function (date) {
+          return moment(date).format("MMM Do, YYYY");
+        }
       });
     </script>
 	</body>

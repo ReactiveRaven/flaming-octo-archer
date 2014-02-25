@@ -2,7 +2,7 @@
 
 html, body {
   padding: 0;
-  margin: 8px;
+  margin: 0;
   height: 100%;
 }
 
@@ -24,9 +24,9 @@ html, body {
   border-color: @blue;
   width: 739px;
   top: 0;
-  bottom: 50px;
+  bottom: 0px;
   min-height: 524px;
-  margin-bottom: 100px;
+  margin-bottom: 50px;
 }
 .commission-panel-header {
   font-size: 20px;
@@ -104,7 +104,7 @@ html, body {
   height: 23px;
   background-color: @blue;
   float: left;
-  margin: 10px 8px 10px 0;  
+  margin: -1px 8px 12px 0;  
 }
 .commission-person-image img {
   width: 100%;
@@ -201,18 +201,23 @@ html, body {
 	top: 117px;
     width: 329px;
 	right: 0;
-	bottom: 117px;
+	bottom: 0px;
     padding: 20px 20px;
 	background: @lightgreyblue;
 	overflow-y: scroll;
 	overflow-x: hidden;
+	border-radius: 0 0 6px 0;
+}
+.commission-conversation-with-attachments {
+	bottom: 117px;
+	border-radius: 0;
 }
 .commission-message {
 	position: relative;
 	margin-bottom: 30px;
 }
 .commission-message-sender {
-	padding: 12px 0 4px 0;
+	padding: 0px 0 8px 0;
 }
 .commission-message-body {
     border: 1px solid @blue;
@@ -229,7 +234,7 @@ html, body {
     border: 1px solid @blue;
 	border-top: none;
 	margin-top: 0px;
-	padding: 19px;
+	padding: 12px 19px 12px 19px;
 	background: @lightblue;
 	color: @blue;
 }
@@ -244,20 +249,25 @@ html, body {
 	right: 0;
 	width: 329px;
 	bottom: -2px;
-	height: 76px;
+	height: 82px;
 	border-radius: 0 0 6px 0;
-    padding: 20px 20px;
+    padding: 16px 20px 18px 20px;
 	border-top: 1px solid @blue;
 	border-bottom: 2px solid @blue;
 	background-color: @greyblue; 
+	overflow-y: scroll;
+	overflow-x: hidden;
 }
 .commission-request-header {
     border: 1px solid @blue;
-	border-top: 0;
+	border-bottom: 0;
+	margin-top: 19px;
+	margin-bottom: 0;
 	border-radius: 6px 6px 0 0;
 	padding: 10px 19px 10px 19px;
 	background: @blue;
 	color: white;
+	font-weight: 300;
 }
 .commission-request-details {
     border: 1px solid @blue;
@@ -284,20 +294,47 @@ html, body {
 	text-align: right;
 }
 .commission-currency-symbol {
-	font-size: 17px;
+	font-size: 16px;
 }
 .commission-request-total .commission-currency-symbol {
-	font-size: 24px;
+	font-size: 20px;
 }
 .commission-price-dollars {
-	font-size: 17px;
+	font-size: 16px;
 }
 .commission-request-total .commission-price-dollars {
-	font-size: 24px;
+	font-size: 20px;
 }
 .commission-price-seperator {
 	font-size: 12px;
 }
 .commission-price-cents {
 	font-size: 12px;
+}
+.commission-attachment {
+    border: 1px solid @blue;
+	border-radius: 6px;
+	margin-top: 9px;
+	padding: 12px 19px 12px 19px;
+	background: @lightblue;
+	color: @blue;
+}
+.commission-files-header {
+	margin: 0;
+	font-weight: 500;
+	line-height: 24px;
+}
+.commission-attachment-size {
+	font-size: 0.85em;
+	font-weight: 300;
+}
+.commisssion-last-updated-date {
+	position: absolute;
+	right: 20px;
+	bottom: 11px;
+	margin: 0;
+	padding: 0;
+	font-size: 0.85em;
+	line-height: 0.85em;
+	font-weight: 300;
 }
