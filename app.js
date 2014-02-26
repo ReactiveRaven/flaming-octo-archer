@@ -30,7 +30,7 @@
             next();
         }
     });
-    app.use(express.favicon());
+    app.use(express.favicon(__dirname + '/www/favicon.ico'));
     app.use(express.logger('dev'));
     app.use(express.json());
     app.use(express.urlencoded());
