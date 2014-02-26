@@ -90,7 +90,6 @@
                 </div>
                 <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
                     <div class="commission-message commission-complete-prompt" ng-if="commissionPanel.selectedCommissionShouldPromptForCompletenessConfirmation()">
-                        <hr>
                         <p>
                             <span ng-if="commissionPanel.selectedCommission.buyerMarkedAsCompleted">The buyer</span> <span ng-if="commissionPanel.selectedCommission.artistMarkedAsCompleted">The artist</span> has marked this commission as complete.<br>
                         </p>
@@ -100,7 +99,6 @@
                         <p class="commission-complete-prompt-actions">
                             <a class="btn success" ng-click="commissionPanel.markSelectedCommissionAsCompleted()">Yes</a> <a class="btn danger" ng-click="commissionPanel.markSelectedCommissionAsIncomplete()">No</a>
                         </p>
-                        <hr>
                     </div>
                     <div class="commission-message commission-complete-message" ng-if="commissionPanel.selectedCommissionShouldShowCompletedMessage()">
                         <hr>

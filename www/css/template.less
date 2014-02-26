@@ -209,9 +209,10 @@ html, body {
 	position: absolute;
 	top: 117px;
   	width: 50%;
+  	box-sizing: border-box;
   	right: 0;
 	margin: 0;
-	padding: 15px 0 15px 0;
+    padding: 15px 19px;
 	bottom: 0px;
 	background: @lightgreyblue;
 	overflow-y: scroll;
@@ -231,7 +232,7 @@ html, body {
 }
 .commission-message {
 	position: relative;
-    padding: 15px 19px 15px 19px;
+	padding: 15px 0;
 }
 .commission-message-sender {
 	padding: 2px 0 8px 0;
@@ -403,6 +404,8 @@ html, body {
 	font-weight: 300;
 	padding-top: 0;
 	padding-bottom: 0;
+	border-top: 1px solid @blue;
+	border-bottom: 1px solid @blue;
 }
 .commission-complete-message {
 	text-align: center;
