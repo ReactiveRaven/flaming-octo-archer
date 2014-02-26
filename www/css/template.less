@@ -1,197 +1,188 @@
 @import "base.less";
 
 html, body {
-  padding: 0;
-  margin: 0;
-  height: 100%;
+    padding: 0;
+    margin: 0;
+    height: 100%;
 }
 
 .kommissioner-view {
-  height: 100%;
-  position: relative;
-}
-.kommissioner-header {
-  height: 100px;
-  line-height: 100px;
-  margin: 0;
+    height: 100%;
+    position: relative;
 }
 
 .commission-panel {
-  position: absolute;
-  border-width: 2px;
-  border-radius: 6px;
-  border-style: solid;
-  border-color: @blue;
-	min-width: 558px;
-  max-width: 740px;
-  width: 100%;
-  top: 0;
-  bottom: 0px;
-  min-height: 524px;
-  margin-bottom: 50px;
-	box-sizing:border-box;
-	-moz-box-sizing:border-box;
+    border-width: 2px;
+    border-radius: 6px;
+    border-style: solid;
+    border-color: @blue;
+    min-width: 558px;
+    max-width: 740px;
+    width: 100%;
+    min-height: 524px;
+    margin-bottom: 50px;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
 }
 .commission-panel-header {
-  font-size: 20px;
-  font-weight: normal;
-  padding-left: 20px;
-  border-bottom: 2px solid @blue;
-  margin: 0;
-  line-height: 64px;
+    font-size: 20px;
+    font-weight: normal;
+    padding-left: 20px;
+    border-bottom: 2px solid @blue;
+    margin: 0;
+    line-height: 64px;
 }
 .commissions-list-header {
-  position: relative;
-  font-size: 14px;
-  font-weight: 300;
-  color: white;
-  padding-left: 20px;
-  display: block;
-  background: @blue;
-  line-height: 32px;
-  margin-bottom: 0;
-  margin-top: 0;
+    position: relative;
+    font-size: 14px;
+    font-weight: 300;
+    color: white;
+    padding-left: 20px;
+    display: block;
+    background: @blue;
+    line-height: 32px;
+    margin-bottom: 0;
+    margin-top: 0;
 }
 .commissions-lists {
-  width: 50%;
-  position: absolute;
-  left: 0;
-  top: 66px;
-  bottom: 0px;
-  border-right: 1px solid @blue;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-sizing: border-box;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  
+    width: 50%;
+    position: absolute;
+    left: 0;
+    top: 66px;
+    bottom: 0px;
+    border-right: 1px solid @blue;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .commissions-lists * {
-  cursor: default;
+    cursor: default;
 }
 .commissions-list {
-  position: relative;
-  width: 100%;
+    position: relative;
+    width: 100%;
 }
 .commissions-list ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 .commission {
-  border-bottom: 1px solid @blue;
-  padding-left: 20px;
-  margin: 0;
-  padding-left: 20px;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  position: relative;
-  height: 42px;
-  overflow: hidden;
-  clear: both;
+    border-bottom: 1px solid @blue;
+    padding-left: 20px;
+    margin: 0;
+    padding-left: 20px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    position: relative;
+    height: 42px;
+    overflow: hidden;
+    clear: both;
 }
 .commissions-list {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 .commission-person-image {
-  width: 40px;
-  height: 40px;
-  background-color: @blue;
-  float: left;
+    width: 40px;
+    height: 40px;
+    background-color: @blue;
+    float: left;
 }
 .commission-person-image img {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 .commission-title {
 	position: absolute;
 	top: 16px;
 	left: 68px;
 	right: 100px;
-  line-height: 14px;
-  line-height: 20px;
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+    line-height: 14px;
+    line-height: 20px;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .commission-person-name {
-  font-weight: 300;
-  line-height: 18px;
-	position: absolute;
-	bottom: 16px;
-	left: 68px;
-	right: 100px;
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+    font-weight: 300;
+    line-height: 18px;
+    position: absolute;
+    bottom: 16px;
+    left: 68px;
+    right: 100px;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .selected-commission {
-  background: @lightgreyblue;
+    background: @lightgreyblue;
 }
 .commission-with-unread-messages::before {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 0;
-  height: 100%;
-  width: 11px;
-  background: @blue;
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 0;
+    height: 100%;
+    width: 11px;
+    background: @blue;
 }
 .commissions-list-toggle {
-  position: absolute;
-  display: block;
-  right: 5px;
-  top: 6px;
-  width: 15px;
-  height: 15px;
-  border: 1px solid white;
-  border-radius: 10px;
-  pointer-events: none;
+    position: absolute;
+    display: block;
+    right: 5px;
+    top: 6px;
+    width: 15px;
+    height: 15px;
+    border: 1px solid white;
+    border-radius: 10px;
+    pointer-events: none;
 }
 .commissions-list-toggle:after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  top: 7px;
-  background-color: white;
-  font-weight: 300;
-  height: 1px;
-  width: 11px;
-  overflow: hidden;
-  font-size: 36px;
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 7px;
+    background-color: white;
+    font-weight: 300;
+    height: 1px;
+    width: 11px;
+    overflow: hidden;
+    font-size: 36px;
 }
 .commissions-list-toggle:before {
-  content: '';
-  position: absolute;
-  left: 7px;
-  top: 2px;
-  background-color: white;
-  font-weight: 300;
-  height: 11px;
-  width: 1px;
-  overflow: hidden;
-  font-size: 36px;
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 2px;
+    background-color: white;
+    font-weight: 300;
+    height: 11px;
+    width: 1px;
+    overflow: hidden;
+    font-size: 36px;
 }
 .disclosed-commission-list-toggle:before {
-  content: none;
+    content: none;
 }
 .commission-actions {
-  position: absolute;
-  top: 66px;
-  right: 0;
-  height: 30px;
-  width: 50%;
-  border-bottom: 1px solid @blue;
-  padding: 10px 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+    position: absolute;
+    top: 66px;
+    right: 0;
+    height: 30px;
+    width: 50%;
+    border-bottom: 1px solid @blue;
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .commission-action {
 	margin: 0;
@@ -223,11 +214,11 @@ html, body {
 	border-radius: 0;
 }
 .commission-message-person-image {
-  width: 23px;
-  height: 23px;
-  background-color: @blue;
-  float: left;
-  margin: 0px 8px 12px 0;  
+    width: 23px;
+    height: 23px;
+    background-color: @blue;
+    float: left;
+    margin: 0px 8px 12px 0;  
 }
 .commission-message {
 	position: relative;
