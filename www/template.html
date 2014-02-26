@@ -51,14 +51,14 @@
             </ul>
           </div>
           
-          <div class="commissions-list completed-commissions-list">
-            <h3 class="commissions-list-header" ng-click="commissionPanel.completedCommissionListDisclosed = !commissionPanel.completedCommissionListDisclosed">
+          <div class="commissions-list complete-commissions-list">
+            <h3 class="commissions-list-header" ng-click="commissionPanel.completeCommissionListDisclosed = !commissionPanel.completeCommissionListDisclosed">
               Completed
             </h3>
-            <div class="commissions-list-toggle completed-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.completedCommissionListDisclosed}"></div>
+            <div class="commissions-list-toggle complete-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.completeCommissionListDisclosed}"></div>
             
-            <ul ng-if="commissionPanel.completedCommissionListDisclosed">
-              <li class="commission completed-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions  | filter: { status: 'completed' }" ng-click="commissionPanel.selectedCommission = commission">
+            <ul ng-if="commissionPanel.completeCommissionListDisclosed">
+              <li class="commission complete-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount > 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions | filter: { status: 'complete' }" ng-click="commissionPanel.selectedCommission = commission">
                 <div class="commission-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
                   <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
                 </div>
@@ -71,11 +71,16 @@
         </div>
       
         <div class="commission-actions">
-          <a class="commission-action btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">Reply</a>
-          <a class="commission-action btn" ng-click="commissionPanel.markSelectedCommissionAsCompleted()">Mark as complete</a>
+          <a class="commission-action commission-action-reply btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">
+            Reply
+          </a>
+          <a class="commission-action commission-action-mark-as-complete btn" ng-class="{ 'active commission-action-mark-as-complete-marked':  commissionPanel.selectedCommissionShouldShowCompletedMessage() }" ng-click="commissionPanel.toggleSelectedCommissionCompletion()" ng-if="commissionPanel.selectedCommission.status != 'complete'">
+            Mark as complete
+          </a>
         </div>
 		
-        <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
+        <div 
+        class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
         	<div class="commission-message commission-complete-prompt" ng-if="commissionPanel.selectedCommissionShouldPromptForCompletenessConfirmation()">
             <hr />
             <p>
@@ -85,17 +90,37 @@
               <span ng-if="commissionPanel.selectedCommission.artistMarkedAsCompleted">
                 The artist
               </span>
-              has marked this commission as completed.<br />
+              has marked this commission as complete.<br />
             </p>
             <p>
-              Is the commission completed?
+              Is the commission complete?
             </p>
-            <p class="commission-completed-prompt-actions">
+            <p class="commission-complete-prompt-actions">
               <a class="btn success" ng-click="commissionPanel.markSelectedCommissionAsCompleted()">Yes</a>
               <a class="btn danger" ng-click="commissionPanel.markSelectedCommissionAsIncomplete()">No</a>
             </p>  
             <hr />
           </div>
+          
+          
+        	<div class="commission-message commission-complete-message" ng-if="commissionPanel.selectedCommissionShouldShowCompletedMessage()">
+            <hr />
+            <p>
+              You have marked this commission as complete.
+            </p>
+            <p>
+              Waiting for 
+              <span ng-if="commissionPanel.commissionPanel.userIsSelectedCommissionArtist">
+                The buyer
+              </span>
+              <span ng-if="!commissionPanel.commissionPanel.userIsSelectedCommissionArtist">
+                The artist
+              </span>
+              to respond.
+            </p>  
+            <hr />
+          </div>
+          
           
         	<div class="commission-message commission-message-reply" ng-if="commissionPanel.selectedCommission.replyDisclosed">
             <div class="commission-person-image commission-message-person-image" ng-class="{ 'commission-person-image-generic': !commissionPanel.selectedCommission.artist.image }">
@@ -239,7 +264,7 @@
         $scope.commissionPanel = {};
         $scope.commissionPanel.activeCommissionListDisclosed = true;
         $scope.commissionPanel.requestCommissionListDisclosed = true;
-        $scope.commissionPanel.completedCommissionListDisclosed = false;
+        $scope.commissionPanel.completeCommissionListDisclosed = false;
         $scope.commissions = [
           {
             title: 'DRAW MAH OC',
@@ -445,7 +470,7 @@
             replyDisclosed: false,
             replyBody: '',
             lastUpdated: new Date(2013, 1, 23),
-            status: 'completed',
+            status: 'complete',
             description: 'Sketch',
             price: 7.00,
             addons: [],
@@ -467,7 +492,7 @@
             replyDisclosed: false,
             replyBody: '',
             lastUpdated: new Date(2013, 1, 23),
-            status: 'completed',
+            status: 'complete',
             description: 'Sketch',
             price: 7.00,
             addons: [],
@@ -529,6 +554,17 @@
           return (buyerMarkedAndUserNotBuyer || artistMarkedAndUserNotArtist) && !artistAndBuyerAggreeSelectedCommissionIsComplete;
         }
         
+        $scope.commissionPanel.selectedCommissionShouldShowCompletedMessage = function() {
+          var selectedCommission = $scope.commissionPanel.selectedCommission;
+          
+          var artistMarkedAndUserIsArtist = selectedCommission.artistMarkedAsCompleted && $scope.commissionPanel.userIsSelectedCommissionArtist();
+          var buyerMarkedAndUserIsBuyer = selectedCommission.buyerMarkedAsCompleted && !$scope.commissionPanel.userIsSelectedCommissionArtist();
+                    
+          var artistAndBuyerAggreeSelectedCommissionIsComplete = selectedCommission.artistMarkedAsCompleted == selectedCommission.buyerMarkedAsCompleted;
+                    
+          return (artistMarkedAndUserIsArtist || buyerMarkedAndUserIsBuyer) && !artistAndBuyerAggreeSelectedCommissionIsComplete;
+        }
+        
         $scope.commissionPanel.userIsSelectedCommissionArtist = function () {
           var selectedCommission = $scope.commissionPanel.selectedCommission;
           return selectedCommission.artist.name == $scope.kommissionerUser.name;
@@ -544,17 +580,32 @@
             selectedCommission.buyerMarkedAsCompleted = true;
           }
           
-          if (selectedCommission.artistMarkedAsCompleted && selectedCommission.buyerMarkedAsCompleted) {
-            selectedCommission.status = 'completed';
-          }
+          $scope.commissionPanel.changeSelectedCommissionStatusToCompletedIfCommissionIsCompleted();
         }
         
+        $scope.commissionPanel.toggleSelectedCommissionCompletion = function () {
+          if ($scope.commissionPanel.userIsSelectedCommissionArtist()) {
+            $scope.commissionPanel.selectedCommission.artistMarkedAsCompleted = !$scope.commissionPanel.selectedCommission.artistMarkedAsCompleted;
+          }
+          else {
+            $scope.commissionPanel.selectedCommission.buyerMarkedAsCompleted = !$scope.commissionPanel.selectedCommission.buyerMarkedAsCompleted;
+          }
+          $scope.commissionPanel.changeSelectedCommissionStatusToCompletedIfCommissionIsCompleted();
+        }
+                
         $scope.commissionPanel.markSelectedCommissionAsIncomplete = function () {
           var selectedCommission = $scope.commissionPanel.selectedCommission;
           selectedCommission.artistMarkedAsCompleted = false;
           selectedCommission.buyerMarkedAsCompleted = false;
         };
         
+        $scope.commissionPanel.changeSelectedCommissionStatusToCompletedIfCommissionIsCompleted = function () {
+          var selectedCommission = $scope.commissionPanel.selectedCommission;
+          
+          if (selectedCommission.artistMarkedAsCompleted && selectedCommission.buyerMarkedAsCompleted) {
+            selectedCommission.status = 'complete';
+          }
+        }        
       });
     </script>
 	</body>
