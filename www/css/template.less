@@ -22,11 +22,15 @@ html, body {
   border-radius: 6px;
   border-style: solid;
   border-color: @blue;
-  width: 739px;
+	min-width: 558px;
+  max-width: 740px;
+  width: 100%;
   top: 0;
   bottom: 0px;
   min-height: 524px;
   margin-bottom: 50px;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
 }
 .commission-panel-header {
   font-size: 20px;
@@ -49,7 +53,7 @@ html, body {
   margin-top: 0;
 }
 .commissions-lists {
-  width: 370px;
+  width: 50%;
   position: absolute;
   left: 0;
   top: 66px;
@@ -71,7 +75,7 @@ html, body {
 }
 .commissions-list {
   position: relative;
-  width: 370px;
+  width: 100%;
 }
 .commissions-list ul {
   padding: 0;
@@ -99,33 +103,32 @@ html, body {
   background-color: @blue;
   float: left;
 }
-.commission-person-image-small {
-  width: 23px;
-  height: 23px;
-  background-color: @blue;
-  float: left;
-  margin: -1px 8px 12px 0;  
-}
 .commission-person-image img {
   width: 100%;
   height: 100%;
 }
 .commission-title {
+	position: absolute;
+	top: 16px;
+	left: 68px;
+	right: 100px;
   line-height: 14px;
   line-height: 20px;
-  padding-left: 8px;
   margin: 0;
-  width: 200px;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 .commission-person-name {
   font-weight: 300;
   line-height: 18px;
-  padding-left: 8px;
+	position: absolute;
+	bottom: 16px;
+	left: 68px;
+	right: 100px;
   margin: 0;
-  width: 200px;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 .selected-commission {
@@ -183,26 +186,33 @@ html, body {
   top: 66px;
   right: 0;
   height: 30px;
-  width: 329px;
+  width: 50%;
   border-bottom: 1px solid @blue;
-  padding: 10px 20px;
+  padding: 10px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .commission-action {
 	margin: 0;
+	width: none;
 }
 .commission-action:first-child {
+	margin-left: 19px;
 	float: left;
 }
 .commission-action:last-child {
+	margin-right: 19px;
 	float: right;
 }
 .commission-conversation {
 	position: absolute;
 	top: 117px;
-    width: 329px;
-	right: 0;
+  	width: 50%;
+  	right: 0;
+	margin: 0;
+	padding: 15px 0 15px 0;
 	bottom: 0px;
-    padding: 20px 20px;
 	background: @lightgreyblue;
 	overflow-y: scroll;
 	overflow-x: hidden;
@@ -212,12 +222,19 @@ html, body {
 	bottom: 117px;
 	border-radius: 0;
 }
+.commission-message-person-image {
+  width: 23px;
+  height: 23px;
+  background-color: @blue;
+  float: left;
+  margin: 0px 8px 12px 0;  
+}
 .commission-message {
 	position: relative;
-	margin-bottom: 30px;
+    padding: 15px 19px 15px 19px;
 }
 .commission-message-sender {
-	padding: 0px 0 8px 0;
+	padding: 2px 0 8px 0;
 }
 .commission-message-body {
     border: 1px solid @blue;
@@ -238,7 +255,7 @@ html, body {
 	padding: 12px 19px 12px 43px;
     border: 1px solid @blue;
 	border-top: none;
-	margin-top: 0px;
+	margin: 0;
 	background-color: @lightblue;
 	color: @blue;
 }
@@ -251,11 +268,11 @@ html, body {
 .commission-files {
 	position: absolute;
 	right: 0;
-	width: 329px;
+	width: 50%;
 	bottom: -2px;
 	height: 82px;
 	border-radius: 0 0 6px 0;
-    padding: 16px 20px 18px 20px;
+    padding: 16px 0 18px 0;
 	border-top: 1px solid @blue;
 	border-bottom: 2px solid @blue;
 	background-color: @greyblue; 
@@ -265,8 +282,7 @@ html, body {
 .commission-request-header {
     border: 1px solid @blue;
 	border-bottom: 0;
-	margin-top: 19px;
-	margin-bottom: 0;
+	margin: 15px 20px 0px 20px;
 	border-radius: 6px 6px 0 0;
 	padding: 10px 19px 10px 19px;
 	background: @blue;
@@ -274,12 +290,14 @@ html, body {
 	font-weight: 300;
 }
 .commission-request-details {
+	margin: 0px 20px 0px 20px;
     border: 1px solid @blue;
 	padding: 8px 19px 8px 19px;
 	background: @lightblue;
 	color: @blue;
 }
 .commission-request-total {
+	margin: 0px 20px 0px 20px;
     border: 1px solid @blue;
 	border-top: 0;
 	border-radius: 0 0 6px 6px;
@@ -326,11 +344,15 @@ html, body {
 	padding: 12px 19px 12px 43px;
 	background-color: @lightblue;
 	color: @blue;
+	margin-left: 19px;
+	margin-right: 19px
 }
 .commission-files-header {
 	margin: 0;
 	font-weight: 500;
 	line-height: 24px;
+	margin-left: 19px;
+	margin-right: 19px
 }
 .commission-attachment-size {
 	font-size: 0.85em;
@@ -375,4 +397,10 @@ html, body {
 }
 .kommi-expand-to-fit-line-break {
 	line-height: 4px;
+}
+.commission-complete-prompt {
+	text-align: center;
+	font-weight: 300;
+	padding-top: 0;
+	padding-bottom: 0;
 }
