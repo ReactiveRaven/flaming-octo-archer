@@ -10,8 +10,14 @@ html, body {
     height: 100%;
     position: relative;
 }
+.kommissioner-header {
+    height: 100px;
+    line-height: 100px;
+    margin: 0;
+}
 
 .commission-panel {
+    position: absolute;
     border-width: 2px;
     border-radius: 6px;
     border-style: solid;
@@ -19,6 +25,8 @@ html, body {
     min-width: 558px;
     max-width: 740px;
     width: 100%;
+    top: 0;
+    bottom: 0px;
     min-height: 524px;
     margin-bottom: 50px;
     box-sizing:border-box;
@@ -60,6 +68,7 @@ html, body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+  
 }
 .commissions-lists * {
     cursor: default;
@@ -113,10 +122,10 @@ html, body {
 .commission-person-name {
     font-weight: 300;
     line-height: 18px;
-    position: absolute;
-    bottom: 16px;
-    left: 68px;
-    right: 100px;
+	position: absolute;
+	bottom: 16px;
+	left: 68px;
+	right: 100px;
     margin: 0;
     overflow: hidden;
     white-space: nowrap;
@@ -360,7 +369,7 @@ html, body {
 	font-weight: 300;
 }
 .commission-message-reply-body {
-	border: 0;
+    border: 0;
 	background-color: transparent;
 	width: 289px;
 	color: @blue;
@@ -404,7 +413,6 @@ html, body {
 .commission-action-mark-as-complete-marked {
 	background-image: url('/img/checkmark-white-16.png');
 	background-repeat: no-repeat;
-	background-position: 12px center;
+	background-position: 0 center;
 	background-size: 16px 16px;
-	padding-left: 35px;
 }

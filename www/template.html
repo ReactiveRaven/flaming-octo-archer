@@ -60,7 +60,9 @@
                                     {{ commissionPanel.formatDate(commission.lastUpdated) }}
                                 </div>
                             </li>
-                        </ul>div&gt; iv class="commissions-list complete-commissions-list"&gt;
+                        </ul>
+                    </div>
+                    <div class="commissions-list complete-commissions-list">
                         <h3 class="commissions-list-header" ng-click="commissionPanel.completeCommissionListDisclosed = !commissionPanel.completeCommissionListDisclosed">
                             Completed
                         </h3>
@@ -84,7 +86,7 @@
                     </div>
                 </div>
                 <div class="commission-actions">
-                    <a class="commission-action commission-action-reply btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">Reply</a> <a class="commission-action commission-action-mark-as-complete btn" ng-class="{ 'active commission-action-mark-as-complete-marked': commissionPanel.selectedCommissionShouldShowCompletedMessage() }" ng-click="commissionPanel.toggleSelectedCommissionCompletion()" ng-if="commissionPanel.selectedCommission.status != 'complete'">Mark as complete</a>
+                    <a class="commission-action commission-action-reply btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">Reply</a> <a class="commission-action commission-action-mark-as-complete btn" ng-class="{ 'commission-action-mark-as-complete-marked ': commissionPanel.selectedCommissionShouldShowCompletedMessage() }" ng-click="commissionPanel.toggleSelectedCommissionCompletion()" ng-if="commissionPanel.selectedCommission.status != 'complete'">Mark as complete</a>
                 </div>
                 <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
                     <div class="commission-message commission-complete-prompt" ng-if="commissionPanel.selectedCommissionShouldPromptForCompletenessConfirmation()">
@@ -118,8 +120,7 @@
                             {{ commissionPanel.selectedCommission.artist.name }}
                         </div>
                         <div class="commission-message-body">
-                            <textarea autofocus="" kommi-expand-to-fit="" kommi-enter="commissionPanel.reply()" ng-model="commissionPanel.selectedCommission.replyBody" class="commission-message-reply-body kommi-expand-to-fit">
-                            </textarea>
+                            <textarea autofocus="" kommi-expand-to-fit="" kommi-enter="commissionPanel.reply()" ng-model="commissionPanel.selectedCommission.replyBody" class="commission-message-reply-body kommi-expand-to-fit"></textarea>
                         </div>
                         <div ng-if="message.attachments.length &gt; 0" ng-repeat="attachment in message.attachments" class="commission-message-attachments">
                             <div class="commission-message-attachment">
@@ -154,9 +155,9 @@
                                 </td>
                                 <td class="commission-details-cell commission-price">
                                     <span class="commission-currency-symbol">£</span><!--
-               --><span class="commission-price-dollars">{{ commissionPanel.selectedCommission.price.toFixed(2).split('.')[0] }}</span><!--
-               --><span class="commission-price-seperator">.</span><!--
-               --><span class="commission-price-cents">{{ commissionPanel.selectedCommission.price.toFixed(2).split('.')[1] }}</span>
+                                 --><span class="commission-price-dollars">{{ commissionPanel.selectedCommission.price.toFixed(2).split('.')[0] }}</span><!--
+                                 --><span class="commission-price-seperator">.</span><!--
+                                 --><span class="commission-price-cents">{{ commissionPanel.selectedCommission.price.toFixed(2).split('.')[1] }}</span>
                                 </td>
                             </tr>
                             <tr ng-repeat="addon in commissionPanel.selectedCommission.addons">
@@ -165,9 +166,9 @@
                                 </td>
                                 <td class="commission-details-cell commission-price">
                                     <span class="commission-currency-symbol">£</span><!--
-               --><span class="commission-price-dollars">{{ addon.price.toFixed(2).split('.')[0] }}</span><!--
-               --><span class="commission-price-seperator">.</span><!--
-               --><span class="commission-price-cents">{{ addon.price.toFixed(2).split('.')[1] }}</span>
+                                 --><span class="commission-price-dollars">{{ addon.price.toFixed(2).split('.')[0] }}</span><!--
+                                 --><span class="commission-price-seperator">.</span><!--
+                                 --><span class="commission-price-cents">{{ addon.price.toFixed(2).split('.')[1] }}</span>
                                 </td>
                             </tr>
                         </table>
@@ -180,9 +181,9 @@
                                 </td>
                                 <td class="commission-details-cell commission-price">
                                     <span class="commission-currency-symbol">£</span><!--
-               --><span class="commission-price-dollars">{{ commissionPanel.selectedCommission.totalPrice.toFixed(2).split('.')[0] }}</span><!--
-               --><span class="commission-price-seperator">.</span><!--
-               --><span class="commission-price-cents">{{ commissionPanel.selectedCommission.totalPrice.toFixed(2).split('.')[1] }}</span>
+                                 --><span class="commission-price-dollars">{{ commissionPanel.selectedCommission.totalPrice.toFixed(2).split('.')[0] }}</span><!--
+                                 --><span class="commission-price-seperator">.</span><!--
+                                 --><span class="commission-price-cents">{{ commissionPanel.selectedCommission.totalPrice.toFixed(2).split('.')[1] }}</span>
                                 </td>
                             </tr>
                         </table>
