@@ -3,12 +3,21 @@
 @import "pager.less";
 @import "tabs.less";
 @import "buttons.less";
+@import "footer.less";
 
 body {
 	background: @lightblue;
 	color: @blue;
 	margin-top: 43px;
 	font-size: 14px;
+	
+	margin-bottom: 300px;
+}
+
+a
+{
+	color: @blue;
+	text-decoration: none;
 }
 
 body, h1, h2, h3, h4, h5, h6 {
@@ -40,9 +49,88 @@ body, h1, h2, h3, h4, h5, h6 {
 	overflow: auto;
 	width: 100%;
 }
-hr {
+
+.hr {
   background-color: @blue;
   border: 0;
   height: 1px;
   margin: 15px 0 15px 0;
+}
+
+::-webkit-input-placeholder {
+   color: @blue;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   color: @blue;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   color: @blue;  
+}
+
+:-ms-input-placeholder {  
+   color: @blue;  
+}
+
+input {
+	border: 1px solid @blue;
+	outline: none;
+	margin: 5px;
+	font-size: 13px;
+	background: transparent;
+	padding: 6px 17px;
+	color: @blue;
+	
+	&.search {
+		border-radius: 1000px;
+		background: url(/img/iconmonstr-magnifier-2-icon-16.png);
+		background-repeat: no-repeat;
+		background-position: right 12px center;
+		width: 175px;
+	}
+			
+	&:focus {
+		border-width: 2px !important;
+		margin: 4px !important;
+	}
+}
+
+.vr {
+	
+	&::before {
+		content: '';
+		border-right: 1px solid @blue;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+	}
+	
+	display: inline-block;
+	margin: 0 15px;
+}
+
+.clearfix {
+	&&::after {
+	    content: ".";
+	    display: block;
+	    height: 0;
+	    clear: both;
+	    visibility: hidden;
+	}
+}
+
+::selection, input::selection {
+    background: @blue;
+    color: @lightblue;
+}
+
+::-moz-selection, input::-moz-selection {
+    background: @blue;
+    color: @lightblue;
+}
+
+::-webkit-selection, input::-webkit-selection {
+    background: @blue;
+    color: @lightblue;
 }
