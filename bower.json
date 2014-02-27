@@ -5,8 +5,9 @@
     "angular": "~1.2",
     "bootstrap": "3.0.0",
     "font-awesome": "*",
-    "angular-mocks": "~1.0.7",
-    "angular-resource": "~1.0.7",
+    "angular-mocks": "~1.2",
+    "angular-route": "~1.2",
+    "angular-resource": "~1.2",
     "marked": "~0.2.9",
     "CornerCouch": "git://github.com/eddelplus/CornerCouch.git",
     "angular-cookies": "~1.0.7",
@@ -14,7 +15,7 @@
     "requirejs": "~2.1.8",
     "waitFor": "git://github.com/cybus10/waitFor.git",
     "ngUpload": "~0.3.17",
-    "angular-moment": "~0.6.0"
+    "angular-moment": "latest"
   },
   "exportsOverride": {
     "marked": {

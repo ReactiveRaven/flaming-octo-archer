@@ -16,6 +16,9 @@
         <script src="/bower_components/momentjs/moment.js" type="text/javascript"></script>
     </head>
     <body ng-app="app">
+<<<<<<< HEAD
+        <div class="kommissioner-view">
+=======
     	<div class="container">
 			<div class="header">
 				<div class="left">
@@ -239,6 +242,301 @@
         </div>
         <script type="text/javascript">
         var app = angular.module('app', []);
+
+        var expandToFitDirective = app.directive('kommiExpandToFit', function () {
+        return {
+          link: function (scope, element) {
+            var hiddenDiv = $(document.createElement('div'));
+            var content = null;
+            var commonClasses = $(element).attr('class');
+
+            $(element).addClass('kommi-expand-to-fit-no-resize');
+            hiddenDiv.addClass('kommi-expand-to-fit-hidden-div kommi-expand-to-fit-no-resize ' + commonClasses);
+
+            $('body').append(hiddenDiv);
+
+            var updateHeight = function () {
+              content = $(element).val();
+
+              content = content.replace(/\n/g, '<br>');
+              hiddenDiv.html(content + '<br class="kommi-expand-to-fit-line-break">');
+
+              $(element).css('height', hiddenDiv.height());
+            };
+
+            updateHeight();
+            $(element).on('keyup', updateHeight);
+          }
+        }
+        });
+
+        var enterDirective = app.directive('kommiEnter', function () {
+        return {
+          link: function (scope, element, attrs) {
+            console.log('yes');
+            $(element).keypress(function(e) {
+              if (e.which == 13) { 
+                if (!e.shiftKey) scope.$apply(attrs['kommiEnter']);
+              }
+            });
+          }
+        };
+        })
+
+        var commissionPanelController = app.controller('commissionPanelController', function($scope) {
+        $scope.kommissionerUser = {
+          name: 'RomanRazor',
+          image: null
+        };
+
+        $scope.commissionPanel = {};
+        $scope.commissionPanel.activeCommissionListDisclosed = true;
+        $scope.commissionPanel.requestCommissionListDisclosed = true;
+        $scope.commissionPanel.completeCommissionListDisclosed = false;
+        $scope.commissions = [
+          {
+            title: 'DRAW MAH OC',
+            artist: {
+              name: 'RomanRazor',
+              image: null
+            },            
+            buyer: { 
+              name: 'PippySmudgebutt', 
+              image: 'example_images/pippy.png' 
+            },
+            unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
+            lastUpdated: new Date(2014, 1, 23),
+            price: 7.00,
+            status: 'active',
+            artistMarkedAsCompleted: false,
+            buyerMarkedAsCompleted: true,
+            description: 'Sketch',
+            addons: [
+              {
+                description: '+ 1 additional character',
+                price: 5.00
+              }
+            ],
+            totalPrice: 19.00,
+            messages: [
+              {
+                sender: { 
+                    name: 'RomanRazor',
+                  },
+                date: new Date(2014, 1, 23),
+                body: 'Yeah, sure',
+                attachments: []
+              },
+              {
+                sender:  { 
+                    name: 'PippySmudgebutt', 
+                    image: 'example_images/pippy.png' 
+                },
+                date: new Date(2014, 1, 23),
+                body: "Hey There,\n Can I commission you to do a thing? Ref attached.\n- Pippy",
+                read: true,
+                attachments: [
+                  {
+                    name: 'Smudebutt-ref.jpg',
+                    size: 249,
+                  }
+                ]
+              },
+              {
+                sender: { 
+                    name: 'RomanRazor',
+                  },
+                date: new Date(2014, 1, 23),
+                body: 'Yeah, sure',
+                attachments: []
+              },
+              {
+                sender:  { 
+                    name: 'PippySmudgebutt', 
+                    image: 'example_images/pippy.png' 
+                },
+                date: new Date(2014, 1, 23),
+                body: "Hey There,\n Can I commission you to do a thing? Ref attached.\n- Pippy",
+                read: true,
+                attachments: [
+                  {
+                    name: 'Smudebutt-ref v1.jpg',
+                    size: 249,
+                  },
+                  {
+                    name: 'Other-ref v2.jpg',
+                    size: 300,
+                  }
+                ]
+              },
+              
+            ]
+          },
+          {
+            title: 'Commission Title Here',
+            buyer: { name: 'John Doe' },
+            artist: $scope.kommissionerUser,
+            unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
+            lastUpdated: new Date(2014, 1, 23),
+            status: 'active',
+            artistMarkedAsCompleted: false,
+            buyerMarkedAsCompleted: true,
+            description: 'Sketch',
+            price: 7.00,
+            addons: [],
+            totalPrice: 7.00,
+            messages: [
+              {
+                        sender:  { 
+                  name: 'John Doe', 
+                },
+                date: new Date(2014, 1, 23),
+                body: "Hi!",
+                attachments: []
+              }
+            ]
+          },
+          {
+            title: 'Commission Dun Goes Here',
+            buyer: { name: 'Jane Doe' },
+            artist: $scope.kommissionerUser,
+            unreadMessageCount: 0,
+            lastUpdated: new Date(2014, 1, 11),
+            status: 'active',
+            artistMarkedAsCompleted: false,
+            buyerMarkedAsCompleted: true,
+            description: 'Sketch',
+            price: 7.00,
+            addons: [],
+            totalPrice: 7.00,
+            messages: [
+              {
+                sender: { name: 'Jane Doe' },
+                date: new Date(2014, 1, 23),
+                body: "Boop!",
+                attachments: []
+              }
+            ]
+          },
+          {
+            title: 'Vowel porn',
+            buyer: { name: 'Carol Vordamon' },
+            artist: $scope.kommissionerUser,
+            unreadMessageCount: 0,
+            replyDisclosed: false,
+            replyBody: '',
+            lastUpdated: new Date(2013, 11, 5),
+            status: 'active',
+            artistMarkedAsCompleted: false,
+            buyerMarkedAsCompleted: true,
+            description: 'Sketch',
+            price: 7.00,
+            totalPrice: 7.00,
+            addons: [],
+            messages: [
+              {
+                sender: { name: 'Carol Vordamon' },
+                date: new Date(2014, 1, 23),
+                body: "Yes!",
+                attachments: []
+              }
+            ]
+          },
+          {
+            title: 'Advertisement',
+            buyer: { name: 'Charleston Chew' },
+            artist: $scope.kommissionerUser,
+            unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
+            lastUpdated: new Date(2013, 1, 23),
+            status: 'request',
+            description: 'Sketch',
+            price: 7.00,
+            addons: [],
+            totalPrice: 7.00,
+            messages: [
+              {
+                sender: { name: 'Charleston Chew' },
+                date: new Date(2014, 1, 23),
+                body: "No!",
+                attachments: []
+              }
+            ]          
+          },
+          {
+            title: 'Sanic',
+            buyer: { name: 'Knuckles' },
+            artist: $scope.kommissionerUser,
+            unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
+            lastUpdated: new Date(2013, 1, 23),
+            status: 'request',
+            description: 'Sketch',
+            price: 7.00,
+            addons: [],
+            totalPrice: 7.00,
+            messages: [
+              {
+                sender: { name: 'Knuckles' },
+                date: new Date(2014, 1, 23),
+                body: "Maybe, I don't know, can you repeat, the, question?",
+                attachments: []
+              }
+            ]
+          },
+          {
+            title: 'Beautiful Fish',
+            buyer: { name: 'Mr Place' },
+            artist: $scope.kommissionerUser,
+            unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
+            lastUpdated: new Date(2013, 1, 23),
+            status: 'complete',
+            description: 'Sketch',
+            price: 7.00,
+            addons: [],
+            totalPrice: 7.00,
+            messages: [
+              {
+                sender: { name: 'Mr Place' },
+                date: new Date(2014, 1, 23),
+                body: "Thank you : )",
+                attachments: []
+              }
+            ]          
+          },
+          {
+            title: 'Knuckles',
+            buyer: { name: 'Sanic' },
+            artist: $scope.kommissionerUser,
+            unreadMessageCount: 1,
+            replyDisclosed: false,
+            replyBody: '',
+            lastUpdated: new Date(2013, 1, 23),
+            status: 'complete',
+            description: 'Sketch',
+            price: 7.00,
+            addons: [],
+            totalPrice: 7.00,
+            messages: [
+              {
+                sender: { name: 'Sanic' },
+                date: new Date(2014, 1, 23),
+                body: "I hope senpai noices me.",
+                attachments: []
+              }
+            ]
+          },
+          
+        ];
+>>>>>>> 2557806b95201d8386afc26066471a808b652909
 
         </div>
     </body>

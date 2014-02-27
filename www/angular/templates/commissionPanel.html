@@ -1,0 +1,190 @@
+<div class="commission-panel" ng-controller="CommissionPanelCtrl">
+    <h2 class="commission-panel-header">
+        Commissions
+    </h2>
+    <div class="commissions-lists">
+        <div class="commissions-list active-commissions-list">
+            <h3 class="commissions-list-header" ng-click="commissionPanel.activeCommissionListDisclosed = !commissionPanel.activeCommissionListDisclosed">
+                Active Commissions
+            </h3>
+            <div class="commissions-list-toggle active-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.activeCommissionListDisclosed }"></div>
+            <ul ng-if="commissionPanel.activeCommissionListDisclosed">
+                <li class="commission active-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount &gt; 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions | filter: { status: 'active' }" ng-click="commissionPanel.selectedCommission = commission">
+                    <div class="commission-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+                        <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
+                    </div>
+                    <h4 class="commission-title">
+                        {{ commission.title }}
+                    </h4>
+                    <p class="commission-person-name">
+                        {{ commission.buyer.name }}
+                    </p>
+                    <div class="commisssion-last-updated-date">
+                        {{ commissionPanel.formatDate(commission.lastUpdated) }}
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="commissions-list request-commissions-list">
+            <h3 class="commissions-list-header" ng-click="commissionPanel.requestCommissionListDisclosed = !commissionPanel.requestCommissionListDisclosed">
+                Requests
+            </h3>
+            <div class="commissions-list-toggle request-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.requestCommissionListDisclosed}"></div>
+            <ul ng-if="commissionPanel.requestCommissionListDisclosed">
+                <li class="commission request-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount &gt; 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions | filter: { status: 'request' }" ng-click="commissionPanel.selectedCommission = commission">
+                    <div class="commission-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+                        <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
+                    </div>
+                    <h4 class="commission-title">
+                        {{ commission.title }}
+                    </h4>
+                    <p class="commission-person-name">
+                        {{ commission.buyer.name }}
+                    </p>
+                    <div class="commisssion-last-updated-date">
+                        {{ commissionPanel.formatDate(commission.lastUpdated) }}
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="commissions-list complete-commissions-list">
+            <h3 class="commissions-list-header" ng-click="commissionPanel.completeCommissionListDisclosed = !commissionPanel.completeCommissionListDisclosed">
+                Completed
+            </h3>
+            <div class="commissions-list-toggle complete-commissions-list-toggle" ng-class="{ 'disclosed-commission-list-toggle': commissionPanel.completeCommissionListDisclosed}"></div>
+            <ul ng-if="commissionPanel.completeCommissionListDisclosed">
+                <li class="commission complete-commission" ng-class="{ 'commission-with-unread-messages': commission.unreadMessageCount &gt; 0, 'selected-commission': commission == commissionPanel.selectedCommission }" ng-repeat="commission in commissions | filter: { status: 'complete' }" ng-click="commissionPanel.selectedCommission = commission">
+                    <div class="commission-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+                        <img ng-if="commission.buyer.image" ng-src="{{ commission.buyer.image }}">
+                    </div>
+                    <h4 class="commission-title">
+                        {{ commission.title }}
+                    </h4>
+                    <p class="commission-person-name">
+                        {{ commission.buyer.name }}
+                    </p>
+                    <div class="commisssion-last-updated-date">
+                        {{ commissionPanel.formatDate(commission.lastUpdated) }}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="commission-actions">
+        <a class="commission-action commission-action-reply btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">Reply</a> <a class="commission-action commission-action-mark-as-complete btn" ng-class="{ 'commission-action-mark-as-complete-marked ': commissionPanel.selectedCommissionShouldShowCompletedMessage() }" ng-click="commissionPanel.toggleSelectedCommissionCompletion()" ng-if="commissionPanel.selectedCommission.status != 'complete'">Mark as complete</a>
+    </div>
+    <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
+        <div class="commission-message commission-complete-prompt" ng-if="commissionPanel.selectedCommissionShouldPromptForCompletenessConfirmation()">
+            <p>
+                <span ng-if="commissionPanel.selectedCommission.buyerMarkedAsCompleted">The buyer</span> <span ng-if="commissionPanel.selectedCommission.artistMarkedAsCompleted">The artist</span> has marked this commission as complete.<br>
+            </p>
+            <p>
+                Is the commission complete?
+            </p>
+            <p class="commission-complete-prompt-actions">
+                <a class="btn success" ng-click="commissionPanel.markSelectedCommissionAsCompleted()">Yes</a> <a class="btn danger" ng-click="commissionPanel.markSelectedCommissionAsIncomplete()">No</a>
+            </p>
+        </div>
+        <div class="commission-message commission-complete-message" ng-if="commissionPanel.selectedCommissionShouldShowCompletedMessage()">
+            <p>
+                You have marked this commission as complete.
+            </p>
+            <p>
+                Waiting for 
+                <span ng-if="commissionPanel.commissionPanel.userIsSelectedCommissionArtist()">
+                    the buyer
+                </span> 
+                <span ng-if="!commissionPanel.commissionPanel.userIsSelectedCommissionArtist()">
+                    the artist
+                </span> 
+                to respond.
+            </p>
+        </div>
+        <div class="commission-message commission-message-reply" ng-if="commissionPanel.selectedCommission.replyDisclosed">
+            <div class="commission-person-image commission-message-person-image" ng-class="{ 'commission-person-image-generic': !commissionPanel.selectedCommission.artist.image }">
+                <img ng-if="commissionPanel.selectedCommission.artist.image" ng-src="{{ commissionPanel.selectedCommission.artist.image }}">
+            </div>
+            <div class="commission-message-sender">
+                {{ commissionPanel.selectedCommission.artist.name }}
+            </div>
+            <div class="commission-message-body">
+                <textarea autofocus="" kommi-expand-to-fit="" kommi-enter="commissionPanel.reply()" ng-model="commissionPanel.selectedCommission.replyBody" class="commission-message-reply-body kommi-expand-to-fit"></textarea>
+            </div>
+            <div ng-if="message.attachments.length &gt; 0" ng-repeat="attachment in message.attachments" class="commission-message-attachments">
+                <div class="commission-message-attachment">
+                    {{ attachment.name }} - <span class="commission-attachment-size">{{ attachment.size }}K</span>
+                </div>
+            </div>
+        </div>
+        <div class="commission-message" ng-repeat="message in commissionPanel.selectedCommission.messages" ng-class="{ 'commission-message-with-attachments': message.attachments.length &gt; 0 }">
+            <div class="commission-person-image commission-message-person-image" ng-class="{ 'commission-person-image-generic': !commission.buyer.image }">
+                <img ng-if="message.sender.image" ng-src="{{ message.sender.image }}">
+            </div>
+            <div class="commission-message-sender">
+                {{ message.sender.name }}
+            </div>
+            <div class="commission-message-body">
+                {{ message.body }}
+            </div>
+            <div ng-if="message.attachments.length &gt; 0" ng-repeat="attachment in message.attachments" class="commission-message-attachments">
+                <div class="commission-message-attachment">
+                    {{ attachment.name }} - <span class="commission-attachment-size">{{ attachment.size }}K</span>
+                </div>
+            </div>
+        </div>
+        <h4 class="commission-request-header">
+            Commission request for
+        </h4>
+        <div class="commission-request-details">
+            <table class="commission-details-table" border="0">
+                <tr>
+                    <td class="commission-details-cell commission-description">
+                        {{ commissionPanel.selectedCommission.description }}
+                    </td>
+                    <td class="commission-details-cell commission-price">
+                        <span class="commission-currency-symbol">£</span><!--
+                     --><span class="commission-price-dollars">{{ commissionPanel.selectedCommission.price.toFixed(2).split('.')[0] }}</span><!--
+                     --><span class="commission-price-seperator">.</span><!--
+                     --><span class="commission-price-cents">{{ commissionPanel.selectedCommission.price.toFixed(2).split('.')[1] }}</span>
+                    </td>
+                </tr>
+                <tr ng-repeat="addon in commissionPanel.selectedCommission.addons">
+                    <td class="commission-details-cell commission-description">
+                        {{ addon.description }}
+                    </td>
+                    <td class="commission-details-cell commission-price">
+                        <span class="commission-currency-symbol">£</span><!--
+                     --><span class="commission-price-dollars">{{ addon.price.toFixed(2).split('.')[0] }}</span><!--
+                     --><span class="commission-price-seperator">.</span><!--
+                     --><span class="commission-price-cents">{{ addon.price.toFixed(2).split('.')[1] }}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="commission-request-total">
+            <table class="commission-details-table" border="0">
+                <tr>
+                    <td class="commission-details-cell commission-description">
+                        Total
+                    </td>
+                    <td class="commission-details-cell commission-price">
+                        <span class="commission-currency-symbol">£</span><!--
+                     --><span class="commission-price-dollars">{{ commissionPanel.selectedCommission.totalPrice.toFixed(2).split('.')[0] }}</span><!--
+                     --><span class="commission-price-seperator">.</span><!--
+                     --><span class="commission-price-cents">{{ commissionPanel.selectedCommission.totalPrice.toFixed(2).split('.')[1] }}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="commission-files" ng-if="commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission)">
+        <h4 class="commission-files-header">
+            Commission files
+        </h4>
+        <div ng-repeat="attachment in commissionPanel.attachementsFromCommission(commissionPanel.selectedCommission)">
+            <div class="commission-attachment">
+                {{ attachment.name }} - <span class="commission-attachment-size">{{ attachment.size }}K</span>
+            </div>
+        </div>
+    </div>
+</div>

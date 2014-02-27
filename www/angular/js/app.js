@@ -17,6 +17,7 @@ define(
         var App = angular.module(
             'commissar',
             [
+                'ngRoute',
                 'commissar.controllers.LogoutCtrl',
                 'commissar.controllers.AdminCtrl',
                 'commissar.controllers.CommissionPanelCtrl',
@@ -27,7 +28,7 @@ define(
                 'commissar.controllers.GalleryCtrl'
             ]
         );
-        App.config(['$locationProvider', function ($locationProvider) {
+        App.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
             $locationProvider.html5Mode(false);
             $locationProvider.hashPrefix("!");
         }]);

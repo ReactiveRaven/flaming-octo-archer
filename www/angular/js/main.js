@@ -6,6 +6,7 @@ require.config({
         angularCookies: '/bower_components/angular-cookies/angular-cookies',
         angularMocks: '/bower_components/angular-mocks/angular-mocks',
         angularResource: '/bower_components/angular-resource/angular-resource',
+        angularRoute: '/bower_components/angular-route/angular-route',
         marked: '/bower_components/marked/js/marked',
         CornerCouch: '/bower_components/CornerCouch/angular-cornercouch',
         jquery: '/bower_components/jquery/jquery',
