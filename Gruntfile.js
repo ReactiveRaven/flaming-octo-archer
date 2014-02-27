@@ -22,7 +22,8 @@ module.exports = function (grunt) {
         'cucumber:run_basic': ['requirejs:compile', 'cucumberjs'],
         'reinstall': ['shell:reinstall'],
         'default': ['units'],
-        'compile': ['ngtemplates', 'requirejs:compile', 'ngmin', 'uglify', 'cssmin']
+        'compile': ['ngtemplates', 'requirejs:compile', 'ngmin', 'uglify', 'cssmin'],
+        'server': ['concurrent:server']
     };
 
     var config = {
@@ -281,6 +282,12 @@ module.exports = function (grunt) {
             tests_unit: {
                 files: '<%= files._watchable_all %>',
                 tasks: ['tests:unit:run']
+            },
+            server: {
+				files: ['.rebooted', '**/*.less', 'www/**/*.js'],
+				options: {
+					livereload: true
+				}
             }
         },
         bower: {
@@ -422,7 +429,7 @@ module.exports = function (grunt) {
         cssmin: {
             combine: {
                 files: {
-                    'www/css/compiled.css': ['www/css/testing.css', 'www/css/loader.css'],
+                    'www/css/compiled.css': ['www/css/testing.css', 'www/css/loader.css']
                 },
                 options: {
                     keepSpecialComments: 1,
@@ -447,9 +454,54 @@ module.exports = function (grunt) {
                     }
                 }
             }
-        }
+        },
+		nodemon: {
+			server: {
+				script: 'app.js',
+				options: {
+					nodeArgs: [],
+					env: {
+						PORT: '5455'
+					},
+					ignore: ['www/**/*.js'],
+					// omit this property if you aren't serving HTML files and 
+					// don't want to open a browser tab on start
+					callback: function(nodemon) {
+						nodemon.on('log', function(event) {
+							console.log(event.colour);
+						});
 
-    };
+						// opens browser on initial server start
+						nodemon.on('config:update', function() {
+							// Delay before server listens on port
+							setTimeout(function() {
+								require('open')('http://localhost:5455');
+							}, 1000);
+						});
+
+						// refreshes browser when server reboots
+						nodemon.on('restart', function() {
+							// Delay before server listens on port
+							setTimeout(function() {
+															console.log("WARK");
+								require('fs').writeFileSync('.rebooted', 'rebooted');
+							}, 1000);
+						});
+					}
+				}
+			}
+		},
+		concurrent: {
+			server: {
+				tasks: ['nodemon:server', 'watch:server'],
+				options: {
+					logConcurrentOutput: true
+				}
+			}
+		}
+				
+
+};
 
 
     var files = config.files;

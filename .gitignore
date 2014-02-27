@@ -22,3 +22,4 @@ VagrantSecrets.rb
 .vagrant_local/
 .nide
 www/css/*.css
+.rebooted
