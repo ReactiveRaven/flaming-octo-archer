@@ -4,6 +4,7 @@ define(
     [
         'controllers/LogoutCtrl',
         'controllers/AdminCtrl',
+        'controllers/CommissionPanelCtrl',
         'controllers/IndexCtrl',
         'controllers/WelcomeCtrl',
         'controllers/MenuCtrl',
@@ -18,6 +19,7 @@ define(
             [
                 'commissar.controllers.LogoutCtrl',
                 'commissar.controllers.AdminCtrl',
+                'commissar.controllers.CommissionPanelCtrl',
                 'commissar.controllers.IndexCtrl',
                 'commissar.controllers.MenuCtrl',
                 'commissar.controllers.WelcomeCtrl',

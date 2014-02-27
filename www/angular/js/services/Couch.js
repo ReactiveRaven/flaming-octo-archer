@@ -28,7 +28,7 @@ define(['CornerCouch', './Random'], function () {
                                 if (!newDoc.type) {
                                     throw ({forbidden: 'All documents must have a type'});
                                 }
-                                if (userCtx.db !== 'commissar_user_' + userCtx.name && userCtx.roles.indexOf('+admin') === -1) {
+                                if (userCtx.db !== 'commissar_user_' + userCtx.name.toLowerCase() && userCtx.roles.indexOf('+admin') === -1) {
                                     throw ({forbidden: 'Cannot alter documents outside your own database'});
                                 }
                                 if (newDoc.created) {
@@ -131,6 +131,59 @@ define(['CornerCouch', './Random'], function () {
                             noThumbnails: {
                                 map: function (document) {
                                     if (document.type && document.type === 'media' && !document.thumbnails) {
+                                        emit(null, document);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '_design/validation_user_commission': {
+                        _id: '_design/validation_user_commission',
+                        language: 'javascript',
+                        validate_doc_update: function (newDoc, oldDoc, userCtx) {
+                            if (userCtx.roles.indexOf('_admin') !== -1) {
+                                return null;
+                            }
+                            if (newDoc.type === 'commission') {
+                                if (typeof newDoc.artist === 'undefined') {
+                                    throw ({forbidden: 'Commission must have an artist'});
+                                }
+                                if (typeof newDoc.buyer === 'undefined') {
+                                    throw ({forbidden: 'Commission must have a buyer'});
+                                }
+                                if (typeof newDoc.description === 'undefined') {
+                                    throw ({forbidden: 'Commission must have a description'});
+                                }
+                                if (typeof newDoc.messages !== 'object') {
+                                    throw ({forbidden: 'Commission must have a messages object'});
+                                }
+                                if (typeof newDoc.addons !== 'object') {
+                                    throw ({forbidden: 'Commission must have an addons object'});
+                                }
+                                if (typeof newDoc.price !== 'number') {
+                                    throw ({forbidden: 'Commission must have a price'});
+                                }
+                                if (typeof newDoc.totalPrice !== 'number') {
+                                    throw ({forbidden: 'Commission must have a total price'});
+                                }
+                                if (typeof newDoc.unreadMessageCount !== 'number') {
+                                    throw ({forbidden: 'Commission must have an unread message count'});
+                                }
+                                if (typeof newDoc.created === 'undefined') {
+                                    throw ({forbidden: 'Commission must have a created timestamp'});
+                                }
+                                if (oldDoc && typeof oldDoc.created === 'undefined' && newDoc.created !== oldDoc.created) {
+                                    throw ({forbidden: 'Can\'t change Commission created timestamp'});
+                                }
+                                if (typeof newDoc.lastUpdated === 'undefined') {
+                                    throw ({forbidden: 'Commission must have a last updated timestamp'});
+                                }
+                            }
+                        },
+                        views: {
+                            all: {
+                                map: function (document) {
+                                    if (typeof document.type === 'string' && document.type === 'commission') {
                                         emit(null, document);
                                     }
                                 }
