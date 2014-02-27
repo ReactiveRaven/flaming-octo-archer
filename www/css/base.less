@@ -14,6 +14,11 @@ body {
 	margin-bottom: 300px;
 }
 
+* {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
 a
 {
 	color: @blue;
@@ -36,6 +41,12 @@ body, h1, h2, h3, h4, h5, h6 {
 .clearfix {
 	clear: both;
 	overflow: hidden;
+}
+
+.hr {
+	width: 100%;
+	border-top: 1px solid @blue;
+	height: 0px;
 }
 
 .container {
@@ -81,6 +92,10 @@ input {
 		background-repeat: no-repeat;
 		background-position: right 12px center;
 		width: 175px;
+		
+		&:focus {
+			width: 173px;
+		}
 	}
 			
 	&:focus {
