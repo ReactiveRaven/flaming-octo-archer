@@ -53,10 +53,8 @@ html, body {
     margin-top: 0;
 }
 .commissions-lists {
+	float: left;
     width: 50%;
-    position: absolute;
-    left: 0;
-    top: 66px;
     bottom: 0px;
     border-right: 1px solid @blue;
     overflow-y: auto;
@@ -181,9 +179,7 @@ html, body {
     content: none;
 }
 .commission-actions {
-    position: absolute;
-    top: 66px;
-    right: 0;
+    float: right;
     height: 50px;
     width: 50%;
     border-bottom: 1px solid @blue;
@@ -205,20 +201,16 @@ html, body {
 	float: right;
 }
 .commission-conversation {
-	position: absolute;
-	top: 116px;
+	float: right;
   	width: 50%;
-  	right: 0;
 	margin: 0;
     padding: 15px 19px;
-	bottom: 0px;
 	background: @lightgreyblue;
-	overflow-y: scroll;
+	overflow-y: auto;
 	overflow-x: hidden;
-	border-radius: 0 0 6px 0;
+	border-bottom-right-radius: 4px;
 }
 .commission-conversation-with-attachments {
-	bottom: 81px;
 	border-radius: 0;
 }
 .commission-message-person-image {
@@ -226,7 +218,7 @@ html, body {
     height: 23px;
     background-color: @blue;
     float: left;
-    margin: 0px 8px 12px 0;  
+    margin: 0px 8px 12px 0;
 }
 .commission-message {
 	position: relative;
@@ -265,17 +257,14 @@ html, body {
 	border-radius: 6px 6px 0 0;
 }
 .commission-files {
-	position: absolute;
-	right: 0;
+	float: right;
+	clear: right;
 	width: 50%;
-	bottom: -2px;
-	height: 82px;
-	border-radius: 0 0 6px 0;
     padding: 16px 0 18px 0;
 	border-top: 1px solid @blue;
-	border-bottom: 2px solid @blue;
+	border-bottom-right-radius: 4px;
 	background-color: @greyblue; 
-	overflow-y: scroll;
+	overflow-y: auto;
 	overflow-x: hidden;
 }
 .commission-request-header {
