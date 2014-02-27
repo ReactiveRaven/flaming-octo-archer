@@ -13,7 +13,6 @@
     "angular-cookies": "~1.0.7",
     "momentjs": "latest",
     "requirejs": "~2.1.8",
-    "waitFor": "git://github.com/cybus10/waitFor.git",
     "ngUpload": "~0.3.17",
     "angular-moment": "latest"
   },

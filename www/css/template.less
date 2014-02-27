@@ -395,6 +395,25 @@
 .commission-action-mark-as-complete-marked {
 	background-image: url('/img/checkmark-white-16.png');
 	background-repeat: no-repeat;
-	background-position: 0 center;
+	background-position: 8px center;
 	background-size: 16px 16px;
+    padding-left: 30px;
+}
+.commission-message-reply-body-sending-reply {
+    color: @greyblue;
+    position: relative;
+    background-image: url('/img/sending-reply-animation.gif');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 43px 11px;
+}
+
+.commission-message-reply-body-sending-reply::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
 }

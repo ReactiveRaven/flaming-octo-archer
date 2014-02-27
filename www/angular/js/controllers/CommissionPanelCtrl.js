@@ -38,6 +38,8 @@ define(
                 $scope.commissionPanel.requestCommissionListDisclosed = true;
                 $scope.commissionPanel.completeCommissionListDisclosed = false;
                 
+                $scope.commissionPanel.sendingReply = false;
+                
                 $scope.commissionPanel.selectedCommission = $scope.commissions[0];
             });
                 
@@ -65,26 +67,39 @@ define(
             
             $scope.commissionPanel.reply = function(replyBody) {
                 var selectedCommission = $scope.commissionPanel.selectedCommission;
-                selectedCommission.replyDisclosed = false;
+                
                 var replyMessage = {
                     sender: selectedCommission.artist,
                     date: new Date(),
                     body: selectedCommission.replyBody,
                     attachments: []
                 }
-                selectedCommission.messages.unshift(replyMessage);
-                selectedCommission.replyBody = '';
+                
+                var updatedCommission = angular.copy(selectedCommission);
+                updatedCommission.messages.unshift(replyMessage);
+                updatedCommission.replyBody = '';
+                updatedCommission.replyDisclosed = false;
+                $scope.commissionPanel.sendingReply = true;
+                
+                CommissionManager.updateCommission(updatedCommission).then(function (revisedCommission) {
+                     $scope.commissionPanel.selectedCommission = revisedCommission;
+                     $scope.commissionPanel.sendingReply = false;
+                },
+                function () {
+                    $scope.commissionPanel.sendingReply = false;
+                });
             };
             
             $scope.commissionPanel.selectedCommissionShouldPromptForCompletenessConfirmation = function() {
                 var selectedCommission = $scope.commissionPanel.selectedCommission;
+                if (selectedCommission) { 
+                    var artistMarkedAndUserNotArtist = selectedCommission.artistMarkedAsCompleted && !$scope.commissionPanel.userIsSelectedCommissionArtist();
+                    var buyerMarkedAndUserNotBuyer = selectedCommission.buyerMarkedAsCompleted && $scope.commissionPanel.userIsSelectedCommissionArtist();
                     
-                var artistMarkedAndUserNotArtist = selectedCommission.artistMarkedAsCompleted && !$scope.commissionPanel.userIsSelectedCommissionArtist();
-                var buyerMarkedAndUserNotBuyer = selectedCommission.buyerMarkedAsCompleted && $scope.commissionPanel.userIsSelectedCommissionArtist();
-                
-                var artistAndBuyerAggreeSelectedCommissionIsComplete = selectedCommission.artistMarkedAsCompleted == selectedCommission.buyerMarkedAsCompleted;
-                
-                return (buyerMarkedAndUserNotBuyer || artistMarkedAndUserNotArtist) && !artistAndBuyerAggreeSelectedCommissionIsComplete;
+                    var artistAndBuyerAggreeSelectedCommissionIsComplete = selectedCommission.artistMarkedAsCompleted == selectedCommission.buyerMarkedAsCompleted;
+                    
+                    return (buyerMarkedAndUserNotBuyer || artistMarkedAndUserNotArtist) && !artistAndBuyerAggreeSelectedCommissionIsComplete;
+                }
             };
             
             $scope.commissionPanel.selectedCommissionShouldShowCompletedMessage = function() {

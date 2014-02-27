@@ -71,7 +71,20 @@
         </div>
     </div>
     <div class="commission-actions">
-        <a class="commission-action commission-action-reply btn active" ng-click="commissionPanel.selectedCommission.replyDisclosed = true">Reply</a> <a class="commission-action commission-action-mark-as-complete btn" ng-class="{ 'commission-action-mark-as-complete-marked ': commissionPanel.selectedCommissionShouldShowCompletedMessage() }" ng-click="commissionPanel.toggleSelectedCommissionCompletion()" ng-if="commissionPanel.selectedCommission.status != 'complete'">Mark as complete</a>
+        <a 
+            class="commission-action commission-action-reply btn active" 
+            ng-click="commissionPanel.selectedCommission.replyDisclosed = true"
+        >
+                Reply
+        </a> 
+        <a 
+            class="commission-action commission-action-mark-as-complete btn" 
+            ng-class="{ 'active commission-action-mark-as-complete-marked': commissionPanel.selectedCommissionShouldShowCompletedMessage() }" 
+            ng-click="commissionPanel.toggleSelectedCommissionCompletion()" 
+            ng-if="commissionPanel.selectedCommission.status != 'complete'"
+        >
+                Mark as complete
+        </a>
     </div>
     <div class="commission-conversation" ng-class="{ 'commission-conversation-with-attachments': commissionPanel.commissionHasAttachments(commissionPanel.selectedCommission) }">
         <div class="commission-message commission-complete-prompt" ng-if="commissionPanel.selectedCommissionShouldPromptForCompletenessConfirmation()">
@@ -108,7 +121,16 @@
                 {{ commissionPanel.selectedCommission.artist.name }}
             </div>
             <div class="commission-message-body">
-                <textarea autofocus="" kommi-expand-to-fit="" kommi-enter="commissionPanel.reply()" ng-model="commissionPanel.selectedCommission.replyBody" class="commission-message-reply-body kommi-expand-to-fit"></textarea>
+                <textarea 
+                    autofocus="" 
+                    kommi-expand-to-fit="" 
+                    kommi-enter="commissionPanel.reply()" 
+                    ng-model="commissionPanel.selectedCommission.replyBody" 
+                    class="commission-message-reply-body kommi-expand-to-fit"
+                    ng-disabled="commissionPanel.sendingReply"
+                    ng-class="{ 'commission-message-reply-body-sending-reply': commissionPanel.sendingReply }"
+                >
+                </textarea>
             </div>
             <div ng-if="message.attachments.length &gt; 0" ng-repeat="attachment in message.attachments" class="commission-message-attachments">
                 <div class="commission-message-attachment">

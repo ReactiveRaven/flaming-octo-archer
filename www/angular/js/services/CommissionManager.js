@@ -28,7 +28,7 @@ define(['./Authentication', './Couch'], function () {
             else {
                 var databaseName = Authentication.getDatabaseName(commissionManager.username);
                 var documentUrl = '/_design/validation_user_commission/_view/all?descending=true';
-                var getCommissionsPromise = $http.get('/couchdb/' + databaseName + documentUrl)
+                $http.get('/couchdb/' + databaseName + documentUrl)
                 .success(function (data) {
                     commissionManager.commissions = data.rows.map(function (row) {
                         return row.value;
@@ -37,13 +37,25 @@ define(['./Authentication', './Couch'], function () {
                 })
                 .error(function () {
                     getCommissionsDeferred.reject();
-                })
+                });
             }
             return getCommissionsDeferred.promise;
         };
         
+        commissionManager.updateCommission = function (commission) {
+            var updateCommisssionDeferred = $q.defer();
+            var databaseName = Authentication.getDatabaseName(commissionManager.username);
+            $http.put('/couchdb/' + databaseName + '/' + commission._id, commission)
+            .then(function (commissionMetaData) {
+                commission._rev = commissionMetaData.rev;
+                updateCommisssionDeferred.resolve(commission);
+            });
+            
+            return updateCommisssionDeferred.promise;
+        };
+        
+        
         return commissionManager;
     });
     return CommissionManagerModule;
-    
 });
