@@ -48,7 +48,9 @@
     "CBuffer": "~0.1.4",
     "jade": "*",
     "less-middleware": "*",
-    "http-proxy": "~1.0.2"
+    "http-proxy": "~1.0.2",
+    "load-grunt-tasks": "~0.4.0",
+    "express-livereload": "0.0.24"
   },
   "scripts": {
     "install": "./node_modules/grunt-cli/bin/grunt setup",

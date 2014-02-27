@@ -11,8 +11,16 @@
     var path = require('path');
     var httpProxy = require('http-proxy');
     var proxy = new httpProxy.createProxyServer({target: 'http://localhost:5984'});
+    var livereload = require('express-livereload');
 
     var app = express();
+    
+    livereload(app, {
+		watchDir: process.cwd(),
+		exts: [
+			'html','css','js','png','gif','jpg','jpeg','php','php5','py','rb','erb','coffee','less'
+		]
+	});
 
     // all environments
     app.set('port', process.env.PORT || 3000);
