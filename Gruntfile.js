@@ -2,25 +2,8 @@
 
 module.exports = function (grunt) {
     "use strict";
-
-    var npmTasks = [
-        'grunt-bower-task',
-        'grunt-contrib-connect',
-        'grunt-contrib-jshint',
-        'grunt-contrib-requirejs',
-        'grunt-contrib-watch',
-        'grunt-cucumber',
-        'grunt-karma',
-        'grunt-shell',
-        'grunt-clear',
-        'grunt-parallel',
-        'grunt-wait',
-        'grunt-bg-shell',
-        'grunt-contrib-cssmin',
-        'grunt-ngmin',
-        'grunt-contrib-uglify',
-        'grunt-angular-templates'
-    ];
+    
+    require('load-grunt-tasks')(grunt);
 
     var tasks = {
         'setup': ['shell:install_selenium', 'bower:install'],
@@ -522,15 +505,6 @@ module.exports = function (grunt) {
 
     // PASS IN CONFIG
     grunt.initConfig(config);
-
-    // LOAD NPM TASKS
-    (function () {
-        var index;
-
-        for (index in npmTasks) {
-            grunt.loadNpmTasks(npmTasks[index]);
-        }
-    })();
 
     // DEFINE CUSTOM TASKS
     (function () {
