@@ -18,7 +18,7 @@
 		font-size: 40px;
 		font-weight: 100;
 		text-align: center;
-		width: 375px;
+		width: 750px;
 		padding-left: 375px;
 	}
 }
@@ -32,6 +32,15 @@
 	.btn:last-child {
 		margin-right: 0;
 	}
+}
+
+.padded-box {
+	border-top: 1px solid @blue;
+	border-bottom: 1px solid @blue;
+	padding: 12px 0;
+	margin: 12px 0;
+	.clearfix();
+	position: relative;
 }
 
 .artist-profile
@@ -54,15 +63,78 @@
 		display: inline-block;
 		width: 250px;
 		vertical-align: top;
+		
+		.padded-box {
+			margin-bottom: 0;
+		}
+	}
+	
+	.artist-profile__favs {
+		float: right;
+		
+		.artist-profile__favs__button {
+			float: left;
+			display: inline-block;
+			padding: 2px;
+			border: 1px solid @blue;
+			border-radius: 3px;
+			width: 26px;
+			height: 26px;
+			text-align: center;
+			position: relative;
+			img {
+				position: absolute;
+				top: 6px;
+				left: 5px;
+				width: 14px;
+				height: 14px;
+			}
+		}
+		
+		.artist-profile__favs__count {
+			float: left;
+			border: 1px solid @blue;
+			border-radius: 3px;
+			height: 26px;
+			line-height: 24px;
+			text-align: center;
+			width: 46px;
+			position: relative;
+			
+			margin-left: 8px;
+			
+			&::before {
+				position: absolute;
+				display: block;
+				content: "";  
+				border-color: transparent @blue transparent transparent;
+				border-style: solid;
+				border-width: 5px;
+				height:0;
+				width:0;
+				left:-10px;
+				top: 7px;
+			}
+			
+			&::after {
+				position: absolute;
+				display: block;
+				content: "";  
+				border-color: transparent @lightblue transparent transparent;
+				border-style: solid;
+				border-width: 4px;
+				height:0;
+				width:0;
+				left:-8px;
+				top: 8px;
+			}
+		}
 	}
 	
 	.artist-profile__prices
 	{
-		border-top: 1px solid @blue;
-		border-bottom: 1px solid @blue;
-		padding: 12px 0;
 		display: inline-block;
-		width: 100%;
+		.left();
 		
 		.artist-profile__prices__label
 		{
@@ -104,11 +176,11 @@
 				font-weight: 400;
 			}
 		}
+		
 	}
 	
 	.artist-profile__tags
 	{
-		margin-top:7px;
 		float: right;
 		
 		.tag:last-child {
