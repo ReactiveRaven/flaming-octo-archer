@@ -165,6 +165,11 @@
                {
                    "source": "commissar_validation_global",
                    "target": "commissar_validation_users"
+               },
+               {
+               		"source": "commissar_private",
+               		"target": "commissar_public",
+               		"filter": "validation_global/should_copy_to_public"
                }
             ],
             "users": [

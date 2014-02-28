@@ -38,6 +38,50 @@ define([], function () {
 						});
 					}
 				}
+			},
+			"filters": {
+				"should_copy_to_private": function () {
+					return true;
+				},
+				"should_copy_to_public": function (doc, req) {
+					return (
+						// Replication status is 'public'
+						typeof doc.replication !== 'undefined' &&
+						typeof doc.replication.status !== 'undefined' &&
+						doc.replication.status === 'public' &&
+						// DB is 'commissar_public'
+						typeof req.query !== 'undefined' &&
+						typeof req.query.x_target === 'commissar_public'
+					);
+				},
+				"should_copy_to_personal": function (doc, req) {
+					return (
+						(
+							// Document has author
+							typeof doc.author !== 'undefined' &&
+							// Current database's username matches author
+							typeof req.query !== 'undefined' &&
+							typeof req.query.x_target !== 'undefined' &&
+							'commissar_user_' + doc.author === req.query.x_target
+						) ||
+						(
+							// Target is a user db
+							typeof req.query !== 'undefined' &&
+							typeof req.query.x_target !== 'undefined' &&
+							req.query.x_target.indexOf("commissar_user_") === 0 &&
+							// Replication status is 'shared'
+							typeof doc.replication !== 'undefined' &&
+							typeof doc.replication.status !== 'undefined' &&
+							doc.replication.status === 'shared' &&
+							// Current database's username appears in 'involved'
+							typeof doc.replication.involved.indexOf(req.query.x_target.substr(15)) !== -1
+						) ||
+						(
+							// Is a design document
+							doc.id.indexOf("_design/") === 0
+						)
+					);
+				}
 			}
 		}
 	};

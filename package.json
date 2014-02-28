@@ -52,7 +52,8 @@
     "load-grunt-tasks": "~0.4.0",
     "grunt-nodemon": "~0.2.0",
     "grunt-concurrent": "~0.4.3",
-    "open": "*"
+    "open": "*",
+    "colors": "~0.6.2"
   },
   "scripts": {
     "install": "./node_modules/grunt-cli/bin/grunt setup",

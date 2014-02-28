@@ -11,6 +11,9 @@
     var path = require('path');
     var httpProxy = require('http-proxy');
     var proxy = new httpProxy.createProxyServer({target: 'http://localhost:5984'});
+    var healthcheck = require('./node/healthcheck');
+    
+    setInterval(healthcheck, 10 * 1000);
 
     var app = express();
 
@@ -22,6 +25,7 @@
     app.use(function (req, res, next) {
         if (req.url.match(/^\/couchdb/)) {
             req.url = req.url.replace(/^\/couchdb/, "");
+            req.headers.Referer = "http://127.0.0.1:5984";
 
             console.log("Couch: " + req.url);
 
