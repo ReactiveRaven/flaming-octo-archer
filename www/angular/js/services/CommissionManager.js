@@ -15,65 +15,62 @@ define(['./Authentication', './Couch'], function () {
         commissionManager.commissions = [];
         commissionManager.username = undefined;
         
-        commissionManager.getCommissions = function (getCommissionsDeferred) {
-            if ( typeof getCommissionsDeferred === 'undefined') {
-                var getCommissionsDeferred = $q.defer();
-            }
+        commissionManager.getUsername = function () {
+            var getUsernameDeferred = $q.defer();
             if (typeof commissionManager.username === 'undefined') {
-                Authentication.getUsername().then(function (username) {
-                    commissionManager.username = username;
-                    commissionManager.getCommissions(getCommissionsDeferred);
-                });
+                Authentication.getUsername().then(
+                    function (username) {
+                        commissionManager.username = username;
+                        getUsernameDeferred.resolve(commissionManager.username);
+                    },
+                    getUsernameDeferred.reject
+                );
             }
-            else {
+            else getUsernameDeferred.resolve(commissionManager.username);
+        }
+        
+        commissionManager.getCommissions = function () {
+            var getCommissionsDeferred = $q.defer();
+
+            commissionManager.getUsername().then(function () {
                 var databaseName = Authentication.getDatabaseName(commissionManager.username);
                 var documentUrl = '/_design/validation_user_commission/_view/all?descending=true';
-                $http.get('/couchdb/' + databaseName + documentUrl)
-                .success(function (data) {
+                $http.get('/couchdb/' + databaseName + documentUrl).then(function (data) {
                     commissionManager.commissions = data.rows.map(function (row) {
                         return row.value;
                     });
                     getCommissionsDeferred.resolve();
-                })
-                .error(function () {
-                    getCommissionsDeferred.reject();
-                });
-            }
+                }, getCommissionsDeferred.reject);    
+            , getCommissionsDeferred.reject);
+            
             return getCommissionsDeferred.promise;
         };
-        
-        commissionManager.updateCommission = function (commission) {
-            var updateCommisssionDeferred = $q.defer();
-            var databaseName = Authentication.getDatabaseName(commissionManager.username);
-            var commissionUrl = '/couchdb/' + databaseName + '/' + commission._id;
-            $http.put(commissionUrl, commission)
-            .then(
-                function (commissionMetaData) {
-                    commission._rev = commissionMetaData.rev;
-                    updateCommisssionDeferred.resolve(commission);
-                },
-                function () {
-                    $http.get('/couchdb').then(function () {
-                        $http.get(commissionUrl).then(
-                            function (revisedCommission) {
-                                revisedCommission.messages.u
-                            },
-                            function () {
-                                updateCommisssionDeferred.resolve(null);
-                            }
-                        );
-                    },
-                    function () {
-                        updateCommisssionDeferred.reject();
-                    });
-                }
-            );
+                
+        commissionManager.addReplyToCommission = function (commission, replyBody) {
+            var addReplyDeferred = $q.defer();
             
-            return updateCommisssionDeferred.promise;
+            commissionManager.getUsername().then(function () {
+                var replyMessage = {
+                    id: new Date().getTime(),
+                    type: 'message'
+                    created: new Date().getTime() / 1000 | 0,
+                    body: replyBody,
+                };
+            
+                var databaseName = Authentication.getDatabaseName(commissionManager.username);
+                var messageUrl = '/couchdb/' + databaseName + '/' + replyMessage.id;
+                $http.post(commissionUrl, commission).then(function () {
+                        
+                }, function () {
+            
+                });
+            });
+            
+            return addReplyDeferred.promise;
         };
-        
         
         return commissionManager;
     });
+    
     return CommissionManagerModule;
 });

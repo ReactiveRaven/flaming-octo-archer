@@ -1,0 +1,12 @@
+{
+  replication: {
+    status: ['public'|'private'|'shared'],
+    involved: [/* list of non-author usernames */]
+  }
+  
+  /* pull if: 
+      Author===$me 
+      || (replication.status === "public" && $db === 'commissar_public')
+      || (replication.status === "shared" && replication.involved.indexOf($me) > -1) 
+   */
+}
