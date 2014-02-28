@@ -14,11 +14,11 @@ define(['./Authentication'], function () {
         
         commissionManager._commissionsListing = {};
         commissionManager._repliesListing = {};
-        commissionManager._confirmationRequestsListing = {};
+        commissionManager._completeionConfirmationRequestsListing = {};
         
         commissionManager.commissions = [];
         commissionManager.replies = [];
-        commissionManager.confirmationRequests = [];
+        commissionManager.completionConfirmationRequests = [];
         
         commissionManager._buildDocument = function (document) {
             var deferred = $q.defer();
@@ -74,7 +74,7 @@ define(['./Authentication'], function () {
         commissionManager._createDocument = function (document) {
             var deferred = $q.defer();
             
-            commissionManager._getUsername().then(function (username) {
+            Authentication.getUsername().then(function (username) {
                 
                 commissionManager._buildDocument(document).then(function (template) {
                     document = angular.extend(template, document);
@@ -116,14 +116,20 @@ define(['./Authentication'], function () {
             return arrayOfDocuments;
         };
         
-        commissionManager._getCommissions = function () {
-            var deferred = $q.defer();
+        commissionManager._listingForType = function (type) {
+            var viewPlural = pluralize.plural(type);
+            var viewListingPropertyName = '_' + viewPlural + 'Listing';
+            var listing = commissionManager[viewListingPropertyName];
             
-            commissionManager._getListingFromView('all_commissions').then(function (listing) {
-                commissionManager._commissionsListing = listing;
-                commissionManager.commissions
-            }, deffered.reject);
+            return listing;
+        };
+        
+        commissionManager._getCommissions = function () {
+            
         }
+        
+        commissionManager._getReplies();
+        commissionManager._getCompletionConfirmationRequests();
         
         
         return commissionManager;

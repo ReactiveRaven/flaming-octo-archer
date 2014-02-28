@@ -12,6 +12,7 @@
     "CornerCouch": "git://github.com/eddelplus/CornerCouch.git",
     "angular-cookies": "~1.0.7",
     "momentjs": "latest",
+    "underscore": "latest",
     "requirejs": "~2.1.8",
     "ngUpload": "~0.3.17",
     "angular-moment": "latest"
