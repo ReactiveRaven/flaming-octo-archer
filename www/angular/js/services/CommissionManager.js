@@ -60,11 +60,11 @@ define(['./Authentication'], function () {
         };
         
         
-        commissionManager._getUrlForView = function (view) {
+        commissionManager._getUrlForViewName = function (viewName) {
             var deferred = $q.defer();
-            var viewPath = '_view/' + view;
+            var viewNamePath = '_viewName/' + viewName;
             
-            commissionManager._getUrlForDocumentId(viewPath).then(function (url) {
+            commissionManager._getUrlForDocumentId(viewNamePath).then(function (url) {
                 deferred.resolve(url);
             });
 
@@ -95,10 +95,10 @@ define(['./Authentication'], function () {
         };
         
         
-        commissionManager._getListingFromView = function (view) {
+        commissionManager._getListingFromViewName = function (viewName) {
             var deferred = $q.defer();
 
-            commissionManager._getUrlForView(view).then(function (url) {
+            commissionManager._getUrlForViewName(viewName).then(function (url) {
                 
                 $http.get(url).then(deffered.resolve, deferred.reject);
                 
@@ -116,16 +116,20 @@ define(['./Authentication'], function () {
             return arrayOfDocuments;
         };
         
-        commissionManager._listingForType = function (type) {
-            var viewPlural = pluralize.plural(type);
-            var viewListingPropertyName = '_' + viewPlural + 'Listing';
-            var listing = commissionManager[viewListingPropertyName];
+        commissionManager._listingPropertyNameForType = function (type) {
+            var typePlural = pluralize.plural(type);
+            var listingPropertyName = '_' + typePlural + 'Listing';
             
-            return listing;
+            return listingPropertyName;
         };
         
-        commissionManager._getCommissions = function () {
+        commissionManager._getListingForAllOfType = function (type) {
+            var deferred = $q.defer();
             
+            var typePlural = pluralize.plural(type);
+            var allOfTypeViewName = 'all_' + typePlural;
+            
+            commissionManager._getListingFromViewName(allOfTypeViewName).then();
         }
         
         commissionManager._getReplies();
