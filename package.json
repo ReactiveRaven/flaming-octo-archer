@@ -2,7 +2,7 @@
   "dependencies": {
     "cucumber": "~0.3.1",
     "grunt": "~0.4.1",
-    "grunt-karma": "~0.7.0",
+    "grunt-karma": "*",
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-contrib-watch": "~0.5.3",
@@ -50,7 +50,9 @@
     "less-middleware": "*",
     "http-proxy": "~1.0.2",
     "load-grunt-tasks": "~0.4.0",
-    "express-livereload": "0.0.24"
+    "grunt-nodemon": "~0.2.0",
+    "grunt-concurrent": "~0.4.3",
+    "open": "*"
   },
   "scripts": {
     "install": "./node_modules/grunt-cli/bin/grunt setup",

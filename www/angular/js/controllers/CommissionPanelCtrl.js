@@ -77,13 +77,17 @@ define(
                 
                 var updatedCommission = angular.copy(selectedCommission);
                 updatedCommission.messages.unshift(replyMessage);
-                updatedCommission.replyBody = '';
-                updatedCommission.replyDisclosed = false;
+                delete updatedCommission.replyBody;
+                delete updatedCommission.replyDisclosed;
+                
                 $scope.commissionPanel.sendingReply = true;
                 
                 CommissionManager.updateCommission(updatedCommission).then(function (revisedCommission) {
-                     $scope.commissionPanel.selectedCommission = revisedCommission;
-                     $scope.commissionPanel.sendingReply = false;
+                    revisedCommission.replyBody = '';
+                    revisedCommission.replyDisclosed = false;
+                    var selectedCommissionIndex = $scope.commissions.indexOf(selectedCommission);
+                    $scope.commissions[selectedCommissionIndex] = revisedCommission;
+                    $scope.commissionPanel.sendingReply = false;
                 },
                 function () {
                     $scope.commissionPanel.sendingReply = false;

@@ -45,11 +45,29 @@ define(['./Authentication', './Couch'], function () {
         commissionManager.updateCommission = function (commission) {
             var updateCommisssionDeferred = $q.defer();
             var databaseName = Authentication.getDatabaseName(commissionManager.username);
-            $http.put('/couchdb/' + databaseName + '/' + commission._id, commission)
-            .then(function (commissionMetaData) {
-                commission._rev = commissionMetaData.rev;
-                updateCommisssionDeferred.resolve(commission);
-            });
+            var commissionUrl = '/couchdb/' + databaseName + '/' + commission._id;
+            $http.put(commissionUrl, commission)
+            .then(
+                function (commissionMetaData) {
+                    commission._rev = commissionMetaData.rev;
+                    updateCommisssionDeferred.resolve(commission);
+                },
+                function () {
+                    $http.get('/couchdb').then(function () {
+                        $http.get(commissionUrl).then(
+                            function (revisedCommission) {
+                                revisedCommission.messages.u
+                            },
+                            function () {
+                                updateCommisssionDeferred.resolve(null);
+                            }
+                        );
+                    },
+                    function () {
+                        updateCommisssionDeferred.reject();
+                    });
+                }
+            );
             
             return updateCommisssionDeferred.promise;
         };
