@@ -44,15 +44,23 @@ define([], function () {
 					return true;
 				},
 				"should_copy_to_public": function (doc, req) {
-					return (
+					var result = (
 						// Replication status is 'public'
 						typeof doc.replication !== 'undefined' &&
 						typeof doc.replication.status !== 'undefined' &&
 						doc.replication.status === 'public' &&
 						// DB is 'commissar_public'
 						typeof req.query !== 'undefined' &&
-						typeof req.query.x_target === 'commissar_public'
+						req.query.x_target === 'commissar_public'
 					);
+					
+					if (!result) {
+						log("should_copy_to_public: rejecting doc " + doc._id);
+						log("should_copy_to_public:    status " + (doc && doc.replication && doc.replication.status ? doc.replication.status : "undefined"));
+						log("should_copy_to_public:    target " + (req && req.query && req.query.x_target ? req.query.x_target : "undefined"));
+					}
+					
+					return result;
 				},
 				"should_copy_to_personal": function (doc, req) {
 					return (
@@ -74,7 +82,7 @@ define([], function () {
 							typeof doc.replication.status !== 'undefined' &&
 							doc.replication.status === 'shared' &&
 							// Current database's username appears in 'involved'
-							typeof doc.replication.involved.indexOf(req.query.x_target.substr(15)) !== -1
+							doc.replication.involved.indexOf(req.query.x_target.substr(15)) !== -1
 						) ||
 						(
 							// Is a design document
