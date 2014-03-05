@@ -2,14 +2,14 @@
 define(
     'app',
     [
-        'controllers/LogoutCtrl',
-        'controllers/AdminCtrl',
-        'controllers/CommissionPanelCtrl',
-        'controllers/IndexCtrl',
-        'controllers/WelcomeCtrl',
-        'controllers/MenuCtrl',
-        'controllers/UploadCtrl',
-        'controllers/GalleryCtrl'
+        './controllers/LogoutCtrl',
+        './controllers/AdminCtrl',
+        './controllers/CommissionPanelCtrl',
+        './controllers/IndexCtrl',
+        './controllers/WelcomeCtrl',
+        './controllers/MenuCtrl',
+        './controllers/UploadCtrl',
+        './controllers/GalleryCtrl'
     ],
     function () {
         "use strict";

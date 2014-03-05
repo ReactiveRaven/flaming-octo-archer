@@ -34,14 +34,15 @@
             next();
         }
     });
+    var wwwdir = path.join(__dirname, 'www');
     app.use(express.favicon(__dirname + '/www/favicon.ico'));
     app.use(express.logger('dev'));
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.methodOverride());
     app.use(app.router);
-    app.use(require('less-middleware')({ src: path.join(__dirname, 'www') }));
-    app.use(express.static(path.join(__dirname, 'www')));
+    app.use(require('less-middleware')({ src: wwwdir }));
+    app.use(express.static(wwwdir));
     
     // development only
     if ('development' === app.get('env')) {

@@ -2,7 +2,6 @@
 define(
     'startup',
     [
-//        'angular',
         'app',
         'angularMocks'
     ],

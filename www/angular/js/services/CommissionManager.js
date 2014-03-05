@@ -100,9 +100,9 @@ define(['./Authentication'], function () {
 
             commissionManager._getUrlForViewName(viewName).then(function (url) {
                 
-                $http.get(url).then(deffered.resolve, deferred.reject);
+                $http.get(url).then(deferred.resolve, deferred.reject);
                 
-            , deferred.reject);
+            }, deferred.reject);
             
             return deferred.promise;
         };
@@ -130,10 +130,10 @@ define(['./Authentication'], function () {
             var allOfTypeViewName = 'all_' + typePlural;
             
             commissionManager._getListingFromViewName(allOfTypeViewName).then();
-        }
+        };
         
-        commissionManager._getReplies();
-        commissionManager._getCompletionConfirmationRequests();
+        //commissionManager._getReplies();
+        //commissionManager._getCompletionConfirmationRequests();
         
         
         return commissionManager;

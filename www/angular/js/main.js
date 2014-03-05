@@ -24,9 +24,12 @@ require.config({
     ]
 });
 
-require([
-    'startup'
-], function (startup) {
-    // All handled in 'startup'
-    startup();
+require(['angular'], function () {
+	require([
+	    './startup',
+	    'angularRoute', 'angularMocks', 'angularResource', 'angularCookies'
+	], function (startup) {
+	    // All handled in 'startup'
+	    startup();
+	});
 });
