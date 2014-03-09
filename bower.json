@@ -15,7 +15,8 @@
     "underscore": "latest",
     "requirejs": "~2.1.8",
     "ngUpload": "~0.3.17",
-    "angular-moment": "latest"
+    "angular-moment": "latest",
+    "angular-slugify": "~1.0.0"
   },
   "exportsOverride": {
     "marked": {
@@ -27,6 +28,6 @@
     }
   },
   "resolutions": {
-    "angular": "~1.2.0"
+    "angular": "~1.2"
   }
 }

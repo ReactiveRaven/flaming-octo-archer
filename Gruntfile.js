@@ -284,7 +284,7 @@ module.exports = function (grunt) {
                 tasks: ['tests:unit:run']
             },
             server: {
-				files: ['.rebooted', '**/*.less', 'www/**/*.js'],
+				files: ['.rebooted', '**/*.less', 'www/**/*.js', 'www/**/*.html'],
 				options: {
 					livereload: true
 				}

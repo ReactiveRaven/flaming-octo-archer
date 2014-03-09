@@ -1,96 +1,23 @@
 <div data-ng-controller="MenuCtrl" data-ng-class="menuClasses()" >
-    
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-top-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Commissar</a>
-        </div>
-        
-        <div class="collapse navbar-collapse navbar-top-collapse" style="margin-right: 15px;">
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a href="#" id="menuArtistToggle" class="dropdown-toggle" data-toggle="dropdown">Artists <b class="caret"></b></a>
-                    
-                    <ul id="menuArtistDropdown" class="dropdown-menu">
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" id="menuOffersToggle" class="dropdown-toggle" data-toggle="dropdown">Offers <b class="caret"></b></a>
-                    
-                    <ul id="menuOffersDropdown" class="dropdown-menu">
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                    </ul>
-                </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown" data-ng-show='loggedIn'>
-                    <a id="menuMyNotificationsToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Notifications <i class="icon icon-exclamation" style="color: #dcdcdc;"></i>
-                        <b class="caret"></b>
-                    </a>
-                    <ul id="menuMyNotificationsDropdown" class="dropdown-menu">
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                    </ul>
-                </li>
-                <li class="dropdown" data-ng-show='loggedIn'>
-                    <a id="menuMyOffersToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        My Offers
-                        <b class="caret"></b>
-                    </a>
-                    <ul id="menuMyOffersDropdown" class="dropdown-menu">
-                        <li>
-                            <a data-ng-href='#!/artist/{{me.slug}}' >
-                                View all
-                            </a>
-                        </li>
-                        <li class='divider'></li>
-                        <li data-ng-repeat="offer in myOffers | orderBy:'updated':true">
-                            <a data-ng-href="#!/artist/{{me.slug}}/{{offer.slug}}" data-ng-class="{prototype: !offer.published}">{{offer.title}}</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="dropdown" data-ng-show='loggedIn'>
-                    <a id="menuMyAccountToggle" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        {{me.username|Capitalize}}
-                        <b class="caret"></b>
-                    </a>
-                    <ul id="menuMyAccountDropdown" class="dropdown-menu">
-                        <li><a id="menuMyAccountItemGallery" data-ng-href='#!/my/gallery'>Gallery</a></li>
-                        <li><a data-ng-href='#!/my/settings'>Settings</a></li>
-                        <li><a data-ng-href="#!/logout">Sign out</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown" data-ng-show="isAdmin">
-                    <a href="#" id="menuAdminToggle" class="dropdown-toggle" data-toggle="dropdown">
-                        Admin <i class="icon-lock"></i>
-                    </a>
-                    <ul class="dropdown-menu" id="menuAdminDropdown">
-                        <li><a id="menuAdminDropdownLinkAdminPanel" data-ng-href="#!/admin">Control Panel</a></li>
-                    </ul>
-                </li>
-                <li class='dropdown' data-ng-show='!loggedIn'>
-                    <a href='#' id="menuLoginToggle" class='dropdown-toggle' data-toggle='dropdown'>
-                        Sign up &amp; Log in <i class='icon icon-key'></i>
-                    </a>
-                    <div class='dropdown-menu' id='menuLoginForm'>
-                        <div data-login-form=""></div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
+
+	<div class="left">
+		<a href="/">
+			<img src="/img/Kommissioner-logo-header.png" alt="Kommissioner" class="logo" />
+		</a>
+	</div>
+	<div class="right">
+		<a class="btn btn-profile" data-ng-href="#!/my/profile" data-ng-show="loggedIn">
+			{{userCtx.name}}
+		</a>
+        <li class='dropdown' data-ng-show='!loggedIn'>
+            <a href='#' id="menuLoginToggle" class='dropdown-toggle' data-toggle='dropdown'>
+                Sign up &amp; Log in <i class='icon icon-key'></i>
+            </a>
+            <div class='dropdown-menu' id='menuLoginForm'>
+                <div data-login-form=""></div>
+            </div>
+        </li>
+	</div>
     
     <script>
         $(function() {

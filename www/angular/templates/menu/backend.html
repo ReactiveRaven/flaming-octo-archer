@@ -1,0 +1,11 @@
+<ul class="backendmenu" >
+    <li
+        data-ng-repeat="item in menuItems"
+        data-ng-class="{ active: item.title === active }"
+    >
+        <a data-ng-href="{{ item.href }}">
+            <img data-ng-src="{{ item.img }}" />
+            <span>{{ item.title }}</span>
+        </a>
+    </li>
+</ul>

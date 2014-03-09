@@ -4,6 +4,7 @@
 @import "tabs.less";
 @import "buttons.less";
 @import "footer.less";
+@import "backendmenu.less";
 
 * {
 	box-sizing: border-box;
@@ -153,4 +154,10 @@ input {
 ::-webkit-selection, input::-webkit-selection {
     background: @blue;
     color: @lightblue;
+}
+
+.menupane {
+    .left();
+    margin-top: 30px;
+    margin-left: 30px;
 }

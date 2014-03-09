@@ -6,6 +6,7 @@ define(
         '../services/ParanoidScope', 
         '../services/CommissionManager', 
         '../directives/KommiExpandToFit',
+        '../directives/BackendMenu',
         '../directives/KommiEnter'
     ], 
     function(constants) {
@@ -17,14 +18,15 @@ define(
             'commissar.services.Authentication',
             'commissar.services.CommissionManager',
             'commissar.directives.KommiExpandToFit',
-            'commissar.directives.KommiEnter',
+            'commissar.directives.BackendMenu',
+            'commissar.directives.KommiEnter'
         ]
     );
 
     CommissionPanelCtrlModule.controller(
         'CommissionPanelCtrl', 
-        ['ParanoidScope', 'Authentication', 'CommissionManager', '$scope', 
-        function(ParanoidScope, Authentication, CommissionManager, $scope) {            
+        ['ParanoidScope', 'Authentication', 'CommissionManager', '$scope',
+        function(ParanoidScope, Authentication, CommissionManager, $scope) {
             $scope.commissionPanel = {};
             
             CommissionManager.getCommissions().then(function (commissions) {

@@ -1,7 +1,11 @@
-<h1 id="adminPanelTitle">Admin Panel</h1>
+<div data-backendmenu="true" data-active="Admin"></div>
 
-<a id="adminPanelLinkUploadDesignDocs" data-ng-click="pushDesignDocs()" data-ng-show="!pushingDesignDocs" class="btn btn-danger">Push Design Documents</a>
+<div class="menupane">
+    <h1 id="adminPanelTitle">Administration Panel</h1>
 
-<div class='alert alert-danger' data-ng-bind='pushDesignDocsErrors' data-ng-show='!pushingDesignDocs && pushDesignDocsErrors'></div>
+    <a id="adminPanelLinkUploadDesignDocs" data-ng-click="pushDesignDocs()" data-ng-show="!pushingDesignDocs" class="btn btn-danger">Push Design Documents</a>
 
-<a id="adminPanelLinkGotoFuton" data-ng-show="!pushingDesignDocs" href="/couchdb/_utils/" class="btn btn-danger">Go to Futon</a>
+    <div class='alert alert-danger' data-ng-bind='pushDesignDocsErrors' data-ng-show='!pushingDesignDocs && pushDesignDocsErrors'></div>
+
+    <a id="adminPanelLinkGotoFuton" data-ng-show="!pushingDesignDocs" href="/couchdb/_utils/" class="btn btn-danger">Go to Futon</a>
+</div>

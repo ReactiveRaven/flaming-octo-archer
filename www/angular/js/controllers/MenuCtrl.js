@@ -42,6 +42,10 @@ define(['../services/Authentication', '../filters/Capitalize', '../directives/Lo
             Authentication.logout();
         };
         
+        $scope.menuClasses = function () {
+			return "header";
+        };
+        
     });
     
     return MenuCtrlModule;
