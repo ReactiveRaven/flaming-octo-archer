@@ -1,6 +1,8 @@
 flaming-octo-archer
 ===================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ReactiveRaven/flaming-octo-archer.svg)](https://greenkeeper.io/)
+
 commissar reset repo
 
 Aiming for minimal php, majority angular.
